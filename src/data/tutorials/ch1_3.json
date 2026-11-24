@@ -1,0 +1,1375 @@
+[
+  {
+    "chapter": 1,
+    "title": "第 1 章 基础语法与输入输出",
+    "subtitle": "从第一行 print 到数位剥离：把「输入—计算—输出」跑通",
+    "isExamScope": false,
+    "estimatedMinutes": 150,
+    "learningGoals": [
+      "能独立写出「读入数据 → 计算 → 按格式输出」的完整小程序",
+      "分清 input 返回的字符串与 int/float 数值，熟练完成类型转换",
+      "掌握 / 与 //、% 与 ** 的区别，会用 math 模块求 π 和开平方",
+      "掌握数位剥离套路与 f-string 格式化，让输出严格对齐题目样例"
+    ],
+    "intro": "学 Python 就像学做一道菜：先把原料拿进来（input 读入），再按菜谱加工（变量与运算），最后装盘上桌（print 输出）。这一章不涉及判断和循环，看起来简单，但后面每一道题——不管是闰年、字符串还是列表——都建立在这三步之上。把这三步练到不用想，后面的章节才会越学越轻松。\n\n新手最容易卡住的地方，不是语法不会写，而是「人觉得理所当然、计算机却不这么想」。比如你在键盘上敲了 18，计算机收到的其实是一段文字 \"18\"；你写 2^3 以为是 8，Python 却算出了 1。本章会反复解释这些「为什么」，并给出可以直接运行、逐行拆解的示例。\n\n最后提醒一句：大学课程平台判题通常是逐字符比对。多一个空格、少两位小数、把整数输出成 36.00，都会判错。所以本章从第一个例子开始，就按「样例长什么样，输出就长什么样」的标准训练。",
+    "sections": [
+      {
+        "id": "ch1-s1",
+        "title": "第一行代码：print 与字符串",
+        "concept": "print 是程序对世界说话的方式。你在括号里放什么，屏幕上就显示什么。想显示一段文字，就用成对的英文引号把它包起来，这种带引号的数据叫「字符串」。引号只是告诉 Python「这一串字符从哪儿开始、到哪儿结束」，它本身不会被输出。单引号和双引号都行，但左边用了单引号，右边也必须用单引号，必须成对。\n\n一次想输出多个内容，可以用逗号把它们隔开：print('2026', '期中', '复习')。逗号分隔的每个值会依次打印，中间默认补一个空格，全部打印完再自动换行。如果不想用空格，就设置 sep（separator，分隔符），比如 sep=' | '；如果希望下一次 print 接着这一行写，就设置 end=''，因为 end 的默认值是换行符。sep 和 end 是「关键字参数」，要写等号，而且习惯上放在普通值的后面。\n\n引号里的内容可以包含中文、空格和标点。字符串里还能写转义字符：\\n 表示换行，\\t 表示制表符，所以一个 print 也能输出多行。代码里以 # 开头的部分是注释，写给人看的，Python 会完全忽略。初学阶段最常见的低级错误，是输入法没切到英文，打出了中文的弯引号或中文逗号——它们看起来几乎一样，Python 却完全不认识。",
+        "syntaxCard": {
+          "title": "print 函数的基本形态",
+          "syntax": "print(值1, 值2, ..., sep='分隔符', end='结尾')",
+          "breakdown": [
+            {
+              "part": "print",
+              "meaning": "内置输出函数，把括号里的内容送到屏幕"
+            },
+            {
+              "part": "值1, 值2",
+              "meaning": "要输出的内容，可以是字符串、数字、变量或表达式，逗号分隔"
+            },
+            {
+              "part": "sep='分隔符'",
+              "meaning": "多个值之间的连接方式，默认是一个空格"
+            },
+            {
+              "part": "end='结尾'",
+              "meaning": "输出结束后追加什么，默认换行；写成 end='' 可让下一次 print 接着同一行"
+            }
+          ]
+        },
+        "keyRules": [
+          "字符串必须用成对的英文引号，中文弯引号会直接 SyntaxError",
+          "print 多个值时默认用空格连接，输出后自动换行",
+          "sep 和 end 是关键字参数，要写等号，且习惯上放在普通值后面",
+          "# 后面是注释，不会被运行；调试时常用它临时「关掉」一行代码",
+          "括号、逗号、引号一律用英文半角，Python 不认中文标点"
+        ],
+        "codeDemo": {
+          "title": "用 print 输出多行信息与自定义分隔",
+          "code": "print('Hello, Python!')\nprint('你好，世界！')\nprint('2026', '11', '24', sep='-')\nprint('加载中', end='')\nprint('...完成')\nprint('第一行\\n第二行')",
+          "expectedOutput": "Hello, Python!\n你好，世界！\n2026-11-24\n加载中...完成\n第一行\n第二行",
+          "lineByLine": [
+            "第 1 行：print('Hello, Python!') 把引号内的文字原样送到屏幕，输出后自动换行。",
+            "第 2 行：中文字符串同样处理；引号只起界定范围的作用，不会显示出来。",
+            "第 3 行：三个值用逗号隔开，sep='-' 把默认空格换成短横线，所以得到 2026-11-24。",
+            "第 4 行：end='' 表示这次输出完不换行，光标停在行尾。",
+            "第 5 行：紧接着上一次的输出，得到「加载中...完成」，最后才换行。",
+            "第 6 行：字符串里的 \\n 是换行符，一个 print 也能输出两行。"
+          ]
+        },
+        "cautionBox": {
+          "title": "中文引号：最冤枉的 SyntaxError",
+          "wrongCode": "print(“Hello, Python!”)",
+          "rightCode": "print('Hello, Python!')",
+          "why": "看起来几乎一模一样，但“ ”是中文全角弯引号，Python 只承认英文半角的单引号或双引号。同样要小心中文逗号、中文括号和中文冒号。写代码前把输入法切到英文，是新手最值得养成的习惯。"
+        }
+      },
+      {
+        "id": "ch1-s2",
+        "title": "变量、数据类型与 input：让程序接收原料",
+        "concept": "变量可以想成一个贴了名字的盒子，等号 = 是「把右边算好，放进左边的盒子里」，不是数学里的「相等」。所以 x = 10 之后还能再写 x = 20，盒子里的值会被替换。变量名只能由字母、数字、下划线组成，不能以数字开头，区分大小写，也不能使用 if、for 这类关键字。取名时尽量让名字自己说话：radius 比 r 清楚，total_price 比 tp 清楚。\n\n数据是有类型的。整数是 int，小数是 float，文本是 str，真假值是 bool，可以用 type() 查看。为什么要分类型？因为数字能加减乘除，文本能拼接和切片，混着来就会 TypeError。比如 \"3\" + \"5\" 得到字符串 \"35\"（拼接），而 3 + 5 得到 8（加法）。看起来都是「加」，含义完全不同。\n\ninput() 从键盘读入一整行，但它返回的东西永远是字符串，哪怕你敲的是 123。想拿它做算术，必须先用 int() 或 float() 转换。int('3.5') 会报 ValueError，因为字符串里有个小数点；要读小数就用 float()，float('3') 也能得到 3.0。如果一行里有多个用空格分隔的数，标准写法是 a, b = map(int, input().split())：先读一行，按空白切成若干段，逐段转成整数，再依次装进变量。",
+        "syntaxCard": {
+          "title": "输入与类型转换",
+          "syntax": "变量 = 转换函数(input())",
+          "breakdown": [
+            {
+              "part": "input()",
+              "meaning": "读入一整行内容，返回值类型永远是 str（不含末尾换行）"
+            },
+            {
+              "part": "int(...)",
+              "meaning": "把字符串转成整数；字符串必须是合法的整数写法"
+            },
+            {
+              "part": "float(...)",
+              "meaning": "把字符串转成小数；整数写法也可以，如 float('3') 得到 3.0"
+            },
+            {
+              "part": "变量 = ...",
+              "meaning": "把转换好的值绑定到名字上，之后用名字参与计算"
+            },
+            {
+              "part": "a, b = map(int, input().split())",
+              "meaning": "读一行 → 按空白切分 → 每段转 int → 依次赋给 a、b"
+            }
+          ]
+        },
+        "keyRules": [
+          "input() 的结果永远是字符串，参与算术前必须 int() 或 float()",
+          "int('3.5') 会 ValueError；要小数就用 float()",
+          "int() 能自动去掉首尾空白，也能识别 '+18'、'-5' 这样的写法",
+          "变量名区分大小写，不能以数字开头，不能使用关键字（如 if、for）",
+          "一行多个数以空格分隔时，用 map(int, input().split()) 一次读入"
+        ],
+        "codeDemo": {
+          "title": "看清 input 的字符串真面目",
+          "code": "text = input()\nage = int(input())\nheight = float(input())\n\nprint(text, type(text))\nprint(age, type(age))\nprint(height, type(height))\nprint(age + 1)",
+          "stdin": "18\n18\n1.75",
+          "expectedOutput": "18 <class 'str'>\n18 <class 'int'>\n1.75 <class 'float'>\n19",
+          "lineByLine": [
+            "第 1 行：input() 读到第一行的 '18'，原样存为字符串，变量名叫 text。",
+            "第 2 行：又读一行 '18'，int() 把它转成整数 18；两个 18 长得一样，类型不同。",
+            "第 3 行：float() 把 '1.75' 转成小数 1.75。",
+            "第 5~7 行：type() 返回类型对象，print 显示为 <class 'str'> 等，证明 input 的原文是字符串。",
+            "第 8 行：age 是 int，所以 age + 1 做加法得到 19；如果 age 没转换，这里会报 TypeError。"
+          ]
+        },
+        "cautionBox": {
+          "title": "input 忘了转换：'18' + 1 不是 19",
+          "wrongCode": "age = input()\nprint(age + 1)",
+          "rightCode": "age = int(input())\nprint(age + 1)",
+          "why": "input() 返回字符串，字符串只能和字符串相加（拼接）。'18' + 1 会报 TypeError（can only concatenate str ...）。记住口诀：只要输入要参与计算，先套 int() 或 float()。"
+        }
+      },
+      {
+        "id": "ch1-s3",
+        "title": "算术运算符：/ 与 //、% 与 ** 的脾气",
+        "concept": "Python 的算术运算符有 +、-、*、/、//、%、**。最需要警惕的是 /：它做普通除法，结果永远是 float，哪怕 4 / 2 也返回 2.0，而不是 2。// 是整除，意思是「最多能装下几个完整的除数」，对正数相当于抹掉小数部分：7 // 2 得 3。% 是取余，7 % 2 得 1。整除和取余是一对搭档，满足 a = (a // b) * b + a % b。\n\n对负数，// 的规则是「向下取整」而不是「向零取整」，所以 -7 // 2 是 -4，不是 -3；对应的 -7 % 2 是 1，因为 -7 = 2 × (-4) + 1。Python 里余数的符号跟随除数，这一点作业和选择题都爱考。乘方用 **，2 ** 10 是 1024。千万不要用 ^：在 Python 里 ^ 是按位异或，2 ^ 3 会算出 1，而且不报错，属于最危险的静默错误。\n\n优先级从高到低大致是：括号、乘方、乘除整除取余、加减；同一级从左到右。不确定就加括号，括号不会扣分，还会让代码更易读。另外，计算机用二进制存小数，0.1 + 0.2 会得到 0.30000000000000004，所以浮点数不要直接用 == 判断相等，应写 abs(a - b) < 1e-9。math 模块提供高精度常数 math.pi 和开平方 math.sqrt()，求圆、距离、海伦公式都靠它们。",
+        "syntaxCard": {
+          "title": "常用算术与 math",
+          "syntax": "a / b    a // b    a % b    a ** b    math.sqrt(x)",
+          "breakdown": [
+            {
+              "part": "/",
+              "meaning": "普通除法，结果一定是 float，如 4/2 得到 2.0"
+            },
+            {
+              "part": "//",
+              "meaning": "整除，向下取整；正数相当于抹掉小数部分"
+            },
+            {
+              "part": "%",
+              "meaning": "取余数；常用来判断整除、取个位、循环归位"
+            },
+            {
+              "part": "**",
+              "meaning": "乘方，如 2**3 得 8；不是 ^"
+            },
+            {
+              "part": "math.sqrt(x)",
+              "meaning": "开平方，返回 float；需先 import math"
+            }
+          ]
+        },
+        "keyRules": [
+          "/ 的结果永远是 float，别用结果的类型判断「能不能整除」",
+          "// 对负数是向下取整：-7 // 2 得 -4，不是 -3",
+          "% 的结果符号跟随除数：-7 % 2 得 1",
+          "乘方是 **，^ 是按位异或（2 ^ 3 得 1，不是 8）",
+          "浮点数有精度误差，0.1 + 0.2 不等于 0.3；判断相等用 abs(a-b) < 1e-9"
+        ],
+        "codeDemo": {
+          "title": "一次跑完七个运算符，再看 math",
+          "code": "a = 7\nb = 2\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)\nprint(-7 // 2, -7 % 2)\nprint(4 / 2, type(4 / 2))\n\nimport math\nprint(math.sqrt(16), type(math.sqrt(16)))",
+          "expectedOutput": "9\n5\n14\n3.5\n3\n1\n49\n-4 1\n2.0 <class 'float'>\n4.0 <class 'float'>",
+          "lineByLine": [
+            "第 1~2 行：定义 a = 7、b = 2，后面反复使用。",
+            "第 3~5 行：+、-、* 分别得到 9、5、14，都是 int。",
+            "第 6 行：/ 普通除法，7 / 2 得到 3.5。",
+            "第 7 行：// 整除，7 // 2 只保留 3 个完整的 2。",
+            "第 8 行：% 取余，7 = 2 × 3 + 1，余数是 1。",
+            "第 9 行：** 乘方，7 的 2 次方是 49；若写成 7 ^ 2 会得到 5。",
+            "第 10 行：负数整除向下取整得 -4；-7 = 2 × (-4) + 1，所以余数是 1。",
+            "第 11 行：4 / 2 虽然除得尽，但 / 仍返回 2.0，type 证明它是 float。",
+            "第 13~14 行：import math 后调用 math.sqrt(16)，结果是 4.0（float），不是 4。"
+          ]
+        },
+        "cautionBox": {
+          "title": "把 ^ 当乘方：2 ^ 3 竟然等于 1",
+          "wrongCode": "print(2 ^ 3)",
+          "rightCode": "print(2 ** 3)",
+          "why": "在 Python 里 ^ 是按位异或：2 的二进制是 10，3 是 11，逐位异或得到 01，也就是 1。乘方必须用 **。这个错误不会报错，只会静默算出离谱的结果，所以最危险。"
+        }
+      },
+      {
+        "id": "ch1-s4",
+        "title": "数位剥离与格式化输出：让答案长得和样例一样",
+        "concept": "十进制整数的每一位都有「位权」：12345 = 1×10⁴ + 2×10³ + 3×10² + 4×10 + 5。对 10 取余 n % 10，得到最低位（个位）；对 10 整除 n // 10，等于把个位扔掉：12345 // 10 = 1234。两招组合就能逐位取数：个位 n % 10，十位 n // 10 % 10，百位 n // 100 % 10，千位 n // 1000 % 10，万位 n // 10000。口诀是「先整除掉右边的所有位，再取余留下目标位」。\n\n为什么不用字符串切片？当然可以，而且第 2 章就会学。但当题目强调「数位运算」，或者后面第 4 章要循环处理每一位时，// 和 % 的组合更通用：它不依赖数字转成文本，也不会因为前导零、正负号出意外。提取出来的每一位仍然是 int，可以继续参与加减乘除，比如重新拼成倒置的数。\n\n最后一公里是输出格式。f-string 在字符串前加 f，花括号里放变量或表达式：f'{x:.2f}' 表示保留两位小数，f'{s:>10}' 表示右对齐占 10 格，< 是左对齐，^ 是居中，还可以写 f'{s:*^10}' 用星号填充。宽度和小数位能组合成 f'{x:10.2f}'。请记住：只有明确要求小数的浮点结果才用 .2f；整数题加了 .2f，36 会变成 36.00，平台直接判错。判题是逐字符比对，单位、冒号、空格、换行都必须和样例一致。",
+        "syntaxCard": {
+          "title": "数位公式与 f-string 格式",
+          "syntax": "n // 10**k % 10        f'{值:格式}'",
+          "breakdown": [
+            {
+              "part": "n % 10",
+              "meaning": "个位（最低位）"
+            },
+            {
+              "part": "n // 10 % 10",
+              "meaning": "十位：先扔掉个位，再取新的最低位"
+            },
+            {
+              "part": "n // 100",
+              "meaning": "去掉后两位，常用于取高位部分"
+            },
+            {
+              "part": "f'...{变量}...'",
+              "meaning": "f-string：引号前加 f，花括号里的变量会被替换成值"
+            },
+            {
+              "part": "{x:.2f}",
+              "meaning": "保留 2 位小数（只对 float 有意义）"
+            },
+            {
+              "part": "{x:>10}",
+              "meaning": "右对齐，占 10 个字符宽度；< 左对齐，^ 居中"
+            }
+          ]
+        },
+        "keyRules": [
+          "取某一位的口诀：先 // 掉它右边的所有位，再 % 10",
+          "个位永远是 n % 10；取完高位别忘了用 //10 缩小范围",
+          "整数输出不要用 .2f，.2f 会把 36 变成 36.00",
+          "平台判题逐字符比对：单位、冒号、空格、换行都必须与样例一致",
+          "格式宽度是「至少占多少格」，内容更长时会自动撑破，不会截断"
+        ],
+        "codeDemo": {
+          "title": "五位数逐位剥离，并练习对齐格式",
+          "code": "n = int(input())\nprint(f'原数：{n}')\nprint(f'个位：{n % 10}')\nprint(f'十位：{n // 10 % 10}')\nprint(f'百位：{n // 100 % 10}')\nprint(f'千位：{n // 1000 % 10}')\nprint(f'万位：{n // 10000}')\n\nr = 2.5\narea = 3.14159 * r ** 2\nprint(f'半径 {r} 的圆面积约为 {area:.2f}')\nname = 'Python'\nprint(f'|{name:>10}|')\nprint(f'|{name:<10}|')\nprint(f'|{name:^10}|')",
+          "stdin": "12345",
+          "expectedOutput": "原数：12345\n个位：5\n十位：4\n百位：3\n千位：2\n万位：1\n半径 2.5 的圆面积约为 19.63\n|    Python|\n|Python    |\n|  Python  |",
+          "lineByLine": [
+            "第 1 行：int(input()) 把输入 '12345' 转成整数 12345；若省掉 int，下一行 % 会报错。",
+            "第 2 行：f'原数：{n}' 把变量嵌进文字，原样显示整个数。",
+            "第 3 行：n % 10 = 5，得到个位。",
+            "第 4 行：先算 n // 10 = 1234（扔掉个位），再 % 10 = 4，得到十位。",
+            "第 5~7 行：同理 //100%10 得 3，//1000%10 得 2，//10000 得万位 1。",
+            "第 9~11 行：r = 2.5，area = 3.14159 × 6.25 = 19.6349375，f'{area:.2f}' 输出 19.63。",
+            "第 12~15 行：同一个 name，>10 右对齐、<10 左对齐、^10 居中，竖线用来目测宽度。"
+          ]
+        },
+        "cautionBox": {
+          "title": "整数题画蛇添足加 .2f：36 变成 36.00",
+          "wrongCode": "n = int(input())\nprint(f'{n:.2f}')",
+          "rightCode": "n = int(input())\nprint(n)",
+          "why": "题目要求输出整数时，.2f 会强制补两位小数，输出从 36 变成 36.00，平台逐字符比对直接判错。.2f 只用在明确要求保留小数的浮点结果上；不确定时先看样例输出有没有小数点。"
+        }
+      }
+    ],
+    "workedExamples": [
+      {
+        "id": "ch1-ex1",
+        "title": "五位数剥离：万千百十个位逐个输出",
+        "difficulty": "常考",
+        "source": "作业 50046 · 五位数剥离输出（改编）",
+        "problemStatement": "从键盘读入一个五位数 n（10000 ≤ n ≤ 99999），把它的万位、千位、百位、十位、个位依次输出，同一行、用一个空格分隔。例如输入 12345，输出 1 2 3 4 5。",
+        "thinkingSteps": [
+          "明确位权：12345 中 1 在万位，代表 1×10⁴；5 在个位，代表 5×10⁰。",
+          "万能公式：取第 k 位（个位是第 0 位）= n // 10**k % 10；先整除把右边的位切掉，再取余留下目标位。",
+          "万位可以直接 n // 10000（五位数除完只剩一位），其余位用公式逐步取。",
+          "输出用 print(w, q, b, s, g)，逗号分隔默认就是空格，不用手工拼字符串。"
+        ],
+        "code": "n = int(input())\nw = n // 10000\nq = n // 1000 % 10\nb = n // 100 % 10\ns = n // 10 % 10\ng = n % 10\nprint(w, q, b, s, g)",
+        "stdin": "12345",
+        "sampleOutput": "1 2 3 4 5",
+        "codeWalkthrough": [
+          {
+            "lines": "n = int(input())",
+            "explanation": "读入 '12345' 并转成整数 12345；不转换就无法做 // 和 %。"
+          },
+          {
+            "lines": "w = n // 10000",
+            "explanation": "12345 // 10000 = 1，正好是万位。"
+          },
+          {
+            "lines": "q = n // 1000 % 10",
+            "explanation": "先 12345 // 1000 = 12，再 12 % 10 = 2，得到千位。"
+          },
+          {
+            "lines": "b = n // 100 % 10",
+            "explanation": "12345 // 100 = 123，123 % 10 = 3，得到百位。"
+          },
+          {
+            "lines": "s = n // 10 % 10",
+            "explanation": "12345 // 10 = 1234，1234 % 10 = 4，得到十位。"
+          },
+          {
+            "lines": "g = n % 10",
+            "explanation": "12345 % 10 = 5，个位；最低位只需一步。"
+          },
+          {
+            "lines": "print(w, q, b, s, g)",
+            "explanation": "五个值逗号分隔，默认空格连接，输出 1 2 3 4 5。"
+          }
+        ],
+        "commonMistakes": [
+          "万位写成 n // 1000：得到 12 而不是 1，忘了再 %10。",
+          "十位写成 n // 10：得到 1234，把「先整除」和「再取余」两步只做了一半。",
+          "忘了 int(input())：字符串不支持 % 和 //，直接 TypeError。",
+          "用 print(w, q, b, s, g, sep='') 把空格也删了，和样例不符。"
+        ],
+        "variationTip": "把五位数倒置输出（12345 → 54321）：可以用 g*10000 + s*1000 + b*100 + q*10 + w 重新组合；第 4 章学循环后可以处理任意位数。也可以用字符串 s[::-1] 一行搞定，但平台若要求整数运算就别用字符串。"
+      },
+      {
+        "id": "ch1-ex2",
+        "title": "圆周长与面积：float 输入 + math.pi + 两位小数",
+        "difficulty": "入门",
+        "source": "作业 50046 · 求圆周长和面积",
+        "problemStatement": "输入圆的半径 r（可能是小数）。第一行输出周长 2πr，第二行输出面积 πr²，均保留两位小数。输入 2.5 时，输出 15.71 和 19.63。",
+        "thinkingSteps": [
+          "半径可能是小数，必须用 float(input())，不能用 int。",
+          "导入 math 使用高精度 math.pi；周长 = 2 * math.pi * r，面积 = math.pi * r ** 2。",
+          "先完整算出结果再格式化，不要在公式中间提前截断，避免误差累积。",
+          "f'{c:.2f}' 按显示精度保留两位小数，并自动补足末尾的零。"
+        ],
+        "code": "import math\nr = float(input())\nc = 2 * math.pi * r\ns = math.pi * r ** 2\nprint(f'{c:.2f}')\nprint(f'{s:.2f}')",
+        "stdin": "2.5",
+        "sampleOutput": "15.71\n19.63",
+        "codeWalkthrough": [
+          {
+            "lines": "import math",
+            "explanation": "导入标准库 math，后续才能使用 math.pi 和 math.sqrt。"
+          },
+          {
+            "lines": "r = float(input())",
+            "explanation": "读入 '2.5'，转成小数 2.5。"
+          },
+          {
+            "lines": "c = 2 * math.pi * r",
+            "explanation": "2 × π × 2.5 = 15.707963…，先保留完整精度。"
+          },
+          {
+            "lines": "s = math.pi * r ** 2",
+            "explanation": "r ** 2 = 6.25，再乘 π 得 19.634954…。"
+          },
+          {
+            "lines": "print(f'{c:.2f}')",
+            "explanation": "保留两位小数输出 15.71；下一行同理输出 19.63。"
+          }
+        ],
+        "commonMistakes": [
+          "用 int(input())：半径 2.5 直接 ValueError。",
+          "自己写 pi = 3.14：精度不够，面积会偏差，和样例对不上。",
+          "把圆周率符号 π 写进代码：变量名只能用 ASCII 字母、数字和下划线。",
+          "先 round(c, 2) 再 print：round 可能把 15.70 显示成 15.7，丢掉末尾的零；格式化交给 .2f 更稳。"
+        ],
+        "variationTip": "求球体积 4/3πr³ 时，注意 4/3 在 Python 里是浮点除法；写成 4 * math.pi * r ** 3 / 3 可以避免先算 4/3 的精度问题，阅读起来也更清楚。"
+      },
+      {
+        "id": "ch1-ex3",
+        "title": "海伦公式求三角形面积：多步计算不怯场",
+        "difficulty": "综合压轴",
+        "source": "作业 50046 · 计算三角形面积（海伦公式）",
+        "problemStatement": "输入三角形三边长 a、b、c（同一行、空格分隔，均为小数）。用海伦公式计算面积并保留两位小数输出。海伦公式：p = (a+b+c)/2，面积 = √(p(p-a)(p-b)(p-c))。输入 3 4 5，输出 6.00。",
+        "thinkingSteps": [
+          "一行三个小数，用 a, b, c = map(float, input().split())，注意是 float 不是 int。",
+          "先算半周长 p，再把四个因子相乘，最后开方；分步写变量，别硬塞成一行。",
+          "开方用 math.sqrt(...)，括号必须包住整个乘积，否则只会对最后一个因子开方。",
+          "用 .2f 输出；即使结果是整数 6，也要显示成 6.00。"
+        ],
+        "code": "import math\na, b, c = map(float, input().split())\np = (a + b + c) / 2\narea = math.sqrt(p * (p - a) * (p - b) * (p - c))\nprint(f'{area:.2f}')",
+        "stdin": "3 4 5",
+        "sampleOutput": "6.00",
+        "codeWalkthrough": [
+          {
+            "lines": "import math",
+            "explanation": "提供 math.sqrt 开平方函数。"
+          },
+          {
+            "lines": "a, b, c = map(float, input().split())",
+            "explanation": "读整行 '3 4 5'；split() 切成 ['3','4','5']；map(float, ...) 逐个转小数；再解包给三个变量。"
+          },
+          {
+            "lines": "p = (a + b + c) / 2",
+            "explanation": "(3+4+5)/2 = 6.0，注意 / 返回 float。"
+          },
+          {
+            "lines": "area = math.sqrt(p * (p - a) * (p - b) * (p - c))",
+            "explanation": "6×3×2×1 = 36，sqrt(36) = 6.0；括号保证四个因子先全部乘完。"
+          },
+          {
+            "lines": "print(f'{area:.2f}')",
+            "explanation": ".2f 把 6.0 显示成 6.00，符合样例。"
+          }
+        ],
+        "commonMistakes": [
+          "用 int 读入：边长 3.5 会 ValueError；即使样例是整数，也应优先 float。",
+          "括号漏写：math.sqrt(p*(p-a)) * (p-b)*(p-c) 只对前半部分开方，结果完全错。",
+          "半周长写成 a + b + c / 2：除法优先级高于加法，实际是 a + b + (c/2)。",
+          "忘记 import math：NameError: name 'math' is not defined。"
+        ],
+        "variationTip": "第 3 章会加一个前置判断：任意两边之和大于第三边才能构成三角形，否则海伦公式里可能出现负数开方（ValueError）。先判断再计算，是标准的「先合法性、后计算」结构。"
+      }
+    ],
+    "summaryCheatsheet": [
+      {
+        "label": "输出一行",
+        "snippet": "print('Hello')",
+        "note": "字符串用成对英文引号；多值逗号分隔默认空格"
+      },
+      {
+        "label": "自定义分隔与结尾",
+        "snippet": "print(a, b, sep=', ', end='')",
+        "note": "sep 管中间，end 管结尾，默认换行"
+      },
+      {
+        "label": "读整数 / 小数",
+        "snippet": "n = int(input())\nx = float(input())",
+        "note": "input 永远返回 str，必须转换"
+      },
+      {
+        "label": "一行多个数",
+        "snippet": "a, b = map(int, input().split())",
+        "note": "split 按空白切分，map 批量转换，再解包"
+      },
+      {
+        "label": "四则与整除取余",
+        "snippet": "7 / 2   # 3.5\n7 // 2  # 3\n7 % 2   # 1\n7 ** 2  # 49",
+        "note": "/ 必为 float；** 才是乘方，^ 是按位异或"
+      },
+      {
+        "label": "取数位",
+        "snippet": "n % 10\nn // 10 % 10\nn // 100 % 10",
+        "note": "个位、十位、百位；先整除掉右侧再取余"
+      },
+      {
+        "label": "保留两位小数",
+        "snippet": "print(f'{x:.2f}')",
+        "note": "只用于浮点；整数加了会变成 36.00"
+      },
+      {
+        "label": "宽度对齐",
+        "snippet": "f'{s:>10}'  f'{s:<10}'  f'{s:^10}'",
+        "note": "右 / 左 / 居中，可加填充字符如 *^10"
+      },
+      {
+        "label": "数学库",
+        "snippet": "import math\nmath.pi\nmath.sqrt(x)",
+        "note": "π 与开方；sqrt 返回 float，负数会 ValueError"
+      },
+      {
+        "label": "查看类型",
+        "snippet": "type(x)",
+        "note": "返回 <class 'int'> 等，调试时确认转换是否生效"
+      }
+    ]
+  },
+  {
+    "chapter": 2,
+    "title": "第 2 章 字符串",
+    "subtitle": "把文本当序列：索引、切片、方法与编码",
+    "isExamScope": false,
+    "estimatedMinutes": 140,
+    "learningGoals": [
+      "理解字符串是字符序列，能用正负索引和切片精确取出任意片段",
+      "熟练使用 upper / lower / strip / replace / split / join 等高频方法",
+      "能用 split 加切片拆解身份证号、文件路径、网址等真实文本",
+      "掌握 ord / chr 与 f-string 格式化，能按样例完成文本排版"
+    ],
+    "intro": "程序不只会算数，还要处理姓名、地址、身份证号、文件路径、网址——这些都是字符串。你可以把字符串想成一条珠链：每个字符是一颗珠子，每颗珠子都有编号。学会按编号取珠子（索引）、按范围取一串珠子（切片）、给整条链子做加工（方法），再学会把链子拆成几段、重新拼回去（split / join），绝大多数文本题就有套路可循了。\n\n这一章的核心是「位置感」。身份证的出生日期为什么从下标 6 开始？文件名的扩展名为什么用 rsplit 而不是 split？网址里的斜杠那么多，为什么只切一刀？每一个问题背后都是「先找到分隔位置，再在正确的位置下刀」。把含头不含尾、负索引、maxsplit 这几个细节吃透，题目就会从「背写法」变成「推出来」。\n\n最后还会讲字符编码：计算机只存数字，字符靠编码表映射，ord 和 chr 就是两个方向的翻译官。第 4 章的凯撒加密、第 6 章的字符统计，都会回来用到这一节。",
+    "sections": [
+      {
+        "id": "ch2-s1",
+        "title": "索引与切片：按编号从字符串里取东西",
+        "concept": "字符串是「字符的序列」。以 'Python' 为例，它由 6 个字符组成，位置从 0 开始编号：P 在 0，y 在 1，t 在 2，h 在 3，o 在 4，n 在 5。用 s[i] 就能取出下标 i 的字符。位置也可以从右往左数：s[-1] 是最后一个字符，s[-2] 是倒数第二个。正索引从左边 0 开始，负索引从右边 -1 开始，两边在中间「会合」。单个索引越界会报 IndexError。\n\n切片 s[start:end:step] 一次取一段。规则只有一句：从 start 开始，到 end 之前停下，也就是「含头不含尾」。所以 s[0:3] 取的是下标 0、1、2 三个字符，长度是 3；end 那个位置的字符取不到。省略 start 就从 0 开始，省略 end 就一直到末尾，省略 step 步长就是 1。s[:2] 是前两个字符，s[2:] 是第三个字符到结尾。切片越界不会报错，会自动截到边界，所以 s[0:100] 永远安全。\n\n步长可以是负数。s[::-1] 表示从头到尾、每次往左走一步，效果就是反转字符串，这是最常用的切片技巧之一；s[::2] 则是隔一个取一个。身份证号出生日期用 s[6:14] 取，是因为日常说的「第 7~14 位」从 1 数，而切片下标从 0 数，正好差 1；end 又不包含，所以 6:14 恰好是 8 个字符。数不清楚时，在纸上写下每个下标再切，比凭感觉可靠。",
+        "syntaxCard": {
+          "title": "索引与切片",
+          "syntax": "s[i]    s[start:end]    s[start:end:step]",
+          "breakdown": [
+            {
+              "part": "s[i]",
+              "meaning": "取下标 i 的单个字符；i 为负表示从右往左数"
+            },
+            {
+              "part": "start",
+              "meaning": "起始下标（包含）；省略则从 0 开始"
+            },
+            {
+              "part": "end",
+              "meaning": "结束下标（不包含）；省略则一直到末尾"
+            },
+            {
+              "part": "step",
+              "meaning": "步长，默认 1；-1 表示从右往左，常用于反转"
+            },
+            {
+              "part": "s[6:14]",
+              "meaning": "取下标 6~13 共 8 个字符，对应日常说的第 7~14 位"
+            }
+          ]
+        },
+        "keyRules": [
+          "下标从 0 开始；最后一个字符是 s[-1] 或 s[len(s)-1]",
+          "切片含头不含尾：s[0:3] 是 3 个字符，不是 4 个",
+          "切片越界不报错（自动截断），但单个索引越界会 IndexError",
+          "s[::-1] 反转字符串；s[::2] 隔一个取一个",
+          "字符串不可变，不能写 s[0]='X'，只能生成新串"
+        ],
+        "codeDemo": {
+          "title": "一条字符串，玩转正负索引与切片",
+          "code": "s = 'Python'\nprint(s[0])\nprint(s[-1])\nprint(s[0:3])\nprint(s[:2])\nprint(s[2:])\nprint(s[::-1])\nprint(s[::2])\nprint(len(s))",
+          "expectedOutput": "P\nn\nPyt\nPy\nthon\nnohtyP\nPto\n6",
+          "lineByLine": [
+            "第 1 行：s 绑定 6 个字符的字符串 'Python'。",
+            "第 2 行：s[0] 取第一个字符 P。",
+            "第 3 行：s[-1] 从右数第一个，即 n。",
+            "第 4 行：s[0:3] 取下标 0、1、2，得到 Pyt（不含下标 3 的 h）。",
+            "第 5 行：s[:2] 省略起点，等价于 s[0:2]，得到 Py。",
+            "第 6 行：s[2:] 省略终点，从下标 2 一直到结尾，得到 thon。",
+            "第 7 行：s[::-1] 步长 -1，从尾到头，得到 nohtyP。",
+            "第 8 行：s[::2] 从头隔一个取一个：下标 0、2、4，得到 P、t、o。",
+            "第 9 行：len(s) 返回字符个数 6。"
+          ]
+        },
+        "cautionBox": {
+          "title": "字符串不可变：s[0] = 'J' 一定报错",
+          "wrongCode": "s = 'Python'\ns[0] = 'J'\nprint(s)",
+          "rightCode": "s = 'Python'\ns = 'J' + s[1:]\nprint(s)",
+          "why": "字符串是不可变对象，创建后任何一位都不能原地修改，s[0]='J' 会抛 TypeError: 'str' object does not support item assignment。正确做法是用切片拼出新串再重新绑定，或者用 s.replace('P','J')。列表才支持原地改元素，别把两种类型搞混。"
+        }
+      },
+      {
+        "id": "ch2-s2",
+        "title": "常用字符串方法：一套加工工具",
+        "concept": "方法是「绑定在对象上的函数」，写法是 s.方法名(参数)。字符串自带一整套加工工具：upper 转大写，lower 转小写，strip 去掉首尾空白，replace 替换子串，count 统计出现次数，find 查找位置。最关键的一点是：这些方法都返回新值，不会修改原来的字符串。想要结果，就必须重新赋值，比如 s = s.upper()。只写 s.upper() 而不接住返回值，等于把加工好的新串直接扔掉。\n\nstrip 去掉的是两端连续的空白字符，包括空格、制表符、换行符；中间的空格一个都不会动。它常用来清理 input 读进来的内容，防止行尾的换行或空格干扰判断。replace(old, new) 默认把 old 全部替换掉，还可以传第三个参数限制替换次数。count 统计子串出现次数，find 返回首次出现的下标，找不到时返回 -1，而不是报错——这一点非常实用，但也要记住：不能拿 find 的返回值和 0 比较来判断「存在」，因为下标 0 也是合法位置。\n\n还有一组「分类判断」方法：isdigit 判断是否全部由数字字符组成，isalpha 判断是否全部由字母组成，中文也算字母。它们在第 3 章会和 if 配合，用来做字符分类。另外，in 运算符可以直接判断子串是否存在，返回 True 或 False，可读性最好。方法还能链式调用，s.strip().lower() 表示先去掉首尾空白，再把结果转小写，从左到右依次执行。注意 isdigit('-1') 和 isdigit('3.5') 都是 False，因为负号和小数点不是数字字符。",
+        "syntaxCard": {
+          "title": "高频字符串方法",
+          "syntax": "s.strip()  s.upper()  s.replace(旧, 新)  s.find(子串)  s.count(子串)",
+          "breakdown": [
+            {
+              "part": "s.strip()",
+              "meaning": "去掉首尾空白（空格、制表符、换行），中间不动"
+            },
+            {
+              "part": "s.upper() / s.lower()",
+              "meaning": "全部转大写 / 小写，返回新串"
+            },
+            {
+              "part": "s.replace(old, new)",
+              "meaning": "把 old 全部替换成 new；可加第三个参数限制次数"
+            },
+            {
+              "part": "s.count(sub)",
+              "meaning": "统计 sub 出现的次数（不重叠）"
+            },
+            {
+              "part": "s.find(sub)",
+              "meaning": "返回首次出现的下标；找不到返回 -1"
+            },
+            {
+              "part": "sub in s",
+              "meaning": "判断是否包含，返回 True/False，最直观的包含判断"
+            }
+          ]
+        },
+        "keyRules": [
+          "所有字符串方法都不会改变原串，必须写 s = s.upper() 才能保存结果",
+          "strip 只去两端，不去中间；去指定字符用 strip('*')",
+          "replace 默认替换全部，不是只替换第一个",
+          "find 找不到返回 -1；不要拿它和 0 比较来判断是否存在",
+          "isdigit 只认 0~9 数字字符，负号和小数点会让它返回 False"
+        ],
+        "codeDemo": {
+          "title": "一套方法走一遍，看清返回值",
+          "code": "s = '  Hello, Python World  '\nprint(s.strip())\nprint(s.strip().upper())\nprint(s.strip().lower())\nprint(s.strip().replace('Python', '编程'))\nprint(s.count('l'))\nprint(s.find('Python'))\nprint('Python' in s)\nprint('123'.isdigit(), 'abc'.isalpha(), 'abc123'.isalpha())",
+          "expectedOutput": "Hello, Python World\nHELLO, PYTHON WORLD\nhello, python world\nHello, 编程 World\n3\n9\nTrue\nTrue True False",
+          "lineByLine": [
+            "第 1 行：原串首尾各有两个空格，实际长度比看起来长。",
+            "第 2 行：strip() 生成去掉首尾空白的新串 Hello, Python World；原 s 未变。",
+            "第 3 行：在 strip 的结果上再 upper，链式调用从左到右执行，得到全大写。",
+            "第 4 行：lower 同理，得到全小写。",
+            "第 5 行：replace 把 Python 换成「编程」，其余字符（包括中间空格）保持原样。",
+            "第 6 行：count('l') 统计小写 l：Hello 里两个，World 里一个，共 3 个。",
+            "第 7 行：find('Python') 返回 P 在原串中的下标 9（前面有两个空格）。",
+            "第 8 行：in 判断子串是否存在，返回 True。",
+            "第 9 行：isdigit('123') 为真；isalpha('abc') 为真；'abc123' 含数字，isalpha 为假。"
+          ]
+        },
+        "cautionBox": {
+          "title": "s.upper() 之后 s 怎么没变？",
+          "wrongCode": "s = 'python'\ns.upper()\nprint(s)",
+          "rightCode": "s = 'python'\ns = s.upper()\nprint(s)",
+          "why": "字符串方法返回的是新对象，不是原地修改。s.upper() 确实生成了 'PYTHON'，但没有被任何变量接住，随即被丢弃；s 仍指向原来的 'python'。凡是「加工」字符串，都要用赋值把结果存回来。"
+        }
+      },
+      {
+        "id": "ch2-s3",
+        "title": "split 与 join：把文本拆开，再拼回去",
+        "concept": "split 负责拆，join 负责拼，两者互为逆操作。s.split() 不带参数时最智能：按任意一段连续空白切分，并自动丢弃空串，所以 '2026  11   24'.split() 依然得到三个部分，不会夹着空字符串。s.split(',') 则严格按逗号切，连续两个逗号之间会产生空串，例如 'a,,b'.split(',') 得到 ['a', '', 'b']。切完之后得到的是列表，每个元素仍然是字符串。\n\n取某一段用下标：path.split('/')[-1] 取最后一段，是取文件名的标准写法。如果只想切前几刀，用 maxsplit 参数：url.split('://', 1) 表示最多切 1 次，后面的内容整体保留。这一点在网址题里特别重要，因为网址的路径里还有斜杠，如果不限次数地切，变量会多到无法解包。切完要计算的话，记得转换类型：map(int, input().split()) 是最常见的入口写法。\n\njoin 的方向最容易错：它的主语是「胶水」字符串，参数才是列表，写法是 胶水.join(列表)。'-'.join(['2026', '11', '24']) 得到 '2026-11-24'。不要写成 列表.join(胶水)，列表根本没有 join 方法，会直接 AttributeError。另外，join 要求列表里的元素全部是字符串，如果列表里是数字，要先转：'-'.join(map(str, nums))。记住一句口诀：想说「用 X 连接」，就把 X 写在最前面。",
+        "syntaxCard": {
+          "title": "拆与拼",
+          "syntax": "列表 = s.split(分隔符)    字符串 = 胶水.join(列表)",
+          "breakdown": [
+            {
+              "part": "s.split()",
+              "meaning": "按任意空白切分，自动去掉多余空格和空串"
+            },
+            {
+              "part": "s.split('/')",
+              "meaning": "按指定字符切分，结果一定是列表"
+            },
+            {
+              "part": "s.split('://', 1)",
+              "meaning": "最多切 1 次，剩下的部分整体保留（maxsplit）"
+            },
+            {
+              "part": "胶水.join(列表)",
+              "meaning": "用胶水把列表元素连接成一个字符串"
+            },
+            {
+              "part": "''.join(parts)",
+              "meaning": "无间隔拼接，常用于把字符列表还原成串"
+            }
+          ]
+        },
+        "keyRules": [
+          "split 的结果是 list，元素全是 str，需要数字时记得转换",
+          "split() 不带参数最智能：任意空白都切，且不产生空串",
+          "split('x') 严格按字符切，连续两个 x 之间会产生空串",
+          "join 的主语是分隔符，写法是 sep.join(list)，方向别反",
+          "join 的列表元素必须都是字符串，数字要先 str() 转换"
+        ],
+        "codeDemo": {
+          "title": "把一句话拆开，再拼回去",
+          "code": "line = '2026 11 24 Python 复习'\nparts = line.split()\nprint(parts)\nprint(len(parts))\n\npath = 'home/stu/notes.txt'\nprint(path.split('/'))\nprint(path.split('/')[-1])\n\nwords = ['Python', 'is', 'fun']\nprint('-'.join(words))\nprint(''.join(words))\nprint(' '.join(['2026', '11', '24']))",
+          "expectedOutput": "['2026', '11', '24', 'Python', '复习']\n5\n['home', 'stu', 'notes.txt']\nnotes.txt\nPython-is-fun\nPythonisfun\n2026 11 24",
+          "lineByLine": [
+            "第 1 行：一句话里有 4 个空格，但内容其实是 5 段。",
+            "第 2 行：split() 按空白切开，返回 5 个字符串组成的列表。",
+            "第 3 行：打印列表，方括号和引号是列表的显示格式，不是字符串内容。",
+            "第 4 行：len(parts) = 5，统计段数。",
+            "第 6~8 行：按 / 切路径，[-1] 取最后一段 notes.txt，这是取文件名的标准写法。",
+            "第 10~12 行：用 - 和无间隔把单词粘起来；注意胶水写在 join 前面。",
+            "第 13 行：三个数字字符串用空格拼回一行；它们仍是 str，不参与算术。"
+          ]
+        },
+        "cautionBox": {
+          "title": "join 写反了：list.join('-') 直接 AttributeError",
+          "wrongCode": "words = ['a', 'b', 'c']\nprint(words.join('-'))",
+          "rightCode": "words = ['a', 'b', 'c']\nprint('-'.join(words))",
+          "why": "join 是字符串的方法，不是列表的方法；它的主语必须是「胶水」字符串，参数才是列表。记法：想说「用 - 连接」，就把 '-' 写在最前面。列表没有 join 方法，所以错误写法会抛 AttributeError: 'list' object has no attribute 'join'。"
+        }
+      },
+      {
+        "id": "ch2-s4",
+        "title": "字符编码与格式化：ord、chr 与 f-string",
+        "concept": "计算机内部只存数字，字符是靠编码表映射出来的。最常见的 ASCII 表里，'A' 的编码是 65，'a' 是 97，'0' 是 48。小写字母比对应的大写字母大 32，数字字符从 48 开始连续排列。ord(字符) 查编码，返回一个整数；chr(整数) 把编码还原成字符。二者方向相反：ord('A') 得 65，chr(65) 得 'A'。第 4 章的凯撒加密，本质就是 chr(ord(ch) + 偏移量)。\n\n字符串也能比较大小，规则是按编码逐位比较：先比第一个字符，相同再比第二个，直到分出胜负。所以 'a' < 'b'，'A' < 'a'（65 < 97），'abc' < 'abd'（前两位相同，第三位 c < d）。这意味着直接排序英文时，所有大写字母会排在小写字母前面。比较还区分大小写，'abc' == 'ABC' 是 False。考试里的登录验证码题，就是靠这一点判错的。\n\nf-string 是输出排版的瑞士军刀。引号前加 f，花括号里可以放变量或表达式；冒号后面写格式：.2f 保留两位小数，>10 右对齐占 10 格，<10 左对齐，^10 居中，*^10 表示居中并用星号填充。处理文本时，f-string 比用 + 拼接更清晰，也不容易漏空格。唯一要小心的是花括号本身是语法符号，想在输出里显示字面量 { 或 }，要写成 {{ 和 }}。",
+        "syntaxCard": {
+          "title": "编码转换与 f-string 格式",
+          "syntax": "ord(字符)    chr(整数)    f'{值:格式}'",
+          "breakdown": [
+            {
+              "part": "ord(c)",
+              "meaning": "返回字符 c 的 Unicode/ASCII 编码（整数）"
+            },
+            {
+              "part": "chr(n)",
+              "meaning": "返回编码 n 对应的字符；n 必须在合法范围内"
+            },
+            {
+              "part": "f'...{表达式}...'",
+              "meaning": "在字符串里嵌入变量或表达式，运行时替换"
+            },
+            {
+              "part": "{s:>10} / {s:<10} / {s:^10}",
+              "meaning": "右对齐 / 左对齐 / 居中，总宽度 10"
+            },
+            {
+              "part": "{s:*^10}",
+              "meaning": "居中且用 * 填充空位"
+            },
+            {
+              "part": "{x:.2f}",
+              "meaning": "保留两位小数；x 应为 float"
+            }
+          ]
+        },
+        "keyRules": [
+          "ord 是「字符 → 数字」，chr 是「数字 → 字符」，方向别记反",
+          "小写字母编码 = 对应大写 + 32；'0' 的编码是 48，不是 0",
+          "ord 的参数必须是长度为 1 的字符串；ord('65') 会 TypeError",
+          "中文字符也有 Unicode 编码，ord('中') 是一个不小的整数",
+          "f-string 的引号前必须有 f；漏了 f 会把 {name} 原样输出"
+        ],
+        "codeDemo": {
+          "title": "编码互转 + 三种对齐 + 填充",
+          "code": "print(ord('A'))\nprint(ord('a'))\nprint(chr(97))\nprint(ord('0'))\nprint(chr(ord('a') + 1))\n\nname = 'Python'\nscore = 92.5\nprint(f'{name} 得分 {score:.1f}')\nprint(f'|{name:>10}|')\nprint(f'|{name:<10}|')\nprint(f'|{name:^10}|')\nprint(f'|{name:*^10}|')",
+          "expectedOutput": "65\n97\na\n48\nb\nPython 得分 92.5\n|    Python|\n|Python    |\n|  Python  |\n|**Python**|",
+          "lineByLine": [
+            "第 1~2 行：ord('A') = 65、ord('a') = 97，说明大小写编码相差 32。",
+            "第 3 行：chr(97) 把编码 97 还原成字符 a。",
+            "第 4 行：字符 '0' 的编码是 48，和数字 0 不是一回事。",
+            "第 5 行：先 ord('a') 得 97，加 1 得 98，chr(98) 得 b，这就是字母移位的雏形。",
+            "第 7~9 行：定义 name 和 score；f-string 把变量嵌入句子，.1f 保留一位小数。",
+            "第 10~13 行：同样宽度 10，> 右对齐、< 左对齐、^ 居中；*^10 用星号填满空位。"
+          ]
+        },
+        "cautionBox": {
+          "title": "ord 和 chr 用反：ord('65') 直接报错",
+          "wrongCode": "print(ord('65'))",
+          "rightCode": "print(chr(65))",
+          "why": "ord 接收的是单个字符，返回编码；'65' 是两个字符，所以 ord('65') 抛 TypeError（ord() expected a character）。想从编码 65 得到字符，用 chr(65)。另一常见错误是 chr('a')：参数必须是整数。"
+        }
+      }
+    ],
+    "workedExamples": [
+      {
+        "id": "ch2-ex1",
+        "title": "身份证切片：一次性取出出生年月日",
+        "difficulty": "常考",
+        "source": "作业 50469 · 身份证-字符串操作",
+        "problemStatement": "输入一个 18 位身份证号（字符串，末尾可能是 X），提取第 7~14 位表示的出生日期，按「YYYY年MM月DD日」输出。例如输入 11010519491231002X，输出 1949年12月31日。",
+        "thinkingSteps": [
+          "身份证是固定格式文本，出生日期永远在固定位置：第 7~14 位，共 8 个字符。",
+          "日常「第几位」从 1 数，而切片下标从 0 数，所以起始下标 = 7 - 1 = 6。",
+          "切片含头不含尾：要取 8 个字符就写 s[6:14]，下标 14 不会包含。",
+          "再按年 4 位、月 2 位、日 2 位切成三段：s[6:10]、s[10:12]、s[12:14]，用 f-string 拼格式。"
+        ],
+        "code": "s = input().strip()\nyear = s[6:10]\nmonth = s[10:12]\nday = s[12:14]\nprint(f'{year}年{month}月{day}日')",
+        "stdin": "11010519491231002X",
+        "sampleOutput": "1949年12月31日",
+        "codeWalkthrough": [
+          {
+            "lines": "s = input().strip()",
+            "explanation": "读入身份证号并去掉首尾空白，避免行尾空格让长度变成 19。"
+          },
+          {
+            "lines": "year = s[6:10]",
+            "explanation": "取下标 6、7、8、9 四个字符，得到 '1949'。"
+          },
+          {
+            "lines": "month = s[10:12]",
+            "explanation": "取两个字符，得到 '12'。"
+          },
+          {
+            "lines": "day = s[12:14]",
+            "explanation": "取两个字符，得到 '31'。"
+          },
+          {
+            "lines": "print(f'{year}年{month}月{day}日')",
+            "explanation": "用 f-string 把三段嵌入中文格式，输出 1949年12月31日。"
+          }
+        ],
+        "commonMistakes": [
+          "写成 s[7:14]：整体右移一位，年份变成 9491。",
+          "写成 s[6:13]：末日少取一位，日期变成 1949年12月3日。",
+          "把身份证当整数 int(input())：末尾 X 直接 ValueError，而且前导 0 会丢失。",
+          "忘记 strip：行尾空格本身不影响切片位置，但会干扰长度校验，养成清理习惯更稳。"
+        ],
+        "variationTip": "同一份数据还能做更多：s[16] 是第 17 位，奇数表示男、偶数表示女（需要第 3 章的 if）；s[-1] 是校验码；s[:6] 是地区码。考试喜欢把「切片 + 选择」组合起来考。"
+      },
+      {
+        "id": "ch2-ex2",
+        "title": "文件路径拆解：文件名、主名、扩展名、目录",
+        "difficulty": "常考",
+        "source": "作业 50469 · 文件路径问题",
+        "problemStatement": "输入一个以 / 分隔的 Linux 风格文件路径，输出：文件名、主文件名、扩展名、所在目录（各占一行，格式见样例）。例如输入 /home/stu/docs/report.txt，输出文件名 report.txt、主文件名 report、扩展名 txt、目录 /home/stu/docs。",
+        "thinkingSteps": [
+          "文件名是最后一个 / 之后的部分，用 path.split('/')[-1] 取。",
+          "扩展名是最后一个点之后的部分，用 filename.rsplit('.', 1) 从右边只切一刀，得到 [主名, 扩展名]。",
+          "目录是最后一个 / 之前的部分，用 path.rfind('/') 找最后一个斜杠下标，再切片 path[:pos]。",
+          "用 f-string 加中文标签逐行输出，标签和冒号照抄样例。"
+        ],
+        "code": "path = input().strip()\nfilename = path.split('/')[-1]\nname, ext = filename.rsplit('.', 1)\npos = path.rfind('/')\nfolder = path[:pos]\nprint(f'文件名：{filename}')\nprint(f'主文件名：{name}')\nprint(f'扩展名：{ext}')\nprint(f'所在目录：{folder}')",
+        "stdin": "/home/stu/docs/report.txt",
+        "sampleOutput": "文件名：report.txt\n主文件名：report\n扩展名：txt\n所在目录：/home/stu/docs",
+        "codeWalkthrough": [
+          {
+            "lines": "path = input().strip()",
+            "explanation": "读路径并去掉首尾空白。"
+          },
+          {
+            "lines": "filename = path.split('/')[-1]",
+            "explanation": "split('/') 得到 ['', 'home', 'stu', 'docs', 'report.txt']，[-1] 取最后一段。"
+          },
+          {
+            "lines": "name, ext = filename.rsplit('.', 1)",
+            "explanation": "从右边只切一次，name='report'、ext='txt'；若用 split('.')[0]，文件名含点时会出错。"
+          },
+          {
+            "lines": "pos = path.rfind('/')",
+            "explanation": "rfind 返回最后一个 / 的下标。"
+          },
+          {
+            "lines": "folder = path[:pos]",
+            "explanation": "取最后一个 / 之前的所有字符，得到 /home/stu/docs。"
+          },
+          {
+            "lines": "print(f'文件名：{filename}') 等四行",
+            "explanation": "逐行按标签输出，冒号用中文全角，和样例完全一致。"
+          }
+        ],
+        "commonMistakes": [
+          "用 filename.split('.')[0] 当主名：my.report.txt 会得到 my，而不是 my.report。",
+          "用 path.split('/')[0] 当目录：路径以 / 开头时第一个元素是空串。",
+          "用 find('/') 而不是 rfind('/')：拿到第一个斜杠，目录只剩空串。",
+          "标签写成英文冒号或多加空格，平台逐字符比对判错。"
+        ],
+        "variationTip": "如果是 Windows 路径，分隔符是反斜杠，可以先用 replace 把反斜杠统一成 / 再处理，后面的逻辑完全不变。注意 Python 代码里反斜杠要转义，或者直接使用原始字符串写法（引号前加 r）。"
+      },
+      {
+        "id": "ch2-ex3",
+        "title": "网址拆解：协议、域名、路径一次拿全",
+        "difficulty": "综合压轴",
+        "source": "作业 50469 · 网址的相关操作（改编）",
+        "problemStatement": "输入一个完整网址（形如 协议://域名/路径），分别输出协议、域名、路径。例如输入 https://www.cgstu.edu.cn/course/python/index.html，输出协议 https、域名 www.cgstu.edu.cn、路径 /course/python/index.html。",
+        "thinkingSteps": [
+          "协议和其余部分由 :// 分隔，用 url.split('://', 1) 只切第一刀，保证后面内容完整。",
+          "剩下部分的第一段是域名，之后都是路径，用 rest.split('/', 1) 只切一刀。",
+          "路径开头有 /，split 会把它当分隔符丢掉，所以要手工补回 '/'。",
+          "用 f-string 逐行输出，标签与样例一致。"
+        ],
+        "code": "url = input().strip()\nprotocol, rest = url.split('://', 1)\nparts = rest.split('/', 1)\ndomain = parts[0]\npath = '/' + parts[1]\nprint(f'协议：{protocol}')\nprint(f'域名：{domain}')\nprint(f'路径：{path}')",
+        "stdin": "https://www.cgstu.edu.cn/course/python/index.html",
+        "sampleOutput": "协议：https\n域名：www.cgstu.edu.cn\n路径：/course/python/index.html",
+        "codeWalkthrough": [
+          {
+            "lines": "url = input().strip()",
+            "explanation": "读入整条网址并去掉首尾空白。"
+          },
+          {
+            "lines": "protocol, rest = url.split('://', 1)",
+            "explanation": "只切一次，得到 ['https', 'www.cgstu.edu.cn/course/python/index.html']，一次解包给两个变量。"
+          },
+          {
+            "lines": "parts = rest.split('/', 1)",
+            "explanation": "对剩余部分按第一个 / 切，得到 ['www.cgstu.edu.cn', 'course/python/index.html']。"
+          },
+          {
+            "lines": "domain = parts[0]",
+            "explanation": "第一部分是域名，包含子域名和顶级域名。"
+          },
+          {
+            "lines": "path = '/' + parts[1]",
+            "explanation": "第二部分是路径，开头的 / 被 split 吃掉了，这里补回来。"
+          },
+          {
+            "lines": "print(f'协议：{protocol}') 等三行",
+            "explanation": "分行输出三个部分，标签与样例一致。"
+          }
+        ],
+        "commonMistakes": [
+          "用 url.split('.') 取域名：www.cgstu.edu.cn 会被切成 4 段，域名不完整。",
+          "用 split('/') 且不限次数：网址路径里还有多个 /，解包时变量数对不上。",
+          "忘记给路径补 /：输出 course/python/index.html，与样例不符。",
+          "用 split('://') 不限次数：多数网址虽然只有一个，但写 maxsplit=1 语义更明确、更安全。"
+        ],
+        "variationTip": "真实业务里会继续拆查询串：先用 split('?', 1) 分开路径和参数，再对参数 split('&')、按 split('=') 拆键值。思路完全一样：先找分隔符，再切分，逐层缩小范围。"
+      }
+    ],
+    "summaryCheatsheet": [
+      {
+        "label": "取单个字符",
+        "snippet": "s[0]    s[-1]",
+        "note": "下标从 0 开始，负索引从右往左数"
+      },
+      {
+        "label": "切片",
+        "snippet": "s[start:end]",
+        "note": "含头不含尾；省略起点从 0，省略终点到末尾"
+      },
+      {
+        "label": "反转",
+        "snippet": "s[::-1]",
+        "note": "步长 -1，从尾到头取一遍"
+      },
+      {
+        "label": "去首尾空白",
+        "snippet": "s.strip()",
+        "note": "只去两端，中间空格不动；常配合 input 使用"
+      },
+      {
+        "label": "大小写",
+        "snippet": "s.upper()\ns.lower()",
+        "note": "返回新串，原串不变，要重新赋值"
+      },
+      {
+        "label": "替换与计数",
+        "snippet": "s.replace('a', 'X')\ns.count('a')",
+        "note": "replace 默认替换全部；count 数出现次数"
+      },
+      {
+        "label": "查找与包含",
+        "snippet": "s.find('a')\n'a' in s",
+        "note": "find 找不到返回 -1；in 返回 True/False"
+      },
+      {
+        "label": "切分",
+        "snippet": "s.split()\ns.split(',')",
+        "note": "不带参数按空白切；结果永远是列表"
+      },
+      {
+        "label": "拼接",
+        "snippet": "'-'.join(['a', 'b'])",
+        "note": "胶水在前，元素必须全是字符串"
+      },
+      {
+        "label": "编码互转",
+        "snippet": "ord('A')   # 65\nchr(65)    # 'A'",
+        "note": "大小写差 32，'0' 是 48"
+      },
+      {
+        "label": "格式化",
+        "snippet": "f'{x:.2f}'  f'{s:>10}'",
+        "note": "小数位 / 对齐；漏写 f 就变成普通字符串"
+      },
+      {
+        "label": "不可变性",
+        "snippet": "s = 'J' + s[1:]",
+        "note": "s[0]='J' 会 TypeError，必须生成新串"
+      }
+    ]
+  },
+  {
+    "chapter": 3,
+    "title": "第 3 章 选择结构",
+    "subtitle": "让程序会判断：布尔、分支、逻辑与分段决策",
+    "isExamScope": false,
+    "estimatedMinutes": 160,
+    "learningGoals": [
+      "理解布尔表达式与比较运算，能写出精确的判断条件",
+      "掌握 if / elif / else 的语法、缩进规则与执行顺序",
+      "会用 and / or / not 组合条件，独立写出闰年判断",
+      "能处理分段计费、三数排序、三角形分类等典型分支题"
+    ],
+    "intro": "前两章的程序是一条直线：读入、计算、输出，从头跑到尾。但现实世界处处要分情况：分数及格还是不及格，年份是闰年还是平年，用电量落在哪一档电价，三条边能不能拼成三角形。选择结构就是程序里的岔路口：条件为真走一条路，为假走另一条路。学会它，程序才真正开始「会思考」。\n\n计算机不会模糊判断，它只认 True 和 False。所以写分支的核心工作，是把人话翻译成精确的布尔表达式。「今年是闰年」要拆成「能被 4 整除且不能被 100 整除，或者能被 400 整除」；「成绩优秀」要落成 score >= 90。翻译得准，程序就准；翻译得含糊，代码就会在边界值上翻车。\n\n这一章有三个高频坑：一是分支顺序，elif 命中即停，顺序错了 95 分会被判成及格；二是区间边界，> 和 >= 差一个等号，样例可能刚好考边界；三是分段计费，必须分段累加，不能总用量乘最高单价。下面每个知识点都配了可运行的例子和逐行讲解，跟着敲一遍，比看十遍更有效。",
+    "sections": [
+      {
+        "id": "ch3-s1",
+        "title": "布尔值与比较运算：把「是不是」变成 True / False",
+        "concept": "布尔类型只有两个值：True 和 False，首字母必须大写。比较运算符 >、<、>=、<=、==、!= 的作用是比较两边，然后产出一个布尔值。最需要分清的是 == 和 =：一个等号是赋值，把右边的值放进左边的变量；两个等号才是比较，问「两边相等吗」。在 if 条件里写成赋值号，Python 会直接报 SyntaxError。\n\nPython 还支持链式比较：0 <= score <= 100 等价于 0 <= score and score <= 100，但写起来更接近数学，也更不容易漏条件。字符串也能比大小：按字符编码从左到右逐位比较，第一位分出胜负就停止；前缀完全相同时，短的更小。所以 'abc' < 'abd'，'A' < 'a'（65 < 97），而 'abc' == 'ABC' 是 False。验证码、用户名比对都区分大小写，原因就在这里。\n\n浮点数有一件反直觉的事：0.1 + 0.2 == 0.3 的结果是 False，因为二进制无法精确表示这些小数，实际结果是 0.30000000000000004。判断两个浮点数是否相等，正确写法是 abs(a - b) < 1e-9。另外，if 后面的条件不一定非要写比较：任何值都能被当成真假。0、0.0、空字符串、空列表、None 视为假，其他值视为真——特别注意字符串 '0' 和 'False' 都是非空串，所以视为真。",
+        "syntaxCard": {
+          "title": "比较运算与布尔值",
+          "syntax": "a == b    a != b    a < b    a <= b    x < y < z",
+          "breakdown": [
+            {
+              "part": "==",
+              "meaning": "判断两边是否相等，返回 True/False；不要写成 ="
+            },
+            {
+              "part": "!=",
+              "meaning": "判断是否不相等"
+            },
+            {
+              "part": "> < >= <=",
+              "meaning": "大小比较；可用于数字和字符串"
+            },
+            {
+              "part": "0 <= x <= 100",
+              "meaning": "链式比较，等价于 0 <= x and x <= 100"
+            },
+            {
+              "part": "bool(值)",
+              "meaning": "查看一个值在条件里是真还是假"
+            }
+          ]
+        },
+        "keyRules": [
+          "= 是赋值，== 是比较；if x = 5 是语法错误",
+          "比较运算的结果是 bool，可以存进变量：ok = a > b",
+          "字符串比较区分大小写，按字符编码逐位进行",
+          "浮点数不要直接用 == 判断相等，用 abs(a-b) < 1e-9",
+          "0、''、[]、None 在 if 中视为假；'0' 和 'False' 是非空字符串，视为真"
+        ],
+        "codeDemo": {
+          "title": "比较运算与真值测试",
+          "code": "a = 10\nb = 3\nprint(a > b)\nprint(a == b)\nprint(a != b)\nprint(a >= 10)\nprint(0 <= a <= 20)\nprint('abc' == 'ABC')\nprint('abc' < 'abd')\nprint(bool(0), bool(''), bool('0'), bool([]))",
+          "expectedOutput": "True\nFalse\nTrue\nTrue\nTrue\nFalse\nTrue\nFalse False True False",
+          "lineByLine": [
+            "第 1~2 行：定义 a = 10、b = 3。",
+            "第 3 行：10 > 3 为 True。",
+            "第 4 行：10 == 3 为 False；注意是两个等号。",
+            "第 5 行：10 != 3 为 True。",
+            "第 6 行：10 >= 10 为 True，等号也满足。",
+            "第 7 行：链式比较等价于 0 <= 10 and 10 <= 20，为 True。",
+            "第 8 行：字符串比较区分大小写，'abc' 与 'ABC' 不相等。",
+            "第 9 行：前两位相同，第三位 'c' < 'd'，所以 True。",
+            "第 10 行：0、空串、空列表为假；字符串 '0' 长度非零，为真。"
+          ]
+        },
+        "cautionBox": {
+          "title": "if 里写成赋值号：SyntaxError",
+          "wrongCode": "x = 5\nif x = 5:\n    print('相等')",
+          "rightCode": "x = 5\nif x == 5:\n    print('相等')",
+          "why": "Python 不允许在 if 条件里做赋值，x = 5 会让解释器直接报 SyntaxError。判断相等永远用 ==。记忆法：一个等号是「把值放进盒子」，两个等号才是「问两边是否一样」。"
+        }
+      },
+      {
+        "id": "ch3-s2",
+        "title": "if / elif / else：程序的第一条岔路",
+        "concept": "分支的语法骨架由三部分组成：关键字、条件、冒号，然后换行缩进写「条件成立时执行的代码块」。冒号和缩进是语法的一部分，不是排版装饰。推荐统一用 4 个空格缩进；同一个代码块里的每一行必须完全对齐。缩进错了，轻则语句跑到分支外面、逻辑改变，重则直接 IndentationError。\n\nif / elif / else 的执行规则是：从上到下依次检查，命中第一个为真的条件后，执行它下面的代码块，然后整个结构立即结束，后面的 elif 和 else 根本不会再判断。这解释了为什么顺序如此重要。写区间判断时，每个 elif 只需要写自己的下限（或上限），因为上一个分支已经排除了更高（或更低）的区间。比如先写 score >= 90，再写 elif score >= 80，就自动表示 80 ≤ score < 90。\n\nelse 是可选的，最多一个，放在最后，兜住所有剩余情况；elif 可以有零个或多个。每个分支里可以写多行语句，只要缩进一致；分支里还可以再嵌套 if，下一节会专门讲。判断「大于、小于、等于」这种三种互斥情况时，用 if / elif / else 最自然，比如猜数游戏的偏大、偏小、猜中。写完后拿边界值各跑一遍：90、89、80、79、60、59，能发现大多数顺序和等号错误。",
+        "syntaxCard": {
+          "title": "多分支语法骨架",
+          "syntax": "if 条件1:\n    代码块1\nelif 条件2:\n    代码块2\nelse:\n    代码块3",
+          "breakdown": [
+            {
+              "part": "if 条件1:",
+              "meaning": "第一个检查；条件为真就执行代码块1，然后跳过整个结构"
+            },
+            {
+              "part": "elif 条件2:",
+              "meaning": "否则再检查条件2；可以有 0 个或多个"
+            },
+            {
+              "part": "else:",
+              "meaning": "前面都不成立时执行；最多一个，必须在最后"
+            },
+            {
+              "part": "缩进（4 个空格）",
+              "meaning": "界定代码块范围；同一块必须完全对齐"
+            },
+            {
+              "part": "冒号 :",
+              "meaning": "表示「下面是属于我的代码块」，不能省略"
+            }
+          ]
+        },
+        "keyRules": [
+          "if / elif / else 行尾都要有英文冒号",
+          "代码块必须缩进，推荐统一 4 个空格，不要混用 Tab 和空格",
+          "多分支只执行第一个成立的分支，命中后其余全部跳过",
+          "区间判断按顺序写，通常从大到小或从小到大，不能交叉",
+          "else 不是必需品；能穷举完就用 elif，兜底才用 else"
+        ],
+        "codeDemo": {
+          "title": "成绩等级：elif 只写区间下限",
+          "code": "score = int(input())\nif score >= 90:\n    print('优秀')\nelif score >= 80:\n    print('良好')\nelif score >= 60:\n    print('及格')\nelse:\n    print('不及格')",
+          "stdin": "85",
+          "expectedOutput": "良好",
+          "lineByLine": [
+            "第 1 行：读入 85 并转成 int。",
+            "第 2 行：85 >= 90 为假，跳过第 3 行的「优秀」。",
+            "第 4~5 行：85 >= 80 为真，执行第 5 行输出「良好」。",
+            "第 6~9 行：因为已经命中，后面的 elif 和 else 不再检查，直接结束。",
+            "补充：如果输入 95，第 2 行就命中输出「优秀」，不会再往下看。",
+            "补充：elif score >= 80 不需要写 score < 90，因为上一分支已排除 >= 90 的情况。"
+          ]
+        },
+        "cautionBox": {
+          "title": "分支顺序颠倒：95 分被判成「及格」",
+          "wrongCode": "score = int(input())\nif score >= 60:\n    print('及格')\nelif score >= 90:\n    print('优秀')",
+          "rightCode": "score = int(input())\nif score >= 90:\n    print('优秀')\nelif score >= 60:\n    print('及格')",
+          "why": "elif 从上往下，命中即停。95 满足第一个条件 >= 60，于是直接输出「及格」，后面的「优秀」永远轮不到。写多分支时先问自己：哪个条件最严格、最不容易满足？把它放最前面。区间判断通常按从大到小（或从小到大）排列。"
+        }
+      },
+      {
+        "id": "ch3-s3",
+        "title": "逻辑运算：用 and / or / not 拼出复合条件",
+        "concept": "and（与）要求两边都为真才为真；or（或）只要有一边为真就为真；not 把真假取反。真值表可以压缩成三句话：and 一假即假，or 一真即真，not 翻转。它们的作用是把多个简单条件拼成一个复合条件。比如「是闰年」可以拆成「能被 4 整除且不能被 100 整除」或者「能被 400 整除」，每个小条件都能单独验证，拼起来才不容易错。\n\n优先级是 not 高于 and，and 高于 or。混用时最稳妥的做法是加括号，括号既保证语义，也让读代码的人一眼看清分组。and 和 or 还有「短路求值」：and 左边已经为假，右边就不会再算；or 左边已经为真，右边也会跳过。这不仅省时间，还能防错，比如 if i < len(s) and s[i] == 'a'，左边保证下标合法，右边才安全。如果把顺序反过来，越界错误就会先发生。\n\n闰年是本章最经典的复合条件：四年一闰，百年不闰，四百年再闰。公式写作 (y % 4 == 0 and y % 100 != 0) or y % 400 == 0。注意第二个条件是 !=，因为「百年不闰」排除的是能被 100 整除的年份；而 400 年又额外开一个口子。写完不要凭感觉，用 2024（普通闰年）、1900（百年不闰）、2000（四百年再闰）三个边界年份各测一遍，全部正确才算过关。",
+        "syntaxCard": {
+          "title": "逻辑运算与闰年",
+          "syntax": "条件A and 条件B    条件A or 条件B    not 条件",
+          "breakdown": [
+            {
+              "part": "and",
+              "meaning": "两边都为真才为真；左边为假时右边不再计算（短路）"
+            },
+            {
+              "part": "or",
+              "meaning": "只要一边为真就为真；左边为真时右边不再计算（短路）"
+            },
+            {
+              "part": "not",
+              "meaning": "取反：True 变 False，False 变 True"
+            },
+            {
+              "part": "(y % 4 == 0 and y % 100 != 0) or y % 400 == 0",
+              "meaning": "闰年公式：普通闰年或世纪闰年"
+            },
+            {
+              "part": "0 <= x <= 100",
+              "meaning": "链式比较，比 x >= 0 and x <= 100 更简洁"
+            }
+          ]
+        },
+        "keyRules": [
+          "and 一假即假，or 一真即真，not 取反",
+          "优先级 not > and > or；不确定就加括号，括号不丢分",
+          "闰年公式必须同时处理「被 4 整除」「不被 100 整除」「被 400 整除」三种情况",
+          "and / or 有短路：可以利用它避免越界、除零等错误",
+          "条件里的 == 不要写成 =；字符串比较区分大小写"
+        ],
+        "codeDemo": {
+          "title": "闰年判断 + 字符分类",
+          "code": "year = int(input())\nif (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:\n    print(f'{year}年是闰年')\nelse:\n    print(f'{year}年不是闰年')\n\nch = input()\nif ch.isdigit():\n    print('数字字符')\nelif ch.isalpha():\n    print('字母字符')\nelse:\n    print('其他字符')",
+          "stdin": "2000\nA",
+          "expectedOutput": "2000年是闰年\n字母字符",
+          "lineByLine": [
+            "第 1 行：读年份 2000。",
+            "第 2 行：先算括号，2000%4==0 真、2000%100!=0 假，and 为假；再算 2000%400==0 真，or 为真。",
+            "第 3 行：条件成立，输出「2000年是闰年」。",
+            "第 4~5 行：else 分支本次不执行。",
+            "第 7~11 行：读入 A；第 8 行 isdigit() 为假，跳到第 10 行 isalpha() 为真，执行第 11 行输出「字母字符」。",
+            "补充：若输入 '7'，isdigit 为真输出数字；输入 '#'，两者都假，走 else 输出其他字符。"
+          ]
+        },
+        "cautionBox": {
+          "title": "闰年条件写漏：1900 年被误判为闰年",
+          "wrongCode": "year = 1900\nif year % 4 == 0 or year % 400 == 0:\n    print('闰年')",
+          "rightCode": "year = 1900\nif (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:\n    print('闰年')\nelse:\n    print('不是闰年')",
+          "why": "1900 能被 4 整除，所以简化版会判成闰年；但它是整百年，必须能被 400 整除才是闰年（1900 % 400 = 300）。完整公式不能漏掉「and y % 100 != 0」这个排除条件。写完用 2024、1900、2000 三个年份各测一遍，基本不会错。"
+        }
+      },
+      {
+        "id": "ch3-s4",
+        "title": "嵌套 if 与分段决策：先大前提，后细分",
+        "concept": "嵌套 if 就是在一个分支的代码块里再写 if。外层负责「大前提」，内层负责「细分」。最典型的例子是三角形判断：先检查任意两边之和是否大于第三边，确认能构成三角形；只有这个大前提成立，才有资格继续判断它是等边、等腰还是普通。顺序绝对不能反：0、0、0 满足三边相等，但它连三角形都不是，如果不先判合法性，就会误判成等边三角形。\n\n嵌套时 else 与哪个 if 配对，由缩进层级决定。写代码时把每一层对齐看清楚，不要凭「就近原则」猜。能扁平化就尽量扁平化：很多嵌套可以改写成 elif 链，或者先算出一个中间变量再判断。好的分支代码，每个条件都在回答一个独立的问题；糟糕的分支代码，条件互相纠缠，改一处就错一片。\n\n分段计费是另一类典型：用电 300 度，前 180 度按 0.5 元，超出的 120 度按 0.55 元，总价 = 180×0.5 + 120×0.55，绝不是 300×0.55。模板是「每一档只算落在本档内的量，再逐段累加」。三数排序则用三次比较交换：先让 a ≤ b，再让 b ≤ c，最后再让 a ≤ b，三次之后必然 a ≤ b ≤ c。Python 交换两个变量不用临时变量，直接写 a, b = b, a。",
+        "syntaxCard": {
+          "title": "嵌套与交换",
+          "syntax": "if 外层条件:\n    if 内层条件:\n        ...\n    else:\n        ...\nelse:\n    ...\na, b = b, a",
+          "breakdown": [
+            {
+              "part": "外层 if",
+              "meaning": "先判断大前提，例如三边能否构成三角形"
+            },
+            {
+              "part": "内层 if",
+              "meaning": "大前提成立后再细分，例如等边 / 等腰"
+            },
+            {
+              "part": "缩进层级",
+              "meaning": "决定语句属于哪个 if；内层要比外层多 4 个空格"
+            },
+            {
+              "part": "a, b = b, a",
+              "meaning": "交换两个变量，右边先组成元组再解包，无需临时变量"
+            },
+            {
+              "part": "分段累加",
+              "meaning": "每档费用 = 本档用量 × 本档单价，再全部相加"
+            }
+          ]
+        },
+        "keyRules": [
+          "嵌套时先判大前提 / 合法性，再判细分类型",
+          "else 与哪个 if 配对由缩进决定，写代码时对齐看清",
+          "分段计费必须分段累加，不能总用量 × 最高档单价",
+          "三数排序三次比较的顺序不能乱：a-b、b-c、a-b",
+          "能不嵌套就不嵌套，扁平化更易读、更少错"
+        ],
+        "codeDemo": {
+          "title": "三角形判断：先合法性，再分类型",
+          "code": "a, b, c = map(int, input().split())\nif a + b > c and a + c > b and b + c > a:\n    if a == b and b == c:\n        print('等边三角形')\n    elif a == b or b == c or a == c:\n        print('等腰三角形')\n    else:\n        print('普通三角形')\nelse:\n    print('不能构成三角形')",
+          "stdin": "3 3 5",
+          "expectedOutput": "等腰三角形",
+          "lineByLine": [
+            "第 1 行：读入三个整数 3、3、5。",
+            "第 2 行：三边两两之和都大于第三边（3+3>5、3+5>3、3+5>3），合法，进入内层。",
+            "第 3 行：3 == 3 真，但 3 == 5 假，and 为假，不是等边。",
+            "第 5 行：a == b 为真，or 短路，直接判定等腰，输出「等腰三角形」。",
+            "补充：若输入 3 4 5，合法但三边不等，走 else 输出「普通三角形」。",
+            "补充：若输入 1 1 3，外层 1+1>3 为假，直接输出「不能构成三角形」，不会进入内层。"
+          ]
+        },
+        "cautionBox": {
+          "title": "先判等边后判合法：0 0 0 成了等边三角形",
+          "wrongCode": "a, b, c = 0, 0, 0\nif a == b == c:\n    print('等边三角形')\nelif a + b > c:\n    print('能构成三角形')",
+          "rightCode": "a, b, c = 0, 0, 0\nif a + b > c and a + c > b and b + c > a:\n    if a == b == c:\n        print('等边三角形')\n    else:\n        print('其他三角形')\nelse:\n    print('不能构成三角形')",
+          "why": "0、0、0 确实满足三边相等，但 0+0 并不大于 0，连三角形都不是。判断类型必须建立在「首先是个三角形」的基础上，所以合法性检查要放在最外层。这个坑在作业里真实出现过，顺序反了，样例 0 0 0 会输出错误答案。"
+        }
+      }
+    ],
+    "workedExamples": [
+      {
+        "id": "ch3-ex1",
+        "title": "闰年判断：把三条规则翻译成一个表达式",
+        "difficulty": "常考",
+        "source": "作业 50585 · 判闰年",
+        "problemStatement": "输入一个年份，判断是否为闰年。闰年规则：能被 4 整除但不能被 100 整除，或者能被 400 整除。是则输出「XXXX年是闰年」，否则输出「XXXX年不是闰年」。输入 1900，输出 1900年不是闰年。",
+        "thinkingSteps": [
+          "把中文规则拆成三个原子条件：A = y%4==0，B = y%100!=0，C = y%400==0。",
+          "规则是「（A 且 B）或 C」；and 的优先级高于 or，但加括号更清楚、更稳妥。",
+          "选边界年份验证：2024（普通闰年）、1900（百年不闰）、2000（四百年再闰）。",
+          "用 f-string 把年份和结论拼成题目要求的完整句子。"
+        ],
+        "code": "year = int(input())\nif (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:\n    print(f'{year}年是闰年')\nelse:\n    print(f'{year}年不是闰年')",
+        "stdin": "1900",
+        "sampleOutput": "1900年不是闰年",
+        "codeWalkthrough": [
+          {
+            "lines": "year = int(input())",
+            "explanation": "读入 1900 并转成整数。"
+          },
+          {
+            "lines": "if (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:",
+            "explanation": "1900%4==0 真；1900%100!=0 假，括号内 and 为假；1900%400==300，==0 为假，整个 or 为假。"
+          },
+          {
+            "lines": "print(f'{year}年是闰年')",
+            "explanation": "条件不成立，这一行被跳过。"
+          },
+          {
+            "lines": "else:",
+            "explanation": "前面不成立，进入 else 分支。"
+          },
+          {
+            "lines": "print(f'{year}年不是闰年')",
+            "explanation": "输出「1900年不是闰年」。"
+          },
+          {
+            "lines": "（若输入 2000）",
+            "explanation": "括号内为假，但 2000%400==0 真，or 为真，输出闰年。"
+          }
+        ],
+        "commonMistakes": [
+          "只写 y%4==0：1900 被误判为闰年。",
+          "写成 (y%4==0 and y%100!=0) and y%400==0：两个条件用 and 连，2000 也会被判成非闰年。",
+          "把 % 写成 //：判断的是整除商，不是余数，逻辑全错。",
+          "输出句子多空格或漏「年」字，平台逐字符比对判错。"
+        ],
+        "variationTip": "闰年是很多题的前置模块：求某年某月有多少天（2 月是 28 还是 29 天）、算一年中的第几天、万年历。把这段判断封装成函数 is_leap(y)，第 5 章会反复复用。"
+      },
+      {
+        "id": "ch3-ex2",
+        "title": "阶梯电价：分段累加，不是总价乘单价",
+        "difficulty": "综合压轴",
+        "source": "作业 50585 · 阶梯电价计算A",
+        "problemStatement": "某地居民用电分三档：不超过 180 度的部分每度 0.5 元；180~400 度的部分每度 0.55 元；超过 400 度的部分每度 0.8 元。输入用电量（度），输出电费，保留两位小数。输入 300，输出 156.00。",
+        "thinkingSteps": [
+          "画数轴分三段：0~180、180~400、400 以上；每一段只按本段单价计费。",
+          "用电 300 度 = 180 度按 0.5 加 120 度按 0.55，费用 90 + 66 = 156。",
+          "用 if / elif / else 按用量落在哪一档分支；elif 的条件只需写上限，因为上一档已排除更小的量。",
+          "先算总价存进 fee，再统一用 f'{fee:.2f}' 输出，避免每个分支各写一遍格式化。"
+        ],
+        "code": "kwh = float(input())\nif kwh <= 180:\n    fee = kwh * 0.5\nelif kwh <= 400:\n    fee = 180 * 0.5 + (kwh - 180) * 0.55\nelse:\n    fee = 180 * 0.5 + 220 * 0.55 + (kwh - 400) * 0.8\nprint(f'{fee:.2f}')",
+        "stdin": "300",
+        "sampleOutput": "156.00",
+        "codeWalkthrough": [
+          {
+            "lines": "kwh = float(input())",
+            "explanation": "读入 300.0；用 float 兼容小数度数。"
+          },
+          {
+            "lines": "if kwh <= 180:",
+            "explanation": "300 <= 180 为假，跳过第一档。"
+          },
+          {
+            "lines": "elif kwh <= 400:",
+            "explanation": "300 <= 400 为真，进入第二档。"
+          },
+          {
+            "lines": "fee = 180 * 0.5 + (kwh - 180) * 0.55",
+            "explanation": "前 180 度费用 90；超出 120 度按 0.55 计 66；fee = 156.0。"
+          },
+          {
+            "lines": "print(f'{fee:.2f}')",
+            "explanation": "输出 156.00，补足两位小数。"
+          },
+          {
+            "lines": "（若输入 500）",
+            "explanation": "走 else：90 + 220×0.55（121）+ 100×0.8（80）= 291.00。"
+          }
+        ],
+        "commonMistakes": [
+          "整段按最高单价：300×0.55 = 165.00，多收了钱；阶梯电价是分段累加。",
+          "第二档写成 (kwh-180)*0.55 + 180*0.55：把前 180 度也算成了 0.55。",
+          "第三档忘记减 400，或把 220 写成 180：分段边界算错。",
+          "用 int(input())：输入 300.5 会 ValueError；电量允许小数。"
+        ],
+        "variationTip": "阶梯水价、出租车计价、个税速算都是同一模板：找到分段点，每段算本段量乘本段价，再累加。若分段更多，可以先把分界点放进列表，用循环处理（第 4、6 章）。"
+      },
+      {
+        "id": "ch3-ex3",
+        "title": "三数排序：三次比较交换，顺序不能乱",
+        "difficulty": "常考",
+        "source": "作业 50585 · 三类商品总价排序输出（简化）",
+        "problemStatement": "输入三个整数（同一行、空格分隔），按从小到大的顺序输出，用一个空格分隔。输入 3 1 2，输出 1 2 3。",
+        "thinkingSteps": [
+          "目标：让 a ≤ b ≤ c。每次比较若逆序就交换，交换后小的在前。",
+          "第一次比较 a、b，保证 a ≤ b；第二次比较 b、c，保证 b ≤ c，此时 c 是三者最大。",
+          "第一次交换后 a 可能仍大于新的 b（例如 2 3 1），所以第三次要再比较 a、b。",
+          "输出 a、b、c，print 逗号分隔默认就是空格。"
+        ],
+        "code": "a, b, c = map(int, input().split())\nif a > b:\n    a, b = b, a\nif b > c:\n    b, c = c, b\nif a > b:\n    a, b = b, a\nprint(a, b, c)",
+        "stdin": "3 1 2",
+        "sampleOutput": "1 2 3",
+        "codeWalkthrough": [
+          {
+            "lines": "a, b, c = map(int, input().split())",
+            "explanation": "读入 3、1、2 三个整数。"
+          },
+          {
+            "lines": "if a > b: a, b = b, a",
+            "explanation": "3 > 1，交换后 a=1、b=3、c=2。"
+          },
+          {
+            "lines": "if b > c: b, c = c, b",
+            "explanation": "3 > 2，交换后 a=1、b=2、c=3。"
+          },
+          {
+            "lines": "if a > b: a, b = b, a",
+            "explanation": "1 > 2 为假，不交换；此时已满足 a ≤ b ≤ c。"
+          },
+          {
+            "lines": "print(a, b, c)",
+            "explanation": "输出 1 2 3。"
+          },
+          {
+            "lines": "（反例 2 3 1）",
+            "explanation": "第一次不换；第二次 3>1 换得 2 1 3；第三次 2>1 换得 1 2 3，第三次必不可少。"
+          }
+        ],
+        "commonMistakes": [
+          "只写前两次比较：2 3 1 会输出 2 1 3。",
+          "三次都比较 a 和 c：b 的位置没被调整。",
+          "交换写成 a = b 再 b = a：两个变量会变成同一个值，必须用 a, b = b, a。",
+          "输出用逗号连接成 1,2,3，与样例空格分隔不符。"
+        ],
+        "variationTip": "三个数只是开始：更多个数可以用列表的 sort（第 6 章），或者冒泡排序的双层循环（第 4 章）。如果题目要求从大到小，把三个 > 全部改成 < 即可，结构不变。"
+      }
+    ],
+    "summaryCheatsheet": [
+      {
+        "label": "布尔值",
+        "snippet": "True / False",
+        "note": "首字母大写；比较运算的结果就是 bool"
+      },
+      {
+        "label": "相等与赋值",
+        "snippet": "a == b   # 比较\na = b    # 赋值",
+        "note": "if 里写 = 会 SyntaxError"
+      },
+      {
+        "label": "链式比较",
+        "snippet": "0 <= score <= 100",
+        "note": "等价于两个比较用 and 连接"
+      },
+      {
+        "label": "双分支",
+        "snippet": "if cond:\n    ...\nelse:\n    ...",
+        "note": "冒号加缩进；else 兜底"
+      },
+      {
+        "label": "多分支",
+        "snippet": "if c1:\n    ...\nelif c2:\n    ...\nelse:\n    ...",
+        "note": "命中第一个为真的分支后立即结束"
+      },
+      {
+        "label": "逻辑运算",
+        "snippet": "A and B    A or B    not A",
+        "note": "优先级 not > and > or；混用加括号"
+      },
+      {
+        "label": "闰年公式",
+        "snippet": "(y%4==0 and y%100!=0) or y%400==0",
+        "note": "2024 闰、1900 不闰、2000 闰"
+      },
+      {
+        "label": "分段累加",
+        "snippet": "fee = 180*0.5 + (kwh-180)*0.55",
+        "note": "每档只算本档用量，再逐段相加"
+      },
+      {
+        "label": "三数排序",
+        "snippet": "if a>b: a,b=b,a\nif b>c: b,c=c,b\nif a>b: a,b=b,a",
+        "note": "三次比较，顺序不能乱"
+      },
+      {
+        "label": "浮点相等",
+        "snippet": "abs(a - b) < 1e-9",
+        "note": "不要直接用 =="
+      },
+      {
+        "label": "真值测试",
+        "snippet": "if 0:      # 假\nif '0':    # 真",
+        "note": "0、''、[]、None 为假，非空字符串为真"
+      },
+      {
+        "label": "三角形顺序",
+        "snippet": "if a+b>c and a+c>b and b+c>a:",
+        "note": "先判能否构成，再判等边/等腰"
+      }
+    ]
+  }
+]

@@ -1,0 +1,826 @@
+{
+  "chapter": 10,
+  "title": "第 10 章 面向对象编程（类、封装、继承与多态）",
+  "subtitle": "类与对象 · 封装 · 继承 · 多态 · 魔术方法（51603 + 51601 全解析）",
+  "isExamScope": false,
+  "estimatedMinutes": 180,
+  "learningGoals": [
+    "能用自己的话解释「类 = 蓝图、对象 = 实例」，并说清封装/继承/多态与顺序/分支/循环三大控制结构的区别。",
+    "熟练编写 class、__init__ 与实例方法，理解创建对象、调用方法时 self 的自动绑定机制。",
+    "掌握同类对象协作（dist_from(self, other)）、动态添加实例属性、类属性与实例属性的差异。",
+    "理解 Python 没有 private 关键字，能用双下划线 + getter/setter 实现封装与防御性校验。",
+    "能正确使用 math.fabs(a - b) <= 0.001 进行浮点近似比较，避开 == 陷阱。",
+    "掌握 class Sub(Base)、super().__init__()、方法沿继承链查找与方法重写。",
+    "理解多态、动态绑定与鸭子类型，能写出不依赖类型判断的通用函数。",
+    "会用 __str__ 与 super().__str__() 扩展对象描述，并按样例正确处理 int/float 与浮点精度直出。",
+    "独立完成 Point/Circle、多类组合图形、GeometricObject 体系与 Ring 圆环四类典型题。"
+  ],
+  "intro": "第 10 章是整个 Python 课程里思维跨度最大的一章：前九章我们主要在写「面向过程」的代码——数据放在一边，函数放在另一边；从这一章开始，你要学会把数据和操作打包成「对象」，用类的视角重新组织程序。很多同学第一次接触时觉得语法不难，但一到作业就不会下手，根本原因不是不会写 class，而是脑子里没有「谁是对象、谁该负责什么」的设计感。\n\n本章以你实际完成的两份作业为骨架：51603（类和对象 + 封装，100 分）与 51601（继承和多态，选做 50 分）。前者解决「怎么造对象、怎么保护数据」，后者解决「怎么复用代码、怎么让一个函数适配多种类型」。两份作业合起来，正好覆盖面向对象三大特性：封装、继承、多态。考虑到本章不在期末笔试核心考纲内（isExamScope = false），我们的目标不是死记语法，而是把这套思维方式真正装进脑子，能独立写出 Point、Circle、组合图形、GeometricObject 体系和 Ring 圆环这四类典型程序。\n\n学习建议：每一节的代码都亲手敲一遍、跑一遍，再故意改错几处看报错信息；每道例题先遮住答案自己写，卡住了再看 thinkingSteps。面向对象是一种「写过才会」的技能，只看不写，考试时一定懵。",
+  "sections": [
+    {
+      "id": "ch10-s1-class-object",
+      "title": "从零理解面向对象：类是蓝图，对象是成品",
+      "concept": "在前面的章节里，我们的程序大多是「数据放在一边、函数放在另一边」：用列表存成绩，再写一个 average(scores) 去算平均分。面向对象（Object-Oriented Programming，OOP）换了一种组织方式：把「数据」和「操作这些数据的方法」打包在一起，形成一个有身份、有状态、有行为的对象。一个学生对象自己知道姓名和成绩，也自己会算平均分，而不是把它的成绩交给外面的函数处理。\n\n类（class）是图纸、模具、模板；对象（object，也叫实例 instance）是按照这张图纸造出来的具体实物。class Student: 只描述「学生应该有姓名、成绩，应该会算平均分」，此时内存里还没有任何一个具体学生；执行 s1 = Student(\"小明\", 90) 时，Python 才按图纸创建出一个实例，并把姓名、成绩填进去。同一个类可以造出无数个对象，每个对象的数据彼此独立。\n\n面向对象有三大特性：封装（encapsulation）——把数据和操作包进类里，并控制外界怎么访问；继承（inheritance）——子类复用父类的成员，表达 is-a（是一个）关系；多态（polymorphism）——同一个方法调用，在不同对象上表现出不同行为。注意不要和「顺序、分支、循环」三大控制结构混淆：控制结构讲的是程序执行流程怎么走，而封装/继承/多态讲的是代码和数据怎么组织，两者完全不是一个维度。考试选择题很喜欢把这两组概念混在一起做干扰项。\n\nPython 是动态语言，实例属性不要求在类体里预先声明。你可以在 __init__ 中用 self.name = name 创建，也可以在对象创建之后随时添加，例如 s1.email = \"xm@example.com\"。这与其他静态语言（Java/C++）必须在类里先声明字段很不一样，也是 Python 灵活性的来源。\n\n还要区分类属性和实例属性：写在类体里、方法之外的 school = \"Python 大学\" 是类属性，所有实例默认共享同一份；self.name = name 是实例属性，每个对象各存一份。如果执行 s1.school = \"...\"，Python 会在 s1 自己身上新建一个同名的实例属性，遮蔽类属性，但不会影响 s2，也不会改变 Student.school。理解这一点，才能看懂「为什么改了 s1 的值，s2 没变」。",
+      "syntaxCard": {
+        "title": "类、对象与实例属性的最小骨架",
+        "syntax": "class Student:\n    school = \"Python 大学\"          # 类属性（所有实例共享）\n\n    def __init__(self, name, score):\n        self.name = name            # 实例属性（每个对象一份）\n        self.score = score\n\n    def average(self):              # 实例方法\n        return self.score\n\ns1 = Student(\"小明\", 90)             # 实例化：类名 + 括号\ns1.email = \"xm@example.com\"         # 动态添加实例属性\nprint(s1.name, s1.email, Student.school)",
+        "breakdown": [
+          {
+            "part": "class Student:",
+            "meaning": "定义类；类名习惯用大驼峰（PascalCase），类体统一缩进 4 个空格。"
+          },
+          {
+            "part": "school = \"Python 大学\"",
+            "meaning": "类属性：写在类体里、方法外，所有实例默认共享同一份。"
+          },
+          {
+            "part": "def __init__(self, name, score):",
+            "meaning": "构造方法；创建对象时自动调用，第一个参数必须是 self。"
+          },
+          {
+            "part": "self.name = name",
+            "meaning": "实例属性：每个对象各存一份，s1 改了不会影响 s2。"
+          },
+          {
+            "part": "def average(self):",
+            "meaning": "实例方法：第一个参数固定为 self，调用时不用手动传。"
+          },
+          {
+            "part": "s1 = Student(\"小明\", 90)",
+            "meaning": "实例化：类名加括号，括号里的参数传给 __init__（self 除外）。"
+          },
+          {
+            "part": "s1.email = \"xm@example.com\"",
+            "meaning": "动态添加实例属性：Python 允许对象创建后随时加属性，无需提前声明。"
+          },
+          {
+            "part": "Student.school",
+            "meaning": "通过类名访问类属性；类属性和实例都能读它。"
+          }
+        ]
+      },
+      "keyRules": [
+        "类（class）是模板/蓝图，对象（object/instance）是按模板创建出来的具体实例；class Student: 只是定义，Student(...) 才创建对象。",
+        "类名用大驼峰 Student、Circle、GeometricObject；变量名用小写，这是 Python 社区的统一约定。",
+        "面向对象三大特性是封装、继承、多态；顺序、分支、循环是三大控制结构，两组概念不能混为一谈。",
+        "实例属性既可以在 __init__ 中用 self.xxx = ... 创建，也可以在对象创建后动态添加（s.email = ...），无需在类体里预先声明。",
+        "写在类体、方法外的是类属性，所有实例共享；写在 __init__ 里且带 self. 的是实例属性，每个对象独立。",
+        "给 s1.school 赋值只会在 s1 上新建实例属性并遮蔽类属性，不会改动 Student.school，也不会影响 s2。",
+        "类名不加括号只是给类起别名，不是创建对象；Student 是类，Student(\"小明\", 90) 才是实例。"
+      ],
+      "codeDemo": {
+        "title": "类属性 vs 实例属性 + 动态添加属性",
+        "code": "class Student:\n    school = \"Python 大学\"\n\n    def __init__(self, name, score):\n        self.name = name\n        self.score = score\n\ns1 = Student(\"小明\", 90)\ns2 = Student(\"小红\", 95)\n\nprint(\"{} {} {}\".format(s1.name, s1.score, s1.school))\nprint(\"{} {} {}\".format(s2.name, s2.score, s2.school))\nprint(\"类属性通过类名访问: {}\".format(Student.school))\n\ns1.school = \"Python 大学 2026 级\"\nprint(\"{} | {} | {}\".format(s1.school, s2.school, Student.school))\n\ns1.email = \"xiaoming@example.com\"\nprint(s1.email)\nprint(\"s2 有 email 吗? {}\".format(hasattr(s2, \"email\")))",
+        "expectedOutput": "小明 90 Python 大学\n小红 95 Python 大学\n类属性通过类名访问: Python 大学\nPython 大学 2026 级 | Python 大学 | Python 大学\nxiaoming@example.com\ns2 有 email 吗? False",
+        "lineByLine": [
+          "第 1 行：class Student: 定义类，类名用大驼峰。",
+          "第 2 行：school 写在类体、方法外，是类属性，所有实例默认共享。",
+          "第 4–6 行：__init__ 是构造方法，创建对象时自动执行；self.name / self.score 创建两个实例属性。",
+          "第 8–9 行：类名加括号实例化；__init__ 被自动调用两次，两个对象的数据互不影响。",
+          "第 11–12 行：通过「对象.属性」读取；s1.school 没有自己的实例属性，就沿查找链找到类属性。",
+          "第 13 行：类属性也可以用「类名.属性」访问，推荐这种写法，语义更清晰。",
+          "第 15 行：给 s1.school 赋值会在 s1 上新建实例属性，遮蔽类属性，s2 与 Student.school 不受影响。",
+          "第 16 行：三个值分别是 s1 自己的、s2 继承类属性的、类本身的。",
+          "第 18 行：对象创建后动态添加 email 属性，类定义里根本没有写过它。",
+          "第 20 行：hasattr 检查属性是否存在；email 只加在 s1 上，所以 s2 没有。"
+        ]
+      },
+      "cautionBox": {
+        "title": "类名不加括号：你拿到的是类本身，不是对象",
+        "wrongCode": "class Student:\n    def __init__(self, name, score):\n        self.name = name\n        self.score = score\n\ns1 = Student          # 没有括号：只是给类起了个别名\nprint(s1.name)        # AttributeError: type object 'Student' has no attribute 'name'",
+        "rightCode": "class Student:\n    def __init__(self, name, score):\n        self.name = name\n        self.score = score\n\ns1 = Student(\"小明\", 90)   # 有括号才会调用 __init__ 创建实例\nprint(s1.name)             # 小明",
+        "why": "Student 是类对象，Student(...) 才是实例化。判断一个变量是类还是实例，可以 print(type(x))：类显示 <class 'type'>，实例显示 <class '__main__.Student'>。"
+      }
+    },
+    {
+      "id": "ch10-s2-init-self",
+      "title": "__init__ 与 self：构造方法自动跑，self 自动绑",
+      "concept": "__init__ 是 Python 的构造方法（更准确地说是初始化方法）。当你写下 p = Point(1, 2) 时，背后发生三件事：Python 先创建出一个空白的 Point 实例；然后自动调用 Point.__init__(p, 1, 2)；最后把已经初始化好的实例交给变量 p。整个过程你不需要、也不应该手动写 p.__init__(1, 2)。名字两边各有两个下划线，说明它是 Python 预定的「魔术方法」，由解释器在特定时机自动调用。\n\nself 是这套机制的核心。它不是 Python 的关键字，只是一个约定俗成的参数名（你写 this 也能跑，但全世界的 Python 代码都写 self）。它代表「当前正在被操作的那个实例」。定义实例方法时，self 必须放在第一个参数位置；调用时 Python 会自动把对象本身塞进去，所以 p1.dist_from(p2) 表面上只传了一个实参，实际执行的是 Point.dist_from(p1, p2)——self 绑定 p1，other 绑定 p2。这也解释了两个高频报错：方法定义里忘写 self，调用时会多出一个位置参数导致 TypeError；在方法体里访问属性忘了写 self，会变成访问局部变量导致 NameError。\n\n同一个类可以创建多个对象，每个对象持有自己的一套实例属性。p1 和 p2 都是 Point，但 p1.x 与 p2.x 是两份独立数据，改一个不会影响另一个。__init__ 每创建一个对象就执行一次，因此常用来做计数、注册、校验等初始化工作。\n\n方法参数可以是同类对象，这是面向对象里「对象协作」的典型写法。dist_from(self, other) 中的 other 就是另一个 Point，通过 other.x、other.y、other.z 读取它的坐标。作业 51603 题 2 考的就是这个点：很多同学只会在方法里用自己的 self，不知道怎么拿到「另一个点」。\n\n最后补充一个语法细节：方法定义里的 self 是形参，调用时自动传入；但如果你非要用类名调用，就必须显式传，例如 Point.dist_from(p1, p2)，它与 p1.dist_from(p2) 完全等价。另外，__init__ 的返回值必须是 None，写 return 0 或 return self 都会让 Python 抛 TypeError。",
+      "syntaxCard": {
+        "title": "__init__、self 与同类对象协作",
+        "syntax": "import math\n\nclass Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def dist_from(self, other):\n        return math.sqrt((self.x - other.x) ** 2\n                         + (self.y - other.y) ** 2)\n\np1 = Point(0, 0)\np2 = Point(3, 4)\nd1 = p1.dist_from(p2)          # self = p1, other = p2\nd2 = Point.dist_from(p1, p2)   # 等价写法，显式传 self\nprint(d1, d2)                  # 5.0 5.0",
+        "breakdown": [
+          {
+            "part": "def __init__(self, x, y):",
+            "meaning": "构造方法；Point(...) 创建对象时自动调用，不需要手动调用。"
+          },
+          {
+            "part": "self.x = x",
+            "meaning": "把参数 x 保存到当前实例的属性 x 上；每个实例各有一份。"
+          },
+          {
+            "part": "p1 = Point(0, 0)",
+            "meaning": "实例化：Python 创建空白对象后自动执行 Point.__init__(p1, 0, 0)。"
+          },
+          {
+            "part": "def dist_from(self, other):",
+            "meaning": "第一个参数 self 是当前点，第二个参数 other 是另一个 Point 对象。"
+          },
+          {
+            "part": "other.x",
+            "meaning": "通过参数名访问另一个对象的属性；前提是 other 也是 Point。"
+          },
+          {
+            "part": "p1.dist_from(p2)",
+            "meaning": "调用时只传一个实参，self 由 Python 自动绑定为 p1。"
+          },
+          {
+            "part": "Point.dist_from(p1, p2)",
+            "meaning": "用类名调用时必须显式传 self；与上一行完全等价，但平时不这么写。"
+          }
+        ]
+      },
+      "keyRules": [
+        "__init__ 是构造/初始化方法，创建对象时自动调用；不要手动 p.__init__(...)，也不要 return 非 None 的值。",
+        "self 代表当前实例，不是关键字；定义方法时必须放在第一个参数位置，调用时由 Python 自动传入，所以 c.method() 括号里不写 self。",
+        "方法体里访问实例属性必须写 self.xxx；只写 xxx 会被当成局部变量，导致 NameError。",
+        "同一个类可以创建任意多个对象，实例属性彼此独立；__init__ 每创建一个对象就执行一次。",
+        "方法参数可以是同类对象：dist_from(self, other) 中 other 是另一个 Point，通过 other.x 访问其属性。",
+        "p.method(args) 等价于 Class.method(p, args)；两种写法都合法，日常用前者。",
+        "方法定义漏写 self 时，调用报「takes 0 positional arguments but 1 was given」——多出来的那个就是自动绑定的对象。"
+      ],
+      "codeDemo": {
+        "title": "自动调用、self 绑定与两点距离",
+        "code": "import math\n\nclass Point:\n    created = 0\n\n    def __init__(self, x, y):\n        Point.created += 1\n        self.x = x\n        self.y = y\n\n    def who(self):\n        return self\n\n    def dist_from(self, other):\n        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)\n\np1 = Point(0, 0)\nprint(\"创建 p1 后 created = {}\".format(Point.created))\np2 = Point(3, 4)\nprint(\"创建 p2 后 created = {}\".format(Point.created))\n\nprint(\"p1.who() 返回的就是 p1: {}\".format(p1.who() is p1))\nprint(\"p1 到 p2 的距离 = {}\".format(p1.dist_from(p2)))\nprint(\"Point.dist_from(p1, p2) = {}\".format(Point.dist_from(p1, p2)))\nprint(\"p1.x = {}, p2.x = {}\".format(p1.x, p2.x))",
+        "expectedOutput": "创建 p1 后 created = 1\n创建 p2 后 created = 2\np1.who() 返回的就是 p1: True\np1 到 p2 的距离 = 5.0\nPoint.dist_from(p1, p2) = 5.0\np1.x = 0, p2.x = 3",
+        "lineByLine": [
+          "第 4 行：created 是类属性，用来统计一共创建了多少个 Point。",
+          "第 6–9 行：创建对象时 __init__ 自动执行；Point.created += 1 证明每 new 一次就调用一次。",
+          "第 11–12 行：who 返回 self，用来验证 self 就是调用它的那个对象。",
+          "第 14–15 行：dist_from 的 other 是另一个 Point 对象，通过 other.x / other.y 访问它的属性。",
+          "第 17–20 行：两次实例化后 created 从 0 变 1 再变 2。",
+          "第 22 行：p1.who() is p1 为 True，说明方法里的 self 绑定的是 p1 本身。",
+          "第 23 行：p1.dist_from(p2) 只传一个实参，self 由 Python 自动绑定为 p1。",
+          "第 24 行：用类名调用时必须显式传 self，Point.dist_from(p1, p2) 与上一行完全等价。",
+          "第 25 行：p1.x 与 p2.x 是两份独立数据，互不影响。"
+        ]
+      },
+      "cautionBox": {
+        "title": "方法定义漏写 self：调用时多出一个位置参数",
+        "wrongCode": "class Circle:\n    def __init__(self, r):\n        self.r = r\n\n    def area():              # 漏写 self\n        return 3.14 * self.r * self.r\n\nc = Circle(2)\nprint(c.area())\n# TypeError: area() takes 0 positional arguments but 1 was given",
+        "rightCode": "class Circle:\n    def __init__(self, r):\n        self.r = r\n\n    def area(self):          # 第一个参数必须是 self\n        return 3.14 * self.r * self.r\n\nc = Circle(2)\nprint(c.area())              # 12.56",
+        "why": "调用 c.area() 时 Python 自动把 c 作为第一个位置参数传进去。定义里没有形参接收它，就报 TypeError。注意报错信息说的是「给了 1 个参数」而不是「少了参数」，这正是 self 自动绑定的直接证据。"
+      }
+    },
+    {
+      "id": "ch10-s3-encapsulation",
+      "title": "封装与私有属性：Python 没有 private 关键字",
+      "concept": "封装（encapsulation）的核心不是「写 getter/setter 走形式」，而是：把对象的内部数据藏起来，只通过受控的接口让外界读写，从而保证数据始终合法。\n\n很多教材用 Java 讲封装时会说 private 关键字，但在 Python 里根本没有 private 这个关键字。Python 用命名约定 + 名称改写（name mangling）来近似实现私有：属性名以双下划线开头（但不以双下划线结尾），如 self.__r，会被 Python 改写成 _类名__r。在 Circle 类内部写 self.__r，实际访问的是 self._Circle__r；在类外部直接 c.__r 会 AttributeError。但请注意，这种保护只是「防误触」，不是「绝对安全」——知道规则的人仍可以用 c._Circle__r 直接访问，所以它不能替代真正的安全机制。单下划线 _r 则只是「内部使用，请勿触碰」的君子协定，解释器不做任何改写。\n\n推荐的封装套路是：私有数据域 + getter 读 + setter 写，并在 setter 里做防御性校验。例如半径必须大于 0，就在 setRadius 里写 if r > 0: self.__r = r，非法值直接拒绝，保持原值不变。更严谨的写法是在 __init__ 里也调用 setRadius，让所有赋值都走同一个校验入口，避免有人绕过 setter 塞进非法值。\n\n封装还有一个重要收益：内部实现可以变，外部接口不用变。今天用半径存圆，明天想改成存直径，只要 getRadius/setRadius 的语义不变，所有调用方代码都不受影响。\n\n最后是浮点数的判等陷阱。计算机用二进制表示浮点数，0.1、0.2、0.3 都无法精确表示，所以 0.1 + 0.2 == 0.3 的结果是 False（实际值是 0.30000000000000004）。判断两个浮点数是否「相等」，要比较它们的差的绝对值是否小于一个容差，本课统一用 math.fabs(a - b) <= 0.001（题目指定的容差）。整数可以用 ==，浮点一律用近似比较。",
+      "syntaxCard": {
+        "title": "私有属性 + 防御性 setter + 浮点容差比较",
+        "syntax": "import math\n\nclass Circle:\n    def __init__(self, r=1):\n        self.__r = 1\n        self.setRadius(r)          # 统一走校验入口\n\n    def setRadius(self, r):\n        if r > 0:                  # 防御性校验\n            self.__r = r\n\n    def getRadius(self):\n        return self.__r\n\n    def getArea(self):\n        return math.pi * self.__r ** 2\n\nc = Circle(2)\nc.setRadius(-5)                    # 非法值被拒绝\nprint(c.getRadius())               # 2\nprint(hasattr(c, \"__r\"))           # False（外部读不到）\nprint(hasattr(c, \"_Circle__r\"))    # True（名称改写后的真名）",
+        "breakdown": [
+          {
+            "part": "self.__r = 1",
+            "meaning": "双下划线开头触发名称改写，真实属性名是 _Circle__r；类外部不能用 c.__r 访问。"
+          },
+          {
+            "part": "def __init__(self, r=1):",
+            "meaning": "r=1 是默认参数；先给一个安全默认值，避免非法半径导致属性不存在。"
+          },
+          {
+            "part": "self.setRadius(r)",
+            "meaning": "构造时也调用 setter，让校验只有一处入口，避免绕过。"
+          },
+          {
+            "part": "if r > 0:",
+            "meaning": "防御性校验：只有合法值才写入，非法值保持原值不变。"
+          },
+          {
+            "part": "def getRadius(self):",
+            "meaning": "getter 提供受控读取；外部不需要知道内部存的是半径还是直径。"
+          },
+          {
+            "part": "math.fabs(a - b) <= 0.001",
+            "meaning": "浮点近似相等判据；不要用 a == b。"
+          },
+          {
+            "part": "c._Circle__r",
+            "meaning": "名称改写后的真实属性名；能访问说明私有只是约定，不是绝对安全。"
+          }
+        ]
+      },
+      "keyRules": [
+        "Python 没有 private / protected 关键字；单选里出现「Python 用 private 关键字定义私有属性」一定是错的。",
+        "双下划线开头（且不以双下划线结尾）的属性会触发名称改写：self.__r 在 Circle 类内变成 self._Circle__r。",
+        "类外部 c.__r 读不到（AttributeError），但 c._Circle__r 仍能访问；所以私有是防误触的约定，不是安全机制。",
+        "标准封装写法：私有数据域 + getter 读 + setter 写；setter 里做防御性校验，如 if r > 0: self.__r = r。",
+        "更严谨的做法是在 __init__ 里也调用 setter，保证「创建」和「后续修改」走同一套校验。",
+        "浮点判等不要用 ==：0.1 + 0.2 == 0.3 是 False；用 math.fabs(a - b) <= 0.001（题目指定容差）。",
+        "封装的收益是隔离变化：内部存储方式改了，只要 getter/setter 语义不变，外部代码不用动。"
+      ],
+      "codeDemo": {
+        "title": "私有半径、防御性赋值与名称改写实测",
+        "code": "import math\n\nclass Circle:\n    def __init__(self, r=1):\n        self.__r = 1\n        self.setRadius(r)\n\n    def setRadius(self, r):\n        if r > 0:\n            self.__r = r\n\n    def getRadius(self):\n        return self.__r\n\n    def getArea(self):\n        return math.pi * self.__r ** 2\n\nc = Circle(2)\nprint(\"半径: {}\".format(c.getRadius()))\nprint(\"面积: {:.4f}\".format(c.getArea()))\n\nc.setRadius(-5)\nprint(\"尝试设 -5 后半径: {}\".format(c.getRadius()))\nc.setRadius(3)\nprint(\"设为 3 后半径: {}\".format(c.getRadius()))\n\nprint(\"外部直接读 c.__r 能读到吗? {}\".format(hasattr(c, \"__r\")))\nprint(\"名称改写后的 _Circle__r 存在吗? {}\".format(hasattr(c, \"_Circle__r\")))\nprint(\"用改写名硬闯: {}\".format(c._Circle__r))\n\na = 0.1 + 0.2\nb = 0.3\nprint(\"0.1 + 0.2 == 0.3 ? {}\".format(a == b))\nprint(\"math.fabs(a - b) <= 0.001 ? {}\".format(math.fabs(a - b) <= 0.001))",
+        "expectedOutput": "半径: 2\n面积: 12.5664\n尝试设 -5 后半径: 2\n设为 3 后半径: 3\n外部直接读 c.__r 能读到吗? False\n名称改写后的 _Circle__r 存在吗? True\n用改写名硬闯: 3\n0.1 + 0.2 == 0.3 ? False\nmath.fabs(a - b) <= 0.001 ? True",
+        "lineByLine": [
+          "第 4–6 行：__init__ 先放一个安全默认值 1，再调用 setRadius，让校验只有一处入口。",
+          "第 8–10 行：防御性 setter，只有 r > 0 才写入私有属性，非法值静默拒绝。",
+          "第 12–13 行：getter 提供受控读取，外部不必知道内部字段名。",
+          "第 15–16 行：类的其他方法内部可以直接用 self.__r。",
+          "第 18–20 行：正常半径 2，面积 π×4 ≈ 12.5664。",
+          "第 22–23 行：传入 -5 被拒绝，半径仍然是 2。",
+          "第 24–25 行：传入 3 合法，半径更新为 3。",
+          "第 27 行：类外部 c.__r 不是真实属性名，hasattr 返回 False。",
+          "第 28–29 行：名称改写后的 _Circle__r 才是真正存储位置，说明私有只是约定不是绝对安全。",
+          "第 31–34 行：浮点判等演示；== 为 False，fabs 容差比较为 True。"
+        ]
+      },
+      "cautionBox": {
+        "title": "浮点判等别用 ==：0.1 + 0.2 并不等于 0.3",
+        "wrongCode": "a = 0.1 + 0.2\nif a == 0.3:\n    print(\"相等\")\nelse:\n    print(\"不相等\")      # 实际输出：不相等",
+        "rightCode": "import math\na = 0.1 + 0.2\nif math.fabs(a - 0.3) <= 0.001:\n    print(\"近似相等\")    # 实际输出：近似相等",
+        "why": "二进制浮点无法精确表示大多数十进制小数，0.1 + 0.2 的真实值是 0.30000000000000004。凡是浮点数比较（判等边、判零、判相等），一律用差值绝对值 <= 容差；本课题目统一指定 0.001。"
+      }
+    },
+    {
+      "id": "ch10-s4-inheritance",
+      "title": "继承与 super()：站在父类的肩膀上",
+      "concept": "继承（inheritance）用来表达 is-a 关系：狗是一种动物，圆是一种几何图形，圆环也是一种几何图形。语法非常直接：class Dog(Animal):，括号里写父类（也叫基类、超类），Dog 叫子类（派生类）。子类会自动获得父类的所有属性和方法，不需要复制粘贴，这就是代码复用。\n\nPython 中所有类最终都继承自 object，所以 class A: 与 class A(object): 等价。考试代码图里经常写 class Person(object):，它的意思只是「Person 直接继承 object」，千万不要误读成「Person 继承了上一行的 Animal」——判断继承关系必须盯紧类名后面括号里的基类名。\n\n构造方法的继承有一个关键细节：如果子类没有定义 __init__，创建对象时会自动使用父类的 __init__；一旦子类定义了自己的 __init__，父类的构造方法就不会自动执行，必须显式调用 super().__init__(...)。super() 返回父类的代理对象，super().__init__(name) 的意思就是「先让父类把那部分属性初始化好，我再初始化自己独有的部分」。忘记写这一句，父类的属性根本不存在，后面一访问就是 AttributeError。\n\n属性与方法的查找顺序是：实例自身 → 实例所属的类 → 父类 → 祖父类 → … → object。子类没有重写的方法，会自动沿继承链向上查找。这就是 Cat 只写一个 pass，却仍然能调用 Animal.eat() 的原因。\n\n继承不是越多越好。只有确实存在 is-a 关系时才用继承；如果只是「一个对象包含另一个对象」（has-a，例如汽车包含发动机），应该用组合：把另一个类的实例作为属性，而不是继承它。滥用继承会让继承链又深又脆，改父类一行可能影响几十个子类。",
+      "syntaxCard": {
+        "title": "class Sub(Base) 与 super().__init__()",
+        "syntax": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def eat(self):\n        return self.name + \" 在吃东西\"\n\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)     # 先初始化父类部分\n        self.breed = breed         # 再初始化子类独有部分\n\n    def speak(self):\n        return \"汪汪汪\"\n\nclass Cat(Animal):\n    pass                           # 不写 __init__，沿用父类的\n\nd = Dog(\"旺财\", \"柴犬\")\nprint(d.name, d.breed, d.eat(), d.speak())",
+        "breakdown": [
+          {
+            "part": "class Dog(Animal):",
+            "meaning": "继承语法：括号里写父类名，Dog 自动获得 Animal 的所有成员。"
+          },
+          {
+            "part": "super().__init__(name)",
+            "meaning": "调用父类构造方法，复用 name 的初始化逻辑；子类写了 __init__ 就必须自己调。"
+          },
+          {
+            "part": "self.breed = breed",
+            "meaning": "子类独有的属性，父类不知道它。"
+          },
+          {
+            "part": "class Cat(Animal): pass",
+            "meaning": "子类不写 __init__ 时自动沿用父类的 __init__；不重写的方法沿继承链向上查找。"
+          },
+          {
+            "part": "d.eat()",
+            "meaning": "Dog 没有定义 eat，沿继承链找到 Animal.eat。"
+          },
+          {
+            "part": "isinstance(d, Animal)",
+            "meaning": "判断对象 d 是不是 Animal 或其子类的实例，返回 True。"
+          },
+          {
+            "part": "issubclass(Dog, Animal)",
+            "meaning": "判断 Dog 是不是 Animal 的子类，参数都是类。"
+          }
+        ]
+      },
+      "keyRules": [
+        "继承语法 class Sub(Base):，括号里写父类；子类自动拥有父类的属性和方法，实现代码复用。",
+        "所有类默认继承 object；class A: 等价于 class A(object):，class Person(object) 不是 Animal 的子类。",
+        "子类不写 __init__ 时自动沿用父类的；子类写了 __init__ 后父类构造不会自动执行，必须 super().__init__(...)。",
+        "super() 返回父类代理对象；super().__init__(...) 用于复用父类初始化，super().method() 用于调用父类被重写的方法。",
+        "属性和方法查找顺序：实例 → 类 → 父类 → … → object；子类没重写的方法自动向上找。",
+        "isinstance(obj, Base) 判断对象与类的关系；issubclass(Sub, Base) 判断两个类之间的继承关系。",
+        "只有 is-a 关系才用继承；has-a（包含）关系应该用组合，把另一个对象作为属性。"
+      ],
+      "codeDemo": {
+        "title": "Animal / Dog / Cat：父类构造复用与继承链查找",
+        "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n        print(\"Animal.__init__ 初始化 {}\".format(name))\n\n    def eat(self):\n        return self.name + \" 在吃东西\"\n\n    def speak(self):\n        return \"……\"\n\n\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)\n        self.breed = breed\n        print(\"Dog.__init__ 初始化品种 {}\".format(breed))\n\n    def speak(self):\n        return self.name + \"：汪汪汪\"\n\n\nclass Cat(Animal):\n    pass\n\n\nd = Dog(\"旺财\", \"柴犬\")\nc = Cat(\"咪咪\")\nprint(\"{} | {}\".format(d.eat(), d.speak()))\nprint(\"{} | {}\".format(c.eat(), c.speak()))\nprint(\"Dog 是 Animal 的子类吗? {}\".format(issubclass(Dog, Animal)))\nprint(\"d 是 Animal 的实例吗? {}\".format(isinstance(d, Animal)))",
+        "expectedOutput": "Animal.__init__ 初始化 旺财\nDog.__init__ 初始化品种 柴犬\nAnimal.__init__ 初始化 咪咪\n旺财 在吃东西 | 旺财：汪汪汪\n咪咪 在吃东西 | ……\nDog 是 Animal 的子类吗? True\nd 是 Animal 的实例吗? True",
+        "lineByLine": [
+          "第 1–10 行：Animal 定义 name 属性、eat 与 speak 两个方法。",
+          "第 13–17 行：Dog 继承 Animal；super().__init__(name) 先初始化父类部分，再保存 breed。",
+          "第 19–20 行：Dog 重写 speak，提供自己的叫声。",
+          "第 23–24 行：Cat 只写 pass，不写 __init__ 也不重写 speak，完全沿用父类。",
+          "第 27 行：创建 Dog，先触发 Animal.__init__，再执行 Dog.__init__ 剩余部分。",
+          "第 28 行：创建 Cat，直接使用 Animal.__init__。",
+          "第 29–30 行：eat 都是从父类继承的；speak 一个走子类重写版、一个走父类版。",
+          "第 31–32 行：issubclass 判断类与类，isinstance 判断对象与类。"
+        ]
+      },
+      "cautionBox": {
+        "title": "子类写了 __init__ 却忘调 super().__init__()",
+        "wrongCode": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        self.breed = breed       # 忘了 super().__init__(name)\n\nd = Dog(\"旺财\", \"柴犬\")\nprint(d.name)                    # AttributeError",
+        "rightCode": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)   # 先让父类初始化 name\n        self.breed = breed\n\nd = Dog(\"旺财\", \"柴犬\")\nprint(d.name, d.breed)           # 旺财 柴犬",
+        "why": "Python 不会自动替你调用父类构造。子类重写了 __init__，就必须自己写 super().__init__(...)，否则父类负责的属性（name）根本不会被创建。属性不存在时读取会抛 AttributeError，而不是返回 None。"
+      }
+    },
+    {
+      "id": "ch10-s5-polymorphism",
+      "title": "方法重写、多态、动态绑定与鸭子类型",
+      "concept": "方法重写（override）：子类定义一个与父类同名、参数列表也相同的方法，就会覆盖父类的版本。调用时优先使用子类的实现。比如 Animal.speak() 返回「……」，Dog 重写 speak() 返回「汪汪汪」，Cat 不重写，就沿继承链用父类的版本。\n\n多态（polymorphism）是继承 + 重写之后自然产生的效果：同一个方法调用语句，作用在不同类型的对象上，会执行不同版本的代码。getInfo(g) 里只有一句 g.getArea()，传圆就调 Circle.getArea，传矩形就调 Rectangle.getArea，传基类对象就调 GeometricObject.getArea。这里的「选择哪个方法」不是写代码时决定的，而是程序运行时根据对象的真实类型决定的，这叫动态绑定（dynamic binding）。正因如此，getInfo 里不需要任何 if/elif 判断类型——多态的目的就是把类型判断从代码里消灭掉。\n\nPython 的多态比 Java/C++ 更进一步，靠的是鸭子类型（duck typing）：「如果它走起来像鸭子、叫起来像鸭子，那它就是鸭子。」Python 在调用 obj.eat() 时根本不检查 obj 是不是某个类的子类，只检查 obj 有没有 eat 这个可调用属性。所以作业里的 class Person(object) 虽然不是 Animal 的子类，只要它实现了 eat()，照样能传进 fun(animal) 并正常执行。反过来说，选择题里「Person 也是 Animal 的子类」这句话是错的——能不能传进去（鸭子类型）和是不是子类（继承关系）是两件事，考试特别喜欢在这里设陷阱。\n\n还要区分两个词：重写（override）是子类改父类的同名方法，Python 支持；重载（overload）是同一个类里同名不同参数的方法，Python 不直接支持（后定义的会覆盖先定义的），不要混淆。\n\n多态带来的最大好处是开闭原则：新增一个 Triangle 子类时，只要实现 getArea()，所有像 getInfo 这样的通用函数一行都不用改，程序自动支持新类型——对扩展开放，对修改封闭。",
+      "syntaxCard": {
+        "title": "重写 + 动态绑定 + 鸭子类型",
+        "syntax": "class Shape:\n    def getArea(self):\n        return 0\n\nclass Circle(Shape):\n    def __init__(self, r):\n        self.r = r\n\n    def getArea(self):             # 重写父类方法\n        return 3.14 * self.r ** 2\n\ndef show(g):\n    print(g.getArea())             # 运行时按实际类型动态绑定\n\nshow(Circle(1))                    # 3.14",
+        "breakdown": [
+          {
+            "part": "def getArea(self):",
+            "meaning": "父类提供默认实现；子类定义同名方法即为重写。"
+          },
+          {
+            "part": "class Circle(Shape):",
+            "meaning": "多态的前提之一：存在继承关系。"
+          },
+          {
+            "part": "return 3.14 * self.r ** 2",
+            "meaning": "子类重写后的版本；调用时优先使用它。"
+          },
+          {
+            "part": "def show(g):",
+            "meaning": "通用函数，参数不限定具体类型，只依赖对象有 getArea 方法。"
+          },
+          {
+            "part": "g.getArea()",
+            "meaning": "动态绑定：运行时看 g 的真实类型，决定执行哪个 getArea。"
+          },
+          {
+            "part": "show(Person())",
+            "meaning": "鸭子类型：Person 不是 Shape 子类，但有 getArea 就能传进来。"
+          }
+        ]
+      },
+      "keyRules": [
+        "方法重写：子类定义与父类同名、同参数的方法，调用时优先执行子类版本；未重写则沿继承链向上查找。",
+        "多态：同一方法调用作用在不同类型对象上表现不同；三要素是继承、重写、父类引用/通用函数接收子类对象。",
+        "动态绑定：方法调用在运行时根据对象真实类型决定，而不是写代码时决定；所以通用函数里不要写 if/elif 判断类型。",
+        "鸭子类型：Python 只检查对象有没有这个方法，不检查继承关系；Person(object) 不是 Animal 子类，但有 eat() 就能传进 fun(animal)。",
+        "「能传进函数」不等于「是子类」：前者靠鸭子类型，后者看 class X(父类) 括号里的基类名，选择题常在此设陷阱。",
+        "不要混淆重写（override，子类改父类）与重载（overload，同名不同参数，Python 不直接支持）。",
+        "多态的价值是开闭原则：新增子类只需实现同名方法，通用函数不用改。"
+      ],
+      "codeDemo": {
+        "title": "同一个 show(g) 适配圆、矩形与「鸭子」",
+        "code": "import math\n\nclass Shape:\n    def getArea(self):\n        return 0\n\n    def name(self):\n        return \"图形\"\n\n\nclass Circle(Shape):\n    def __init__(self, r):\n        self.r = r\n\n    def getArea(self):\n        return math.pi * self.r ** 2\n\n    def name(self):\n        return \"圆\"\n\n\nclass Rectangle(Shape):\n    def __init__(self, w, h):\n        self.w = w\n        self.h = h\n\n    def getArea(self):\n        return self.w * self.h\n\n    def name(self):\n        return \"矩形\"\n\n\ndef show(g):\n    print(\"{} 的面积 = {:.2f}\".format(g.name(), g.getArea()))\n\n\nshow(Shape())\nshow(Circle(1))\nshow(Rectangle(2, 4))\n\n\nclass Person:\n    def name(self):\n        return \"路人甲\"\n\n    def getArea(self):\n        return 1.75\n\n\nshow(Person())\nprint(\"Person 是 Shape 的子类吗? {}\".format(issubclass(Person, Shape)))",
+        "expectedOutput": "图形 的面积 = 0.00\n圆 的面积 = 3.14\n矩形 的面积 = 8.00\n路人甲 的面积 = 1.75\nPerson 是 Shape 的子类吗? False",
+        "lineByLine": [
+          "第 3–8 行：基类 Shape 提供默认 getArea 返回 0 和 name。",
+          "第 11–19 行：Circle 继承 Shape，重写 getArea 与 name。",
+          "第 22–31 行：Rectangle 同样继承 Shape，重写两个方法。",
+          "第 34–35 行：show 只依赖 g.name() 与 g.getArea()，完全不判断 g 的类型。",
+          "第 38–40 行：同一行 show(...) 分别传入三种对象，输出三种结果——这就是多态。",
+          "第 43–48 行：Person 没有继承 Shape，但实现了 name 与 getArea。",
+          "第 51 行：鸭子类型放行，show(Person()) 正常执行。",
+          "第 52 行：issubclass(Person, Shape) 为 False，证明「能传进去」不等于「是子类」。"
+        ]
+      },
+      "cautionBox": {
+        "title": "用 if/elif 判断类型，等于把多态写没了",
+        "wrongCode": "def show(g):\n    if type(g) == Circle:\n        print(math.pi * g.r ** 2)\n    elif type(g) == Rectangle:\n        print(g.w * g.h)\n    # 每新增一种图形，都要回来改 show",
+        "rightCode": "def show(g):\n    print(g.getArea())    # 运行时动态绑定到实际类型的 getArea",
+        "why": "多态的意义就是让调用方只依赖「有 getArea 这个方法」这一契约，而不依赖具体类型。用 type 分支不仅代码长、易漏，还违背开闭原则：新增 Triangle 就得修改已经测试过的 show。鸭子类型下，只要对象实现了 getArea，就应该能传进来。"
+      }
+    },
+    {
+      "id": "ch10-s6-str-magic",
+      "title": "__str__ 魔术方法：让 print(对象) 说人话",
+      "concept": "print(对象)、str(对象)、f-string 里的 {对象}，都会自动调用对象的 __str__ 方法。如果你没有定义它，Python 会使用 object 的默认实现，输出类似 <__main__.Circle object at 0x000001F2A3B4C5D0> 的东西——类名加内存地址，每次运行地址还不一样，判题系统必然判错。所以只要对象需要被打印，就应该定义 __str__，并且它必须返回一个字符串；返回数字或对象本身会抛 TypeError: __str__ returned non-string。\n\n继承体系里，子类重写 __str__ 时最常用的手法是「扩展而不是替换」：先调用 super().__str__() 拿到父类已经拼好的描述，再在前面或后面拼接子类自己的信息。这样父类以后增加字段，子类不用改；也避免把 color/filled 的格式在每个子类里重复写一遍。\n\n数值类型与输出精度是本章的另一个大坑。输入里的 10 到底该用 int 还是 float 解析，不由你的习惯决定，而由样例输出决定：样例输出 10 就用 int，样例输出 10.0 才用 float。Python 的 / 永远返回 float（10 / 2 是 5.0），// 才返回整数；math.pi 是 float，所以面积基本都是 float。\n\n关于精度：如果样例输出是 area=7.0685834705770345 这样的长串，说明期望就是 str(浮点数) 原样直出，千万不要自作主张用 :.2f 四舍五入；只有当样例明确要求「保留 3 位小数」时，才用 \"{:.3f}\".format(x)。格式化会四舍五入：942.477796… 保留 3 位是 942.478。\n\n__str__ 的反面是 __repr__：前者面向用户、给 print 用；后者面向开发者、给调试和容器显示用。本章判题只看 __str__，但知道这个区别能帮你读懂报错信息。",
+      "syntaxCard": {
+        "title": "__str__ 与 super().__str__() 扩展",
+        "syntax": "class GeometricObject:\n    def __init__(self, color=\"green\", filled=True):\n        self.color = color\n        self.filled = filled\n\n    def __str__(self):\n        return \"color is \" + self.color + \" and filled is \" + str(self.filled)\n\nclass Circle(GeometricObject):\n    def __init__(self, radius):\n        super().__init__()\n        self.radius = radius\n\n    def __str__(self):\n        return \"Circle: radius is \" + str(self.radius) + \", \" + super().__str__()\n\nprint(Circle(10))\n# Circle: radius is 10, color is green and filled is True",
+        "breakdown": [
+          {
+            "part": "def __str__(self):",
+            "meaning": "魔术方法；print/str/格式化时自动调用，不需要手动写 obj.__str__()。"
+          },
+          {
+            "part": "return \"color is \" + ...",
+            "meaning": "__str__ 必须返回 str；返回数字或对象会抛 TypeError。"
+          },
+          {
+            "part": "super().__str__()",
+            "meaning": "取父类已经拼好的描述，实现扩展而不是替换。"
+          },
+          {
+            "part": "print(c)",
+            "meaning": "自动调用 c.__str__()；效果与 print(str(c)) 相同。"
+          },
+          {
+            "part": "str(c) == c.__str__()",
+            "meaning": "两者结果一致；str 是内置函数，内部就是调 __str__。"
+          },
+          {
+            "part": "int(parts[0]) / float(parts[0])",
+            "meaning": "决定输出 10 还是 10.0；类型必须由样例输出决定。"
+          },
+          {
+            "part": "\"{:.3f}\".format(x)",
+            "meaning": "只有题目要求 3 位小数时才格式化；会四舍五入，样例给长浮点时不要用。"
+          }
+        ]
+      },
+      "keyRules": [
+        "print(对象)、str(对象)、f-string 的 {对象} 都会自动调用 __str__；不定义就输出 <类名 object at 地址>，判题必错。",
+        "__str__ 必须返回 str；返回数字/对象会抛 TypeError: __str__ returned non-string。",
+        "子类重写 __str__ 时用 super().__str__() 拼接父类描述，实现扩展而不是重复或替换父类格式。",
+        "print(对象) 等价于 print(对象.__str__())；两种写法都能跑，但前者更 Pythonic。",
+        "输入数值用 int 还是 float 由样例输出决定：样例写 10 用 int，样例写 10.0 才用 float。",
+        "样例给长浮点（如 7.0685834705770345）就 str() 直出，不要格式化；只有明确要求几位小数时才用 {:.3f}。",
+        "格式化会四舍五入：942.477796… 保留 3 位小数是 942.478；手算结果要与 {:.3f} 规则一致。"
+      ],
+      "codeDemo": {
+        "title": "父类描述扩展、int/float 差异与精度直出",
+        "code": "import math\n\nclass GeometricObject:\n    def __init__(self, color=\"green\", filled=True):\n        self.color = color\n        self.filled = filled\n\n    def __str__(self):\n        return \"color is \" + self.color + \" and filled is \" + str(self.filled)\n\n\nclass Circle(GeometricObject):\n    def __init__(self, radius, color=\"green\", filled=True):\n        super().__init__(color, filled)\n        self.radius = radius\n\n    def __str__(self):\n        return \"Circle: radius is \" + str(self.radius) + \", \" + super().__str__()\n\n\nc = Circle(10, \"blue\", False)\nprint(c)\nprint(\"str(c) 与 c.__str__() 一致: {}\".format(str(c) == c.__str__()))\nprint(Circle(2.0))\nprint(Circle(2))\n\nprint(\"int 半径面积: {}\".format(math.pi * 2 ** 2))\nprint(\"float 半径面积: {}\".format(math.pi * 2.0 ** 2))\nprint(\"样例给长浮点就直出: {}\".format(7.0685834705770345))\nprint(\"要求 3 位小数才格式化: {:.3f}\".format(7.0685834705770345))",
+        "expectedOutput": "Circle: radius is 10, color is blue and filled is False\nstr(c) 与 c.__str__() 一致: True\nCircle: radius is 2.0, color is green and filled is True\nCircle: radius is 2, color is green and filled is True\nint 半径面积: 12.566370614359172\nfloat 半径面积: 12.566370614359172\n样例给长浮点就直出: 7.0685834705770345\n要求 3 位小数才格式化: 7.069",
+        "lineByLine": [
+          "第 3–9 行：父类定义公开属性 color/filled 与 __str__。",
+          "第 12–15 行：子类 Circle 构造时用 super().__init__(color, filled) 复用父类初始化。",
+          "第 17–18 行：子类 __str__ 用 super().__str__() 拼接父类描述，实现扩展。",
+          "第 21–23 行：print(c) 与 str(c) 都自动调用 __str__，两者结果一致。",
+          "第 24–25 行：半径 2.0 与 2 在 str 下分别显示 2.0 与 2，类型直接影响输出。",
+          "第 27–28 行：int 半径与 float 半径算出的面积都是 float（因为 math.pi 是 float）。",
+          "第 29 行：样例给长浮点就 str 直出，不擅自四舍五入。",
+          "第 30 行：只有要求小数位时才格式化，.3f 会四舍五入。"
+        ]
+      },
+      "cautionBox": {
+        "title": "半径用 float 解析，输出多出 .0 直接判错",
+        "wrongCode": "parts = \"10,20,20200101111\".split(\",\")\ninnerRadius = float(parts[0])\nprint(\"The innerRadius is\", innerRadius)\n# 输出：The innerRadius is 10.0   ← 与样例的 10 不符",
+        "rightCode": "parts = \"10,20,20200101111\".split(\",\")\ninnerRadius = int(parts[0])\nprint(\"The innerRadius is\", innerRadius)\n# 输出：The innerRadius is 10     ← 与样例逐字符一致",
+        "why": "评测是逐字符比较。样例写 10 就用 int，样例写 10.0 才用 float；不要凭「半径可能是小数」的直觉默认 float。同理，样例给出长浮点（area=7.0685834705770345）时用 str() 直出，不要格式化。"
+      }
+    }
+  ],
+  "workedExamples": [
+    {
+      "id": "ch10-ex1-point-circle",
+      "title": "Point 三维距离 + Circle 封装：从对象协作到防御性 setter",
+      "difficulty": "入门",
+      "source": "作业 51603 题 2 + 题 6（程序片段填空，10 + 20 分）",
+      "problemStatement": "【改编自 51603 题 2 + 题 6】本例题把两道填空合成一个可运行程序，一次练透「同类对象协作」和「封装 setter」。\n\n程序分两段：\n(1) 读入两行三维坐标（每行 3 个数），分别创建 p1、p2，输出两点距离，保留 2 位小数；\n(2) 再读入一个半径，创建圆 c1，输出半径与周长（1 位小数）；然后把半径改为原来的 2 倍，再输出一次。\n\n【输入】\n0 0 0\n1 1 1\n1\n\n【输出】\n1.73\nc1半径=1.0,c1周长=6.3\nc1半径=2.0,c1周长=12.6\n\n要求：Point 类包含 __init__ 与 dist_from(self, other)；Circle 类包含 __init__、setRadius（r > 0 才赋值）、getRadius、perimeter。",
+      "thinkingSteps": [
+        "先翻译需求：名词 Point、Circle 是要定义的类，动词 dist_from / setRadius / getRadius / perimeter 是方法。",
+        "Point 的三个坐标是三个实例属性，在 __init__ 里用 self.x / self.y / self.z 保存。",
+        "dist_from 需要「另一个点」，所以第二个参数 other 是 Point 对象；三维距离公式是 √(Δx² + Δy² + Δz²)。",
+        "距离输出 2 位小数，用 \"{:.2f}\".format(...)，与作业模板一致。",
+        "Circle 的半径要防非法值：把赋值收口到 setRadius，__init__ 也调用它，保证任何入口都校验。",
+        "先给 self.r 一个安全默认值，避免传入非法半径时属性根本不存在，后续 getRadius 直接 AttributeError。",
+        "周长是 2πr，用 math.pi 保持精度；不要把面积公式 πr² 混进来。",
+        "半径翻倍：c1.setRadius(c1.getRadius() * 2)，先读后写，别写成 c1.setRadius(2) 这种硬编码。",
+        "输出格式严格照样例：c1半径=...,c1周长=...，两个值都保留 1 位小数，逗号与中文都不能差。"
+      ],
+      "code": "import math\n\nclass Point:\n    def __init__(self, x, y, z):\n        self.x = x\n        self.y = y\n        self.z = z\n\n    def dist_from(self, other):\n        return math.sqrt((self.x - other.x) ** 2\n                         + (self.y - other.y) ** 2\n                         + (self.z - other.z) ** 2)\n\nclass Circle:\n    def __init__(self, r=0):\n        self.r = 0\n        self.setRadius(r)\n\n    def setRadius(self, r):\n        if r > 0:\n            self.r = r\n\n    def getRadius(self):\n        return self.r\n\n    def perimeter(self):\n        return 2 * math.pi * self.r\n\nx1, y1, z1 = map(float, input().split())\nx2, y2, z2 = map(float, input().split())\np1 = Point(x1, y1, z1)\np2 = Point(x2, y2, z2)\n\nprint(\"{:.2f}\".format(p1.dist_from(p2)))\n\nr = float(input())\nc1 = Circle(r)\nprint(\"c1半径={:.1f},c1周长={:.1f}\".format(c1.getRadius(), c1.perimeter()))\nc1.setRadius(c1.getRadius() * 2)\nprint(\"c1半径={:.1f},c1周长={:.1f}\".format(c1.getRadius(), c1.perimeter()))",
+      "stdin": "0 0 0\n1 1 1\n1",
+      "sampleOutput": "1.73\nc1半径=1.0,c1周长=6.3\nc1半径=2.0,c1周长=12.6",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1 行",
+          "explanation": "导入 math，后面用 math.sqrt 与 math.pi。"
+        },
+        {
+          "lines": "第 3–7 行",
+          "explanation": "Point 的构造方法接收三个坐标，用 self.x / self.y / self.z 保存为实例属性。"
+        },
+        {
+          "lines": "第 9–12 行",
+          "explanation": "dist_from 的 other 是另一个 Point；通过 other.x 等读取对方坐标，套三维距离公式。"
+        },
+        {
+          "lines": "第 14–17 行",
+          "explanation": "Circle 构造先放安全默认值 0，再调用 setRadius；传入非法值时对象仍然有 r 属性。"
+        },
+        {
+          "lines": "第 19–21 行",
+          "explanation": "防御性 setter：只有 r > 0 才写入；负数或零被静默拒绝，保持原值。"
+        },
+        {
+          "lines": "第 23–24 行",
+          "explanation": "getter 返回半径；外部不需要知道内部字段名。"
+        },
+        {
+          "lines": "第 26–27 行",
+          "explanation": "周长 2πr；用 math.pi，不要手写 3.14 丢精度。"
+        },
+        {
+          "lines": "第 29–34 行",
+          "explanation": "读两行坐标，map(float, ...) 转数值，创建 p1、p2，输出两位小数距离。"
+        },
+        {
+          "lines": "第 36–40 行",
+          "explanation": "读半径创建 c1，输出初始半径与周长；再翻倍调用 setRadius，重新输出。"
+        }
+      ],
+      "commonMistakes": [
+        "def dist_from(self, other) 写成 def dist_from(other)，调用时 Python 自动多传一个 self，直接 TypeError。",
+        "公式里把 other.x 写成 x，x 是未定义局部变量，报 NameError。",
+        "距离用 str() 直出得到 1.7320508075688772，与样例 1.73 不符；应使用 {:.2f}。",
+        "setRadius 里忘记 self.，写成 r = r，半径永远不会更新。",
+        "在 __init__ 里直接 self.r = r 绕过校验，传入负数也被接受，违背「防御性 setter」的题意。",
+        "周长写成 πr²（面积公式），或把 2πr 写成 πr。",
+        "输出时多一个空格或把中文逗号写成英文逗号，逐字符判题直接 0 分。"
+      ],
+      "variationTip": "把 Point 改成二维只需删掉 z；把距离改成曼哈顿距离就是 |dx| + |dy| + |dz|。若题目要求非法半径必须报错，把 setter 改成 if r <= 0: raise ValueError(\"半径必须为正\")；若要求「静默拒绝」，就保持本题写法。"
+    },
+    {
+      "id": "ch10-ex2-composite-area",
+      "title": "多类组合图形面积：Triangle + 3 个半圆",
+      "difficulty": "常考",
+      "source": "作业 51603 题 8（编程题，10 分）",
+      "problemStatement": "【51603 题 8 编程题，10 分】输入三角形三边 a、b、c（英文逗号分隔），以三条边分别为直径向外作三个半圆，求「三角形 + 3 个半圆」组合图形的总面积，保留 2 位小数。\n\n要求面向对象：至少定义 Triangle 与 Circle 两个类，圆类负责算面积，三角形用海伦公式。\n\n【输入】\n3,4,5\n\n【输出】\n25.63",
+      "thinkingSteps": [
+        "先做图形拆解：总面积 = S三角形 + S半圆(a) + S半圆(b) + S半圆(c)，四个部分一个都不能漏。",
+        "半圆以边为直径，所以半径 = 边长 / 2；半圆面积 = πr² / 2 = π(d/2)² / 2。",
+        "三角形三边已知，用海伦公式：p = (a+b+c)/2，S = √(p(p-a)(p-b)(p-c))。",
+        "设计 Triangle(a, b, c)：__init__ 存三边，getArea() 返回海伦公式算出的面积。",
+        "设计 Circle(d)：__init__ 存直径，getArea() 返回半圆面积。类名叫 Circle 但算的是半圆，注释要写清楚。",
+        "读入用 map(float, input().split(\",\"))；逗号分隔必须给 split 传 \",\"，否则整行会被当成一个字符串。",
+        "创建四个对象，把四个 getArea() 相加；不要让某个半圆被漏加或重复加。",
+        "最后 print(\"{:.2f}\".format(total)) 保留两位小数。",
+        "自检：3-4-5 是直角三角形，三角形面积 = 6；三个半圆总面积 = π/2 × (1.5² + 2² + 2.5²) = π/2 × 12.5 ≈ 19.635；合计 ≈ 25.635 → 25.63，与样例一致。"
+      ],
+      "code": "import math\n\nclass Triangle:\n    def __init__(self, a, b, c):\n        self.a = a\n        self.b = b\n        self.c = c\n\n    def getArea(self):\n        p = (self.a + self.b + self.c) / 2\n        return math.sqrt(p * (p - self.a) * (p - self.b) * (p - self.c))\n\nclass Circle:\n    def __init__(self, d):\n        self.d = d\n\n    def getArea(self):\n        return math.pi * (self.d / 2) ** 2 / 2\n\na, b, c = map(float, input().split(\",\"))\ntri = Triangle(a, b, c)\ntotal = tri.getArea() + Circle(a).getArea() + Circle(b).getArea() + Circle(c).getArea()\nprint(\"{:.2f}\".format(total))",
+      "stdin": "3,4,5",
+      "sampleOutput": "25.63",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1 行",
+          "explanation": "导入 math，使用 math.sqrt 与 math.pi。"
+        },
+        {
+          "lines": "第 3–7 行",
+          "explanation": "Triangle 构造保存三条边；三边都是实例属性。"
+        },
+        {
+          "lines": "第 9–11 行",
+          "explanation": "海伦公式：p 是半周长，返回 √(p(p-a)(p-b)(p-c))。"
+        },
+        {
+          "lines": "第 13–15 行",
+          "explanation": "Circle 的参数是直径 d；构造只保存数据，不算面积。"
+        },
+        {
+          "lines": "第 17–18 行",
+          "explanation": "半圆面积 = π(d/2)²/2；先算半径 d/2，再平方，最后除以 2。"
+        },
+        {
+          "lines": "第 20 行",
+          "explanation": "逗号分隔输入：split(\",\") 拆成三个字符串，map(float, ...) 转成浮点数。"
+        },
+        {
+          "lines": "第 21 行",
+          "explanation": "创建 Triangle 对象；此时不计算，只保存三边。"
+        },
+        {
+          "lines": "第 22 行",
+          "explanation": "组合四个面积：三角形 + 以 a、b、c 为直径的三个半圆。"
+        },
+        {
+          "lines": "第 23 行",
+          "explanation": "保留两位小数输出；格式化会四舍五入，25.63495… 输出 25.63。"
+        }
+      ],
+      "commonMistakes": [
+        "半圆面积忘记除以 2，把三个半圆当成整圆，结果偏大一倍。",
+        "把直径直接当半径代入 πr²，面积变成正确值的 4 倍。",
+        "只加一个或两个半圆，漏掉某条边；组合图形题一定要数清部件。",
+        "海伦公式漏写一个因子，如少乘 (p - c)，结果错误但程序不报错。",
+        "输入用 split() 只按空格拆，遇到 \"3,4,5\" 得到一项，解包报 ValueError。",
+        "Circle 构造参数语义混乱：传的是直径，方法里却当半径用；参数名与公式必须自洽。",
+        "把 Triangle 的合法性判断也写进类里，但本题 main 保证三边合法，属于多余逻辑；先看清题目分工。"
+      ],
+      "variationTip": "若三个半圆改为「朝内」（从三角形中减去），只需把加号改成减号，类完全不用动——这就是封装带来的可组合性。若输入可能是非法三角形，可以在 Triangle 里加 isValid() 方法，main 先判断 a+b>c 等三个条件再计算。"
+    },
+    {
+      "id": "ch10-ex3-geometric-system",
+      "title": "GeometricObject / Circle / Rectangle：继承与多态动态绑定",
+      "difficulty": "常考",
+      "source": "作业 51601 题 6（程序片段填空，25 分）",
+      "problemStatement": "【51601 题 6 程序片段填空，25 分】实现一个图形系统：\n\n- 基类 GeometricObject：私有属性 color（默认 \"green\"）与 filled（默认 True），提供 getColor / setColor / isFilled / setFilled、__str__，以及 getArea() 返回 0；\n- 子类 Circle：继承 GeometricObject，构造时先调用父类构造，再保存半径；重写 getArea 返回 πr²；重写 __str__ 输出 \"A Circle: radius is ...,\" + 父类描述；\n- 子类 Rectangle：保存宽高，重写 getArea 返回 w×h，__str__ 输出 \"A RectAngle: w*h,\" + 父类描述；\n- 函数 getInfo(g)：不判断类型，直接取 g.getArea() 并打印对象与面积；\n- main：创建半径 1.5 的圆、2×4 的矩形、一个默认 GeometricObject，依次 getInfo，观察动态绑定。\n\n（本题 5 个空分别对应：继承的父类名、super().__init__()、g.getArea()、Rectangle(2, 4)、getInfo(rectangle1)。）\n\n【输出】\nA Circle: radius is 1.5,color is green and filled is True area=7.0685834705770345\nA RectAngle: 2*4,color is green and filled is True area=8\ncolor is green and filled is True area=0\n\n（输出按作业模板复现；实际判题时以平台样例的空格与标点为准。）",
+      "thinkingSteps": [
+        "先找 is-a 关系：Circle 和 Rectangle 都是几何图形，所以都继承 GeometricObject。",
+        "父类构造负责 color / filled；子类构造第一句写 super().__init__()，否则父类私有属性不存在。",
+        "父类私有属性用 self.__color / self.__filled，父类自己的 getter、setter、__str__ 内部访问；子类不要直接碰，走 getter/setter 或 super().__str__()。",
+        "空(1) 填父类名 GeometricObject：class Circle(GeometricObject):。",
+        "空(2) 填 super().__init__()：复用父类对 color/filled 的初始化。",
+        "空(3) 填 g.getArea()：不能写 g.getArea（那是方法对象），也不能按类型 if/elif 分支。",
+        "空(4) 填 Rectangle(2, 4)：宽 2 高 4，对应样例 2*4。",
+        "空(5) 填 getInfo(rectangle1)：完成第三次多态调用。",
+        "每个子类重写 __str__ 时用 super().__str__() 拼接父类描述，避免重复写 color/filled 格式。",
+        "运行后观察：同一个 g.getArea() 对圆、矩形、基类分别返回不同结果，这就是运行时动态绑定。",
+        "输出中的长浮点 area=7.0685834705770345 说明不能格式化，必须 str() 直出。"
+      ],
+      "code": "import math\n\nclass GeometricObject:\n    def __init__(self, color=\"green\", filled=True):\n        self.__color = color\n        self.__filled = filled\n\n    def getColor(self):\n        return self.__color\n\n    def setColor(self, color):\n        self.__color = color\n\n    def isFilled(self):\n        return self.__filled\n\n    def setFilled(self, filled):\n        self.__filled = filled\n\n    def __str__(self):\n        return \"color is \" + self.__color + \" and filled is \" + str(self.__filled)\n\n    def getArea(self):\n        return 0\n\n\nclass Circle(GeometricObject):\n    def __init__(self, radius):\n        super().__init__()\n        self.__radius = radius\n\n    def getRadius(self):\n        return self.__radius\n\n    def setRadius(self, radius):\n        self.__radius = radius\n\n    def getArea(self):\n        return math.pi * self.__radius ** 2\n\n    def __str__(self):\n        return \"A Circle: radius is \" + str(self.__radius) + \",\" + super().__str__()\n\n\nclass Rectangle(GeometricObject):\n    def __init__(self, width, height):\n        super().__init__()\n        self.__width = width\n        self.__height = height\n\n    def getArea(self):\n        return self.__width * self.__height\n\n    def __str__(self):\n        return \"A RectAngle: \" + str(self.__width) + \"*\" + str(self.__height) + \",\" + super().__str__()\n\n\ndef getInfo(g):\n    s = g.getArea()\n    print(g, \"area=\" + str(s))\n\n\ndef main():\n    circle1 = Circle(1.5)\n    getInfo(circle1)\n    rectangle1 = Rectangle(2, 4)\n    getInfo(rectangle1)\n    geometric1 = GeometricObject()\n    getInfo(geometric1)\n\n\nmain()",
+      "sampleOutput": "A Circle: radius is 1.5,color is green and filled is True area=7.0685834705770345\nA RectAngle: 2*4,color is green and filled is True area=8\ncolor is green and filled is True area=0",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1 行",
+          "explanation": "导入 math，圆的面积用 math.pi。"
+        },
+        {
+          "lines": "第 3–24 行",
+          "explanation": "基类 GeometricObject：两个私有属性 + getter/setter + __str__ + getArea 返回 0。"
+        },
+        {
+          "lines": "第 20–21 行",
+          "explanation": "父类 __str__ 用 self.__color / self.__filled 拼描述；名称改写保证子类不会误覆盖。"
+        },
+        {
+          "lines": "第 27–30 行",
+          "explanation": "空(1) 的答案体现在 class Circle(GeometricObject):；空(2) 是 super().__init__()，先初始化父类部分再存半径。"
+        },
+        {
+          "lines": "第 38–39 行",
+          "explanation": "Circle 重写 getArea，返回 πr²；这就是多态里圆的具体实现。"
+        },
+        {
+          "lines": "第 41–42 行",
+          "explanation": "Circle 重写 __str__，用 super().__str__() 扩展父类描述。"
+        },
+        {
+          "lines": "第 45–55 行",
+          "explanation": "Rectangle 同样继承父类，重写 getArea 返回 w×h，并按题面格式拼接 __str__。"
+        },
+        {
+          "lines": "第 58–60 行",
+          "explanation": "空(3)：getInfo 只用 g.getArea()，运行时动态绑定，不做类型判断。"
+        },
+        {
+          "lines": "第 63–69 行",
+          "explanation": "main：创建半径 1.5 的圆、2×4 的矩形（空 4）和基类对象；三次 getInfo（空 5 是 getInfo(rectangle1)）。"
+        },
+        {
+          "lines": "第 72 行",
+          "explanation": "调用 main 启动程序。"
+        }
+      ],
+      "commonMistakes": [
+        "子类 __init__ 忘写 super().__init__()，访问父类私有属性时抛 AttributeError: 'Circle' object has no attribute '_GeometricObject__color'。",
+        "class Circle: 忘写括号里的父类，导致不是继承；getInfo 调用时缺少父类行为。",
+        "空(3) 写成 g.getArea（没有括号），打印出 bound method，而不是面积。",
+        "在 getInfo 里写 if isinstance(g, Circle) ... elif ...，虽能出结果，但违背多态题意，填空题按标准答案判 0 分。",
+        "在 __str__ 里又 print(self)，导致无限递归。",
+        "把圆半径写成 1 而不是 1.5，面积与样例 7.0685834705770345 不符。",
+        "手动把长浮点格式化成 .2f，输出与样例不逐字符一致。",
+        "父类 __str__ 里直接写 self.color（公开属性），但父类字段是 __color，AttributeError。"
+      ],
+      "variationTip": "新增 Triangle 子类时，只要实现 getArea() 与 __str__()，getInfo 一行都不用改——这就是多态的开闭原则。也可以把 getInfo 改成 return 字符串而不是 print，便于单元测试；再把三个对象放进列表 for g in shapes: getInfo(g)，就是典型的多态遍历。"
+    },
+    {
+      "id": "ch10-ex4-ring",
+      "title": "Ring 圆环类：继承 + 私有域 + super().__str__() 综合压轴",
+      "difficulty": "综合压轴",
+      "source": "作业 51601 题 7（编程题，25 分）",
+      "problemStatement": "【51601 题 7 编程题，25 分】在给定的 GeometricObject 类（公开属性 color / filled + getter/setter + __str__）基础上设计 Ring 圆环类：\n\n(1) 私有数据域：内环半径 __innerRadius、外环半径 __outerRadius、圆环序号 __ringID；\n(2) 构造方法：内环默认 1、外环默认 2、序号默认 0；\n(3) getInnerRadius() 返回内环半径；\n(4) getArea() 返回圆环面积 π(R² − r²)；\n(5) 重写 __str__：\"The \" + str(序号) + \" Ring's:\" + super().__str__() + \",outerRadius is \" + str(外半径)。\n\nmain：第一行输入「内半径,外半径,学号」，第二行颜色，第三行 1/0 表示是否填充；创建名为 r+学号 的对象，设置颜色/填充，输出 5 行。\n\n【输入】\n10,20,20200101111\nblue\n1\n\n【输出】\nThe 20200101111 Ring's:color is blue and filled is True,outerRadius is 20\nThe area is 942.478\nThe innerRadius is 10\nColor is blue\nFilled is True",
+      "thinkingSteps": [
+        "识别继承关系：Ring 是一种 GeometricObject，所以写 class Ring(GeometricObject)。",
+        "构造方法先 super().__init__() 初始化 color / filled，再给三个私有域赋值；顺序上先父后子。",
+        "三个数据域都用双下划线开头，对应题目「私有数据域」要求，同时也在考名称改写。",
+        "面积 = 外圆 − 内圆 = π(R² − r²)；注意是平方差，不是 π(R − r)²。",
+        "__str__ 严格按题目给的拼接顺序：\"The \" + str(id) + \" Ring's:\" + super().__str__() + \",outerRadius is \" + str(R)。",
+        "输入解析：三个字段用 split(\",\")；半径按 int（样例输出 10/20 没有小数点），学号保持字符串。",
+        "filled = input() == \"1\"：直接把 1/0 转成 True/False，简洁且符合样例输出。",
+        "输出：对象描述直接 print(ring)（等价于 print(ring.__str__())）；面积用 {:.3f}；其余用 print 逗号或 format。",
+        "自检：π(400 − 100) = π × 300 = 942.477796…，保留 3 位小数是 942.478，与样例一致。",
+        "再次检查：输出 10 而不是 10.0，证明半径必须用 int 解析；学号不要转 int，避免前导零丢失。"
+      ],
+      "code": "import math\n\nclass GeometricObject:\n    def __init__(self, color=\"green\", filled=True):\n        self.color = color\n        self.filled = filled\n\n    def getColor(self):\n        return self.color\n\n    def setColor(self, color):\n        self.color = color\n\n    def isFilled(self):\n        return self.filled\n\n    def setFilled(self, filled):\n        self.filled = filled\n\n    def __str__(self):\n        return \"color is \" + self.color + \" and filled is \" + str(self.filled)\n\n\nclass Ring(GeometricObject):\n    def __init__(self, innerRadius=1, outerRadius=2, ringID=0):\n        super().__init__()\n        self.__innerRadius = innerRadius\n        self.__outerRadius = outerRadius\n        self.__ringID = ringID\n\n    def getInnerRadius(self):\n        return self.__innerRadius\n\n    def getArea(self):\n        return math.pi * (self.__outerRadius ** 2 - self.__innerRadius ** 2)\n\n    def __str__(self):\n        return (\"The \" + str(self.__ringID) + \" Ring's:\" + super().__str__()\n                + \",outerRadius is \" + str(self.__outerRadius))\n\n\ndef main():\n    parts = input().split(\",\")\n    innerRadius = int(parts[0])\n    outerRadius = int(parts[1])\n    ringID = parts[2]\n    color = input()\n    filled = input() == \"1\"\n    r20200101111 = Ring(innerRadius, outerRadius, ringID)\n    r20200101111.setColor(color)\n    r20200101111.setFilled(filled)\n    print(r20200101111)\n    print(\"The area is {:.3f}\".format(r20200101111.getArea()))\n    print(\"The innerRadius is\", r20200101111.getInnerRadius())\n    print(\"Color is\", r20200101111.getColor())\n    print(\"Filled is\", r20200101111.isFilled())\n\n\nmain()",
+      "stdin": "10,20,20200101111\nblue\n1",
+      "sampleOutput": "The 20200101111 Ring's:color is blue and filled is True,outerRadius is 20\nThe area is 942.478\nThe innerRadius is 10\nColor is blue\nFilled is True",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1 行",
+          "explanation": "导入 math，圆环面积用 math.pi。"
+        },
+        {
+          "lines": "第 3–6 行",
+          "explanation": "父类构造用公开属性 color / filled，并带默认值 green / True。"
+        },
+        {
+          "lines": "第 8–21 行",
+          "explanation": "父类提供 getColor / setColor / isFilled / setFilled 与 __str__，供子类复用。"
+        },
+        {
+          "lines": "第 24–29 行",
+          "explanation": "Ring 继承父类；空 super().__init__() 先初始化 color/filled，再保存三个私有域。"
+        },
+        {
+          "lines": "第 31–32 行",
+          "explanation": "getInnerRadius 返回私有内半径，满足题目第 (3) 条。"
+        },
+        {
+          "lines": "第 34–35 行",
+          "explanation": "圆环面积 = π(R² − r²)；外圆减内圆，注意平方差。"
+        },
+        {
+          "lines": "第 37–39 行",
+          "explanation": "重写 __str__，用 super().__str__() 拼接父类描述，再补 outerRadius。"
+        },
+        {
+          "lines": "第 42–48 行",
+          "explanation": "读三行输入：半径 int、学号 str、颜色 str、filled 用 == \"1\" 转 bool。"
+        },
+        {
+          "lines": "第 49–51 行",
+          "explanation": "创建对象并调用父类的 setColor / setFilled 设置颜色与填充。"
+        },
+        {
+          "lines": "第 52–56 行",
+          "explanation": "输出 5 行：对象描述、面积 3 位小数、内半径、颜色、是否填充。"
+        },
+        {
+          "lines": "第 59 行",
+          "explanation": "调用 main 启动程序。"
+        }
+      ],
+      "commonMistakes": [
+        "半径用 float 解析，输出 The innerRadius is 10.0 / outerRadius is 20.0，与样例 10 / 20 不符。",
+        "面积写成 π(R − r)² = π×100 = 314.159，与 942.478 相差甚远；应为 π(R² − r²)。",
+        "忘写 super().__init__()，父类 color / filled 未初始化，__str__ 访问时 AttributeError。",
+        "__str__ 里 super().__str__ 漏了括号，把方法对象拿去字符串拼接，TypeError。",
+        "把学号转成 int，前导零丢失或格式变化；学号应保持字符串。",
+        "圆环序号忘记 str()，字符串 + 整数直接 TypeError。",
+        "半径合法值直接写死，或面积手动写成 942.48 / 942.4778，未按 {:.3f} 规则输出。",
+        "在 Ring 里直接访问 self.__color（父类私有），名称改写后不存在，AttributeError；应通过 getter 或 super().__str__()。"
+      ],
+      "variationTip": "若要求增加 getOuterRadius / setOuterRadius，照 getInnerRadius 写即可；若要求「外半径必须大于内半径」，可在 __init__ 里写 if outerRadius <= innerRadius: raise ValueError(...)。如果样例改成输出 10.0 / 20.0，只需把两处 int 改成 float，其余不动——再次说明输入类型由样例输出决定。"
+    }
+  ],
+  "summaryCheatsheet": [
+    {
+      "label": "定义类",
+      "snippet": "class Student:\n    def __init__(self, name):\n        self.name = name",
+      "note": "类名大驼峰；类体缩进 4 个空格。"
+    },
+    {
+      "label": "实例化",
+      "snippet": "s = Student(\"小明\")",
+      "note": "类名加括号；__init__ 自动调用，不需要手动传 self。"
+    },
+    {
+      "label": "self",
+      "snippet": "self.name = name",
+      "note": "当前实例；方法第一个参数，调用时 Python 自动绑定。"
+    },
+    {
+      "label": "同类对象协作",
+      "snippet": "def dist_from(self, other):\n    return other.x - self.x",
+      "note": "other 是另一个 Point，通过 other.属性 访问。"
+    },
+    {
+      "label": "动态属性",
+      "snippet": "s.email = \"xm@example.com\"",
+      "note": "对象创建后可随时添加属性，无需在类里声明。"
+    },
+    {
+      "label": "类属性",
+      "snippet": "school = \"Python 大学\"",
+      "note": "所有实例共享；s1.school = ... 只给 s1 新建实例属性。"
+    },
+    {
+      "label": "私有属性",
+      "snippet": "self.__r = r",
+      "note": "双下划线改写为 _Circle__r；Python 没有 private 关键字。"
+    },
+    {
+      "label": "防御性 setter",
+      "snippet": "def setRadius(self, r):\n    if r > 0:\n        self.__r = r",
+      "note": "非法值拒绝修改；__init__ 也调用 setter 最稳。"
+    },
+    {
+      "label": "浮点判等",
+      "snippet": "math.fabs(a - b) <= 0.001",
+      "note": "不要用 ==；0.1 + 0.2 != 0.3。"
+    },
+    {
+      "label": "继承",
+      "snippet": "class Dog(Animal):",
+      "note": "括号里写父类；子类自动获得父类属性与方法。"
+    },
+    {
+      "label": "super",
+      "snippet": "super().__init__(name)",
+      "note": "子类写了 __init__ 就必须调用，否则父类属性不存在。"
+    },
+    {
+      "label": "方法重写",
+      "snippet": "def speak(self):\n    return \"汪汪汪\"",
+      "note": "子类同名方法覆盖父类；未重写则沿继承链向上找。"
+    },
+    {
+      "label": "多态/动态绑定",
+      "snippet": "def show(g):\n    print(g.getArea())",
+      "note": "运行时按实际类型选方法；不要写 if/elif 类型判断。"
+    },
+    {
+      "label": "鸭子类型",
+      "snippet": "show(Person())",
+      "note": "不检查继承，只看有没有方法；Person(object) 不是 Animal 子类也能传。"
+    },
+    {
+      "label": "__str__",
+      "snippet": "def __str__(self):\n    return \"Circle: \" + super().__str__()",
+      "note": "print/str 自动调用；子类用 super().__str__() 扩展父类描述。"
+    },
+    {
+      "label": "int vs float",
+      "snippet": "int(parts[0])    # 输出 10\nfloat(parts[0])  # 输出 10.0",
+      "note": "由样例输出决定，不要凭直觉默认 float。"
+    },
+    {
+      "label": "精度直出",
+      "snippet": "print(\"area=\" + str(s))",
+      "note": "样例给长浮点就直出；只有要求 3 位小数才用 {:.3f}。"
+    },
+    {
+      "label": "面积公式",
+      "snippet": "p = (a + b + c) / 2\nS = math.sqrt(p * (p-a) * (p-b) * (p-c))\nS_half = math.pi * (d / 2) ** 2 / 2",
+      "note": "海伦公式 + 半圆面积；组合图形 = 各部件面积之和。"
+    }
+  ]
+}

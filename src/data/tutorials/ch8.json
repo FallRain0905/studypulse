@@ -1,0 +1,479 @@
+{
+  "chapter": 8,
+  "title": "第 8 章 · 数据文件与 CSV",
+  "subtitle": "with open 读写模式 · FileNotFoundError 回退 stdin · 逐行解析 · 词频弯引号坑 · CSV 排序与防双引号坑",
+  "isExamScope": true,
+  "estimatedMinutes": 165,
+  "learningGoals": [
+    "熟练运用 with open(..., mode, encoding='utf-8') 读写文本文件，分清 'r' / 'w' / 'a' 模式与 'utf-8-sig' 编码。",
+    "分清 read()、readlines()、for line in f 三种读取方式，牢记 f.write() 不会自动换行。",
+    "掌握文件不存在时 try/except FileNotFoundError 回退 sys.stdin.read() 的评测健壮写法。",
+    "掌握英文文本词频统计全流程，重点记住 Unicode 弯引号（’ ‘ “ ”）替换，防止单词切不开。",
+    "掌握标准库 csv.reader / csv.writer（必加 newline=''），能用 lambda 按多列总分排序并追加新列。",
+    "彻底理解 csv.writer 对含逗号字段自动加双引号的机制，知道何时必须改用 f.write() 手写文本。"
+  ],
+  "intro": "前面 7 章的程序有一个共同局限：数据全靠键盘手敲，程序一关，计算结果就烟消云散。第 8 章《数据文件与 CSV》让你的 Python 程序真正连接到硬盘里的文件——批量读取上千行文本、清洗词频、给整张成绩表按总分排序并生成可直接用 Excel 打开的 CSV 报表。\n\n本章既是最新 4~8 章考试范围的收官综合章（完美融合了循环、列表、字典、排序与格式化），也是平时作业中**踩坑最集中、一错就是 0 分**的章节！我们在实战作业（51599、52361、51600）中亲手踩过的所有大坑——填空缩进、弯引号丢失、`csv.writer` 自动加双引号、Windows 编码乱码——都会在本章逐一掰开讲透，让你考场上滴水不漏。",
+  "sections": [
+    {
+      "id": "ch8-s1",
+      "title": "文件读写入门：with open、三种模式与 UTF-8 编码",
+      "concept": "读写文件就像使用实体笔记本，必须经历三步：**打开 → 读或写 → 合上（关闭）**。如果打开文件后忘记 `close()`，不仅浪费操作系统资源，写入的内容还可能滞留在内存缓冲区里没真正写进硬盘！\n\n因此，Python 最推荐的写法是 **`with open(...) as f:`** 上下文管理器：只要缩进块里的代码执行完毕——哪怕中途突然抛出异常——Python 都会保证自动帮你把文件关得严严实实，绝无泄漏风险。\n\n打开模式必须记牢三个字母：\n- `\"r\"`（read，默认）：只读，文件不存在会抛 `FileNotFoundError`。\n- `\"w\"`（write）：只写——**高危注意：如果文件原本已存在，会立刻清空原内容再写！**文件不存在则自动新建。\n- `\"a\"`（append）：追加写，保留原有内容，把新内容接在末尾。\n\n在 Windows 电脑上还有一个必考细节：必须显式写 **`encoding=\"utf-8\"`**（否则 Windows 默认按 GBK 解码，碰到 UTF-8 中文或特殊符号立刻报 `UnicodeDecodeError`）。如果写出的 CSV 文件需要直接给 **Excel** 双击打开且含中文，应使用 **`encoding=\"utf-8-sig\"`**（带 UTF-8 BOM 头，Excel 才能识别中文不乱码）。",
+      "syntaxCard": {
+        "title": "with open 标准文件读写骨架",
+        "syntax": "with open(\"src.txt\", \"r\", encoding=\"utf-8\") as f:\n    text = f.read()\n\nwith open(\"out.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"第一行内容\\n\")   # 注意：write 不自动换行！",
+        "breakdown": [
+          {
+            "part": "with ... as f:",
+            "meaning": "自动管理文件资源，离开缩进块自动 f.close()"
+          },
+          {
+            "part": "\"r\" / \"w\" / \"a\"",
+            "meaning": "只读 / 清空覆写 / 末尾追加"
+          },
+          {
+            "part": "encoding=\"utf-8\"",
+            "meaning": "显式指定编码，防止 Windows 默认 GBK 解码崩溃"
+          },
+          {
+            "part": "encoding=\"utf-8-sig\"",
+            "meaning": "带 BOM 的 UTF-8，专治 Excel 打开中文 CSV 乱码"
+          }
+        ]
+      },
+      "keyRules": [
+        "with 语句块结束时自动关闭文件，异常时也能安全关闭（单选 119 题原考点）。",
+        "\"w\" 模式打开已有文件会先清空原内容；想保留原内容必须用 \"a\"（单选 121 题原考点）。",
+        "f.write(\"Hello\") 不会像 print() 那样自动换行，每行末尾必须自己加 \"\\n\"（单选 122 题原考点）。",
+        "一定核对题目要求的文件名一字不差：result.txt 与 results.txt 差一个 s 就是 0 分！"
+      ],
+      "codeDemo": {
+        "title": "演示 'w' 覆写、'a' 追加与 'r' 读取的完整流程",
+        "code": "# 1. 'w' 模式写入（若文件存在会先清空！）\nwith open(\"note.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"第一行：Python 文件读写\\n\")\n    f.write(\"第二行：with 会自动关闭文件\\n\")\n\n# 2. 'a' 模式追加（保留原内容）\nwith open(\"note.txt\", \"a\", encoding=\"utf-8\") as f:\n    f.write(\"第三行：追加的新内容\\n\")\n\n# 3. 'r' 模式读取\nwith open(\"note.txt\", \"r\", encoding=\"utf-8\") as f:\n    content = f.read()\nprint(content, end=\"\")",
+        "expectedOutput": "第一行：Python 文件读写\n第二行：with 会自动关闭文件\n第三行：追加的新内容",
+        "lineByLine": [
+          "第 2~4 行：'w' 模式新建 note.txt 并写入两行，每行末尾手动加 \\n。",
+          "第 7~8 行：'a' 模式在原文件末尾追加第三行，不会抹掉前两行。",
+          "第 11~13 行：'r' 模式整读并打印，验证三行内容完整保留。"
+        ]
+      },
+      "cautionBox": {
+        "title": "f.write() 忘了写 \\n 导致所有行粘成一整行",
+        "wrongCode": "with open(\"words.txt\", \"w\", encoding=\"utf-8\") as f:\n    for w in [\"apple\", \"banana\"]:\n        f.write(w)   # 文件里变成 applebanana！",
+        "rightCode": "with open(\"words.txt\", \"w\", encoding=\"utf-8\") as f:\n    for w in [\"apple\", \"banana\"]:\n        f.write(w + \"\\n\")  # 每行一个单词",
+        "why": "print() 默认参数 end='\\n' 会自动换行，而文件对象的 write() 只忠实写入你给的字符串，绝不擅自补换行符。"
+      }
+    },
+    {
+      "id": "ch8-s2",
+      "title": "三种读文件姿势对比 & strip() / split() 清洗",
+      "concept": "打开文件后，Python 提供三种主流读取方式，各自适合不同题型：\n\n1. **`f.read()`**：一次性把整个文件读成一个大字符串。适合做全文大小写转换（`f.read().lower()`）、英文词频统计（整段替换标点后再 `split()`）。\n2. **`f.readlines()`**：把每一行放进一个列表，注意**每个字符串末尾都带着 `'\\n'`**（如 `['Alice 92\\n', 'Bob 85\\n']`）。\n3. **`for line in f:`**（最推荐）：逐行惰性读取，内存占用极小，写起来最自然。\n\n无论是 `readlines()` 还是 `for line in f:`，拿到的每一行末尾都挂着看不见的换行符 `'\\n'`（甚至行首尾可能有多余空格）。如果直接比较 `line == \"yes\"` 一定会失败（因为实际是 `\"yes\\n\"`）！养成肌肉记忆：逐行读取后第一时间 **`.strip()`** 清理首尾空白，或者直接 **`.split()`**（无参 `split()` 会自动剥离所有空格、制表符和换行符，同时跳过空行）。",
+      "syntaxCard": {
+        "title": "三种读取方法与行清洗套路",
+        "syntax": "text = f.read()                 # 整个文件 -> 1 个 str\nlines = f.readlines()           # 每行(含 \\n) -> list[str]\nfor line in f:                  # 逐行迭代（推荐）\n    parts = line.strip().split()\n    if not parts: continue      # 优雅跳过空行",
+        "breakdown": [
+          {
+            "part": "f.read()",
+            "meaning": "全文一次性读入，适合大小写转换、替换标点、词频统计"
+          },
+          {
+            "part": "f.readlines()",
+            "meaning": "返回行列表，注意每项末尾保留了 '\\n'"
+          },
+          {
+            "part": "for line in f",
+            "meaning": "逐行遍历，省内存且代码简洁"
+          },
+          {
+            "part": "line.strip().split()",
+            "meaning": "先去首尾换行/空格，再按任意空白拆成字段列表"
+          }
+        ]
+      },
+      "keyRules": [
+        "文件对象像磁带一样有读取指针：f.read() 读到底后，再调用一次 f.read() 会得到空字符串！",
+        "读出来的每行自带 '\\n'，做字符串比对前一定要 .strip()。",
+        "遇到文件末尾或中间可能夹杂空行时，加一句 if not parts: continue 可彻底防止下标越界 IndexError。"
+      ],
+      "codeDemo": {
+        "title": "对比 read()、readlines() 与逐行清洗解析",
+        "code": "with open(\"demo.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"Alice 92\\nBob 85\\nCindy 98\\n\")\n\n# 方式一：read() 整读成单个字符串\nwith open(\"demo.txt\", \"r\", encoding=\"utf-8\") as f:\n    print(\"read() 字符数:\", len(f.read()))\n\n# 方式二：readlines() 读成带 \\n 的列表\nwith open(\"demo.txt\", \"r\", encoding=\"utf-8\") as f:\n    print(\"readlines() 原貌:\", f.readlines())\n\n# 方式三：逐行遍历 + strip() 清洗（最省内存、最常用）\nwith open(\"demo.txt\", \"r\", encoding=\"utf-8\") as f:\n    for line in f:\n        name, score = line.strip().split()\n        print(f\"清洗解析 -> {name}: {score} 分\")",
+        "expectedOutput": "read() 字符数: 25\nreadlines() 原貌: ['Alice 92\\n', 'Bob 85\\n', 'Cindy 98\\n']\n清洗解析 -> Alice: 92 分\n清洗解析 -> Bob: 85 分\n清洗解析 -> Cindy: 98 分",
+        "lineByLine": [
+          "第 1~2 行：创建包含 3 行「姓名 分数」的 demo.txt。",
+          "第 5~10 行：观察 read() 返回整串长度，readlines() 列表元素末尾都带着 '\\n'。",
+          "第 13~16 行：用 for line in f + line.strip().split() 拆包出 name 与 score。"
+        ]
+      },
+      "cautionBox": {
+        "title": "忽略行尾 '\\n' 或空行导致解析崩溃",
+        "wrongCode": "for line in f:\n    name, score = line.split(' ')  # 末尾空行会 ValueError，score 里还粘着 '\\n'！",
+        "rightCode": "for line in f:\n    parts = line.split()           # 无参 split 自动去 \\n 与多余空格\n    if len(parts) >= 2:\n        name, score = parts[0], int(parts[1])",
+        "why": "不带参数的 split() 能一次性吸收连续空格、\\r、\\n，并把纯空白行拆成空列表 []，配合长度检查稳如泰山。"
+      }
+    },
+    {
+      "id": "ch8-s3",
+      "title": "评测健壮护身符：FileNotFoundError 回退 sys.stdin",
+      "concept": "在平时作业（如 52361、51599、51600）和上机考试中，同学们经常遇到一个诡异现象：题目说“读取 data.txt”，本地建了文件跑得飞起，一交到评测平台却报 `FileNotFoundError`！原因是部分测试点并没有把文件放在工作目录，而是把文件内容重定向到了标准输入（stdin）。\n\n解决方法超级简单，把它当成所有文件题的**标配护身符**：用 `try / except FileNotFoundError` 包裹 `open()`；如果文件存在就正常读文件，如果文件不存在就捕获异常，回退读取 `sys.stdin.read()`！\n\n这样写出的程序拥有“双栖能力”：有文件读文件，没文件读标准输入，无论评测机采用哪种供数方式都能 100% 稳过（这也是单选第 123 题的原考点）。",
+      "syntaxCard": {
+        "title": "文件不存在回退标准输入标准模板",
+        "syntax": "import sys\n\ntry:\n    with open(\"data.txt\", \"r\", encoding=\"utf-8\") as f:\n        content = f.read()\nexcept FileNotFoundError:\n    content = sys.stdin.read()",
+        "breakdown": [
+          {
+            "part": "try / except FileNotFoundError",
+            "meaning": "只精准捕获“文件找不到”异常，不掩盖其他代码逻辑错误"
+          },
+          {
+            "part": "sys.stdin.read()",
+            "meaning": "一次性读取全部标准输入，返回与 f.read() 格式完全一致的字符串"
+          }
+        ]
+      },
+      "keyRules": [
+        "先尝试 open 目标文件，捕获 FileNotFoundError 后无缝切换到 sys.stdin.read()。",
+        "拿到统一的字符串 content 后，后续用 content.splitlines() 或 content.split() 处理，两套路径共享 100% 相同的解析代码。"
+      ],
+      "codeDemo": {
+        "title": "文件缺失时自动无缝回退至 stdin 解析",
+        "code": "import sys\n\ndef read_text_safely(filename):\n    try:\n        with open(filename, \"r\", encoding=\"utf-8\") as f:\n            return f.read()\n    except FileNotFoundError:\n        return sys.stdin.read()\n\n# 文件 missing.txt 不存在，自动无缝回退到 stdin！\nraw = read_text_safely(\"missing.txt\")\npairs = []\nfor line in raw.splitlines():\n    parts = line.split()\n    if len(parts) >= 2:\n        pairs.append((parts[0], int(parts[1])))\n\nscores = [sc for _, sc in pairs]\nprint(f\"人数: {len(pairs)}, 最高分: {max(scores)}, 平均分: {sum(scores)/len(scores):.2f}\")",
+        "stdin": "张三 88\n李四 96\n王五 74\n",
+        "expectedOutput": "人数: 3, 最高分: 96, 平均分: 86.00",
+        "lineByLine": [
+          "第 3~8 行：封装通用安全读入函数，优先读文件，找不到自动读 sys.stdin。",
+          "第 11 行：故意读取不存在的 missing.txt，触发回退成功拿到 stdin 中的 3 条成绩。",
+          "第 12~19 行：统一按行解析并计算人数、最高分与保留 2 位小数的平均分。"
+        ]
+      }
+    },
+    {
+      "id": "ch8-s4",
+      "title": "英文词频统计全流程 & Unicode 弯引号大坑",
+      "concept": "英文文章词频统计 Top10（如作业 51599 的 cup 简介题）是串联第 2、4、7、8 章的经典综合题。标准流水线一共 6 步：\n1. `read()` 读取全文；\n2. **标点全转空格**（把标点替换成空格 `' '` 而不是空串 `''`，避免 `hello,world` 粘成一个词 `helloworld`！）；\n3. `.lower()` 统一小写（让 `Python` 和 `python` 合并计数）；\n4. `.split()` 按任意空白拆出单词列表；\n5. 过滤掉停用词（如 `the, and, of, in, a, is...`）并用字典 `cnt[w] = cnt.get(w, 0) + 1` 计数；\n6. `sorted(cnt.items(), key=lambda kv: -kv[1])[:10]` 稳定降序取前 10！\n\n这里藏着一个真实考场让无数人翻车的隐形杀手——**Unicode 弯引号 `’ ‘ “ ”`（U+2018/2019/201C/201D）**！英文文章里的所有格常写成 `China’s`（右弯单引号），而不是键盘上的直单引号 `'`。如果标点串里只写了直引号 `'` 而漏掉了弯引号 `’`，`China’s` 就切不开，既不会算作 `china`，又凭空多出脏词，导致 Top10 排名彻底错乱（单选第 128 题专考此坑）！",
+      "syntaxCard": {
+        "title": "词频统计 6 步流水线（含完整弯引号标点串）",
+        "syntax": "biaodian = \"#$%&()'’‘“”!\\\"\\\\*+,-./:;<=>?@[]^_{|}~\"\nfor ch in biaodian:\n    text = text.replace(ch, \" \")\ncnt = {}\nfor w in text.lower().split():\n    if w not in excluded:\n        cnt[w] = cnt.get(w, 0) + 1\nranked = sorted(cnt.items(), key=lambda kv: -kv[1])[:10]",
+        "breakdown": [
+          {
+            "part": "’ ‘ “ ”",
+            "meaning": "Unicode 弯单/双引号，复制标点串时绝不能丢！"
+          },
+          {
+            "part": "replace(ch, ' ')",
+            "meaning": "必须替换成空格而不是空字符串，防相邻单词粘连"
+          },
+          {
+            "part": "excluded = {...}",
+            "meaning": "把停用词放进集合 set，w not in excluded 查询速度极快"
+          },
+          {
+            "part": "key=lambda kv: -kv[1]",
+            "meaning": "按词频降序且稳定保留首次出现顺序"
+          }
+        ]
+      },
+      "keyRules": [
+        "标点一定要替换成空格 ' '，不能替换成 ''。",
+        "检查标点串是否包含弯引号 ’ ‘ “ ”（单选 128 题原考点）。",
+        "别忘了 text = text.replace(...) 必须重新赋值，因为字符串不可变！"
+      ],
+      "codeDemo": {
+        "title": "直击现场：漏弯引号 vs 完整弯引号的切词对比",
+        "code": "raw = \"China’s cup, China’s pride! The cup is a “great” cup.\"\n\n# 故意演示：如果标点串漏了弯引号 ’ ‘ “ ”，结果会出错\nbad_punct = \",.!\\\"\"\nbad_text = raw\nfor ch in bad_punct:\n    bad_text = bad_text.replace(ch, \" \")\nprint(\"漏弯引号切词(错):\", bad_text.lower().split())\n\n# 正确做法：标点串必须包含 Unicode 弯引号 ’ ‘ “ ”\ngood_punct = \"#$%&()'’‘“”!\\\"\\\\*+,-./:;<=>?@[]^_{|}~\"\ntext = raw\nfor ch in good_punct:\n    text = text.replace(ch, \" \")\nexcluded = {\"the\", \"is\", \"a\", \"s\"}\ncnt = {}\nfor w in text.lower().split():\n    if w not in excluded:\n        cnt[w] = cnt.get(w, 0) + 1\nranked = sorted(cnt.items(), key=lambda kv: -kv[1])\nprint(\"正确去弯引号词频:\", ranked)",
+        "expectedOutput": "漏弯引号切词(错): ['china’s', 'cup', 'china’s', 'pride', 'the', 'cup', 'is', 'a', '“great”', 'cup']\n正确去弯引号词频: [('cup', 3), ('china', 2), ('pride', 1), ('great', 1)]",
+        "lineByLine": [
+          "第 4~8 行：漏掉弯引号时，切词得到畸形的 'china’s' 和 '“great”'。",
+          "第 11~20 行：补齐弯引号 ’ ‘ “ ” 后，'china' 正确合并计数为 2，'great' 也干干净净。"
+        ]
+      },
+      "cautionBox": {
+        "title": "把标点替换成空串导致粘词 + 忘记重新赋值",
+        "wrongCode": "for ch in ',.!':\n    text.replace(ch, '')  # 1. 没重新赋值，白忙一场！2. 即使赋值也会把 a,b 粘成 ab！",
+        "rightCode": "for ch in ',.!\\'\"’‘“”':\n    text = text.replace(ch, ' ')",
+        "why": "字符串不可变，必须写 text = text.replace(...)；且替换成空格才能确保标点两侧单词干净断开。"
+      }
+    },
+    {
+      "id": "ch8-s5",
+      "title": "CSV 文件读写与按多列总分排序（51600 核心 80 分）",
+      "concept": "CSV（Comma-Separated Values，逗号分隔值）是最轻量的表格文件格式，本质就是每行用逗号隔开各列的纯文本，比如成绩表：`序号,学号,姓名,班级,高数,英语,政治,体育,历史`。Python 标准库内置了 `csv` 模块专门负责读写：\n\n- **读 CSV**：`rows = list(csv.reader(f))`，瞬间把整张表格读成**二维字符串列表**！其中 `rows[0]` 是表头，`rows[1:]` 是真正的数据行。\n- **写 CSV**：`writer = csv.writer(f)`，用 `writer.writerow(header)` 写单行表头，用 `writer.writerows(data)` 批量写多行数据。\n- **官方铁律**：凡是用 `csv` 模块打开文件，无论是读还是写，都必须传 **`newline=\"\"`**！否则在 Windows 系统中写出的 CSV 每两行之间都会夹杂一个难看的空行。\n\n排序成绩表时记住两个关键点：\n1. **一定要把表头和数据拆开**：`header, data = rows[0], rows[1:]`，绝不能把表头混进数据一起排序（表头里的 `'高数'` 转 `float` 会立刻报 `ValueError`！）。\n2. **排序键写法**：`data.sort(key=lambda x: sum(map(float, x[4:])), reverse=True)`——因为 `csv.reader` 读出来的每个单元格都是**字符串**，所以 `x[4:]` 切出后 5 科后必须先 `map(float, ...)` 转成数值才能 `sum()`！",
+      "syntaxCard": {
+        "title": "CSV 读取、按总分降序与追加列写回",
+        "syntax": "import csv\nwith open(\"in.csv\", \"r\", encoding=\"utf-8\", newline=\"\") as f:\n    rows = list(csv.reader(f))\nheader, data = rows[0], rows[1:]\ndata.sort(key=lambda x: sum(map(float, x[4:])), reverse=True)\nwith open(\"out.csv\", \"w\", encoding=\"utf-8\", newline=\"\") as f:\n    w = csv.writer(f)\n    w.writerow(header)\n    w.writerows(data)",
+        "breakdown": [
+          {
+            "part": "newline=\"\"",
+            "meaning": "csv 模块官方强制参数，防止 Windows 写出多余空行"
+          },
+          {
+            "part": "list(csv.reader(f))",
+            "meaning": "整表读成二维列表，每行是 list[str]（单选 125 题）"
+          },
+          {
+            "part": "rows[0] / rows[1:]",
+            "meaning": "分离表头与数据，只对 data 排序"
+          },
+          {
+            "part": "sum(map(float, x[4:]))",
+            "meaning": "把第 5 列起字符串成绩批量转 float 后求总分"
+          }
+        ]
+      },
+      "keyRules": [
+        "csv.reader 读出的每个字段都是字符串 str，参与数学求和前必须 map(float, ...) 或 map(int, ...)。",
+        "追加总分列时：header = rows[0] + ['总分']，每行写出 row + [sum(map(float, row[4:]))]（得 float 如 446.0）。",
+        "Python 的 sort 是稳定排序，总分相同的两位同学自动保持原文件中的先后顺序。"
+      ],
+      "codeDemo": {
+        "title": "CSV 成绩表按 5 科总分降序排序并新增总分列",
+        "code": "import csv, io\n\nraw_csv = \"\"\"序号,学号,姓名,班级,高数,英语,政治,体育,历史\n1,2019010027,杨东,资源19-1班,92,68,85,51,70\n2,2018011928,苏斌,材料18-3班,51,64,59,79,66\n3,2019010088,陈晓,软件19-2班,95,88,91,84,88\"\"\"\n\nrows = list(csv.reader(io.StringIO(raw_csv)))\nheader = rows[0] + [\"总分\"]\ndata = rows[1:]\ndata.sort(key=lambda x: sum(map(float, x[4:])), reverse=True)\n\nout = io.StringIO()\nwriter = csv.writer(out, lineterminator=\"\\n\")\nwriter.writerow(header)\nfor row in data:\n    writer.writerow(row + [sum(map(float, row[4:]))])\nprint(out.getvalue().strip())",
+        "expectedOutput": "序号,学号,姓名,班级,高数,英语,政治,体育,历史,总分\n3,2019010088,陈晓,软件19-2班,95,88,91,84,88,446.0\n1,2019010027,杨东,资源19-1班,92,68,85,51,70,366.0\n2,2018011928,苏斌,材料18-3班,51,64,59,79,66,319.0",
+        "lineByLine": [
+          "第 8~11 行：读成二维列表，表头追加 ['总分']，对 data 按后 5 科浮点总分降序排序。",
+          "第 13~18 行：依次写入新表头和每行数据拼上总分，陈晓以 446.0 分排在首位。"
+        ]
+      },
+      "cautionBox": {
+        "title": "忘记分离表头 或 直接对字符串列表 sum()",
+        "wrongCode": "rows.sort(key=lambda x: sum(x[4:]))\n# 1. rows[0] 是表头 '高数' 等文字，一起排必炸！\n# 2. x[4:] 里全是字符串，sum(['92','68']) 直接 TypeError！",
+        "rightCode": "header, data = rows[0], rows[1:]\ndata.sort(key=lambda x: sum(map(float, x[4:])), reverse=True)",
+        "why": "CSV 读入全是文本字符串，必须先切片跳过表头，再把分数列 map(float, ...) 转为数值才能相加。"
+      }
+    },
+    {
+      "id": "ch8-s6",
+      "title": "实战高危坑深度复盘：csv.writer 引号包裹 & 填空缩进判断",
+      "concept": "作业 51600 的实战中，有两个坑让大量同学反复拿到 0 分，务必在考前刻进 DNA 里：\n\n**第一坑：`csv.writer` 给含逗号字段自动套双引号！**\n按照标准 RFC 4180 CSV 规范，如果某个单元格里本身包含逗号——例如体能训练营报告里的 `\"[1, 3, 5, 6, 8, 10]\"`——`csv.writer` 为了不让它被误拆成多列，会非常“热心”地自动给它套上一对双引号，输出变成：`最高分题目序号,\"[1, 3, 5, 6, 8, 10]\"`。但很多教学平台的判题机只是逐字符比对纯文本，期望输出里**没有双引号**！此时不要和 `csv.writer` 较劲，直接改用最朴素的 **`f.write(...)` 手写文本行**，一招解决所有引号差异（单选第 124 题考点）。\n\n**第二坑：程序片段填空题的两种缩进行为！**\n同样在作业 51600 题 1 里，填 `with open(...)` 时究竟该顶格写还是自带 4 个空格缩进？判断秘诀看空位前面那一行静态代码的行尾：\n- 若前一行以 `\"\\n    \"`（换行+空格）结尾 → 平台会自动补缩进 → 填空内容**顶格写**；\n- 若前一行以裸 `\"\\n\"` 结尾 → 平台不会补缩进 → 填空内容必须**自带 4/8 空格缩进**！",
+      "syntaxCard": {
+        "title": "真 CSV vs 伪 CSV 决策口诀",
+        "syntax": "# 情况 A：标准二维表格排序（无手写列表字段） -> 用 csv.writer\nwriter.writerow(row)\n\n# 情况 B：报告含 [1, 3, 5] 等含逗号文本且期望无双引号 -> 直接 f.write 手写\nf.write(f\"最高分题目序号,[{', '.join(map(str, hi_s))}]\\n\")",
+        "breakdown": [
+          {
+            "part": "csv.writer 自动引号",
+            "meaning": "字段内只要含逗号，csv.writer 必然包裹双引号"
+          },
+          {
+            "part": "f.write 手写",
+            "meaning": "完全掌控每一个字符与空行，零意外引号"
+          },
+          {
+            "part": "填空缩进看行尾",
+            "meaning": "不凭经验盲猜，看模板静态代码空位前是否有预设空格"
+          }
+        ]
+      },
+      "keyRules": [
+        "csv.writer 写出含逗号字段必然加双引号；判题期望无引号时，果断改用 f.write() 手写（单选 124 题）。",
+        "写给 Excel 打开的中文报告选 encoding='utf-8-sig'，别漏分区间的空行 f.write('\\n')。",
+        "文件类编程题提交前务必本地跑通样例并逐行对比，判错立即展开 judgeDetails.jsp 查看真实差异。"
+      ],
+      "codeDemo": {
+        "title": "亲眼见证：csv.writer 自动加双引号 vs f.write 精确输出",
+        "code": "import csv, io\n\n# 对比：含逗号字段 [1, 3, 5] 用 csv.writer vs 手写 f.write\nbuf = io.StringIO()\ncsv.writer(buf, lineterminator=\"\\n\").writerow([\"最高分题目序号\", \"[1, 3, 5]\"])\nprint(\"csv.writer 实际写出:\", buf.getvalue().strip(), \"  <-- 多了一对双引号！\")\n\nmanual = \"最高分题目序号,\" + \"[\" + \", \".join(map(str, [1, 3, 5])) + \"]\"\nprint(\"f.write 手写输出:  \", manual, \"  <-- 与判题期望逐字符一致！\")",
+        "expectedOutput": "csv.writer 实际写出: 最高分题目序号,\"[1, 3, 5]\"   <-- 多了一对双引号！\nf.write 手写输出:   最高分题目序号,[1, 3, 5]   <-- 与判题期望逐字符一致！",
+        "lineByLine": [
+          "第 4~6 行：把含逗号的列表字符串交给 csv.writer，肉眼可见输出被套上了双引号。",
+          "第 8~9 行：改用 f.write 拼接字符串，彻底消除多余双引号。"
+        ]
+      },
+      "cautionBox": {
+        "title": "在非标准表格报告中硬用 csv.writer 导致双引号判错",
+        "wrongCode": "writer.writerow([\"最高分题目序号\", str(hi_s)])\n# 实际输出: 最高分题目序号,\"[1, 3, 5, 6, 8, 10]\" -> 字符比对 0 分！",
+        "rightCode": "f.write(\"最高分题目序号,\" + \"[\" + \", \".join(map(str, hi_s)) + \"]\\n\")\n# 实际输出: 最高分题目序号,[1, 3, 5, 6, 8, 10] -> 满分通过！",
+        "why": "扩展名叫 .csv 不代表评测机按 RFC 4180 CSV 解析器比对——绝大多数 OJ 都是按纯文本逐字节 diff。"
+      }
+    }
+  ],
+  "workedExamples": [
+    {
+      "id": "ch8-ex1",
+      "title": "例题 1：文件逐行解析加减法表达式并写入 jieguo.txt",
+      "difficulty": "入门",
+      "source": "作业 51599 · 文件读写 8-1",
+      "problemStatement": "读取文件 jisuan.txt，每行是一个形如 `a+b` 或 `a-b` 的算术表达式（如 `121+20.5`、`15-2.3`）。计算每一行的结果，保留 2 位小数，逐行写入 jieguo.txt。",
+      "thinkingSteps": [
+        "用 with open('jisuan.txt', 'r', encoding='utf-8') 读取后，直接 .read().split() 按空白切出每条表达式（顺手过滤掉空行和 \\n）。",
+        "对每条表达式判断 '+' in expr：有加号就 split('+') 转 float 相加，否则 split('-') 转 float 相减。",
+        "用 with open('jieguo.txt', 'w', encoding='utf-8') 打开输出文件，用 f\"{ans:.2f}\\n\" 写入每行（千万别漏 \\n）。"
+      ],
+      "code": "# 预置输入文件 jisuan.txt\nwith open(\"jisuan.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"121+20.5\\n15-2.3\\n8.5+1.5\\n100-33.333\\n\")\n\nwith open(\"jisuan.txt\", \"r\", encoding=\"utf-8\") as f:\n    items = f.read().split()\n\nwith open(\"jieguo.txt\", \"w\", encoding=\"utf-8\") as f:\n    for expr in items:\n        if \"+\" in expr:\n            a, b = expr.split(\"+\")\n            ans = float(a) + float(b)\n        else:\n            a, b = expr.split(\"-\")\n            ans = float(a) - float(b)\n        f.write(f\"{ans:.2f}\\n\")\n\n# 读取并展示生成结果\nwith open(\"jieguo.txt\", \"r\", encoding=\"utf-8\") as f:\n    print(f.read().strip())",
+      "sampleOutput": "141.50\n12.70\n10.00\n66.67",
+      "codeWalkthrough": [
+        {
+          "lines": "第 5~6 行",
+          "explanation": "read().split() 一步完成整读、去换行与跳过空行。"
+        },
+        {
+          "lines": "第 8~16 行",
+          "explanation": "根据运算符切分左右操作数转 float 计算，再用 {:.2f}\\n 写出到 jieguo.txt。"
+        }
+      ],
+      "commonMistakes": [
+        "写 f.write(f'{ans:.2f}') 忘记末尾加 \\n，导致 4 个答案挤在同一行。",
+        "直接把 split('+') 得到的字符串 a + b 相加，变成了字符串拼接 '12120.5'！"
+      ],
+      "variationTip": "如果题目升级为支持四则运算（+ - * /），把 if/else 扩展为 if/elif 链即可；如果是「姓名 分数」排名写入 rank.txt，则解析成 (name, int(score)) 元组列表排序后 enumerate 写出。"
+    },
+    {
+      "id": "ch8-ex2",
+      "title": "例题 2：英文简介词频统计 TopN（完整防弯引号模板）",
+      "difficulty": "常考",
+      "source": "作业 51599 · cup 简介词频 Top10",
+      "problemStatement": "读取英文文本文件 cup.txt，将所有标点符号（含中英文弯引号 ’ ‘ “ ”）替换为空格，忽略大小写并排除常见虚词（the, and, of, is, a 等），统计词频并按次数降序输出前 5（原题前 10）个高频词及出现次数。",
+      "thinkingSteps": [
+        "用 UTF-8 读出全文 text；准备完整标点串 biaodian（重点确认包含 ’ ‘ “ ” 四个弯引号）。",
+        "循环把每个标点替换成空格 ' '，接着 text.lower().split() 得到干净的小写单词列表。",
+        "排除集合 excluded 里的虚词后用字典计数，最后用 sorted(cnt.items(), key=lambda kv: -kv[1])[:5] 稳定降序输出。"
+      ],
+      "code": "sample_cup = \"\"\"China’s Cup is held in Beijing. The Cup has a long history,\nand China’s students love Python and “Cup” competitions!\nPython makes Cup data analysis fast and clean.\"\"\"\n\nwith open(\"cup.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(sample_cup)\n\nwith open(\"cup.txt\", \"r\", encoding=\"utf-8\") as f:\n    text = f.read()\n\nbiaodian = \"#$%&()'’‘“”!\\\"\\\\*+,-./:;<=>?@[]^_{|}~\"\nfor ch in biaodian:\n    text = text.replace(ch, \" \")\n\nexcluded = {\"the\", \"and\", \"of\", \"in\", \"with\", \"a\", \"has\", \"to\", \"it\", \"for\", \"at\", \"is\", \"on\", \"from\", \"s\"}\ncnt = {}\nfor w in text.lower().split():\n    if w not in excluded:\n        cnt[w] = cnt.get(w, 0) + 1\n\nranked = sorted(cnt.items(), key=lambda kv: -kv[1])\nfor w, c in ranked[:5]:\n    print(w, c)",
+      "sampleOutput": "cup 4\nchina 2\npython 2\nheld 1\nbeijing 1",
+      "codeWalkthrough": [
+        {
+          "lines": "第 11~13 行",
+          "explanation": "完整标点串含弯引号，循环 replace 成空格，彻底切开 China’s 与 “Cup”。"
+        },
+        {
+          "lines": "第 15~19 行",
+          "explanation": "排除虚词集合后，用字典 get(w, 0) + 1 累计词频。"
+        },
+        {
+          "lines": "第 21~23 行",
+          "explanation": "稳定降序排序取前 5 项输出。"
+        }
+      ],
+      "commonMistakes": [
+        "标点串遗漏弯引号，导致带弯引号的词无法归并。",
+        "没有转 lower()，导致 Cup 和 cup 被分成两个不同单词统计。"
+      ],
+      "variationTip": "若题目要求把所有不重复单词按字母序写入 words.txt（词汇表题），把计数步骤换成 words = sorted(set(text.lower().split())) 再逐行 write(w + '\\n') 即可。"
+    },
+    {
+      "id": "ch8-ex3",
+      "title": "例题 3：CSV 成绩表按 5 科总分降序排序 + 添加总分列",
+      "difficulty": "常考",
+      "source": "作业 51600 · 题 2 & 题 3（共 90 分）",
+      "problemStatement": "读取 sdjw-in.csv（表头：序号,学号,姓名,班级,高数,英语,政治,体育,历史），按后 5 科成绩之和降序排序，并在表头末尾增加「总分」列、每行末尾附上浮点形式的总分（如 446.0），写入 sdjw-out.csv。",
+      "thinkingSteps": [
+        "用 with open(..., encoding='utf-8', newline='') 打开源文件，rows = list(csv.reader(f)) 读入全部行。",
+        "表头加列：header = rows[0] + ['总分']；分离数据 data = rows[1:]。",
+        "对 data 用 data.sort(key=lambda x: sum(map(float, x[4:])), reverse=True) 降序排序。",
+        "以 newline='' 打开 sdjw-out.csv，先 writerow(header)，再遍历 data 写出 row + [sum(map(float, row[4:]))]。"
+      ],
+      "code": "import csv\n\n# 1. 准备输入文件 sdjw-in.csv\nwith open(\"sdjw-in.csv\", \"w\", encoding=\"utf-8\", newline=\"\") as f:\n    f.write(\"序号,学号,姓名,班级,高数,英语,政治,体育,历史\\n\")\n    f.write(\"1,2019010027,杨东,资源19-1班,92,68,85,51,70\\n\")\n    f.write(\"2,2018011928,苏斌,材料18-3班,51,64,59,79,66\\n\")\n    f.write(\"3,2019010088,陈晓,软件19-2班,95,88,91,84,88\\n\")\n\n# 2. 核心解答：读取 -> 分离表头 -> 按后 5 科总分降序 -> 写回并附总分列\nwith open(\"sdjw-in.csv\", \"r\", encoding=\"utf-8\", newline=\"\") as f:\n    rows = list(csv.reader(f))\n\nheader = rows[0] + [\"总分\"]\ndata = rows[1:]\ndata.sort(key=lambda x: sum(map(float, x[4:])), reverse=True)\n\nwith open(\"sdjw-out.csv\", \"w\", encoding=\"utf-8\", newline=\"\") as f:\n    writer = csv.writer(f)\n    writer.writerow(header)\n    for row in data:\n        writer.writerow(row + [sum(map(float, row[4:]))])\n\n# 3. 核对生成的 sdjw-out.csv 内容\nwith open(\"sdjw-out.csv\", \"r\", encoding=\"utf-8\") as f:\n    print(f.read().strip())",
+      "sampleOutput": "序号,学号,姓名,班级,高数,英语,政治,体育,历史,总分\n3,2019010088,陈晓,软件19-2班,95,88,91,84,88,446.0\n1,2019010027,杨东,资源19-1班,92,68,85,51,70,366.0\n2,2018011928,苏斌,材料18-3班,51,64,59,79,66,319.0",
+      "codeWalkthrough": [
+        {
+          "lines": "第 10~11 行",
+          "explanation": "csv.reader 将文件读成二维字符串列表，newline='' 防空行。"
+        },
+        {
+          "lines": "第 13~15 行",
+          "explanation": "表头追加 '总分'；x[4:] 取后 5 科转 float 求和，降序排列。"
+        },
+        {
+          "lines": "第 17~21 行",
+          "explanation": "写回新表头与每行拼上浮点总分（446.0），与样例格式完全一致。"
+        }
+      ],
+      "commonMistakes": [
+        "用 map(int, ...) 求和导致写出 446 而不是样例要求的浮点形式 446.0。",
+        "忘记 newline='' 导致 Windows 生成的文件出现间隔空行。"
+      ],
+      "variationTip": "若题目不需要新增总分列（作业 51600 题 2），直接写 writer.writerow(rows[0]) 和 writer.writerows(data) 更简洁！"
+    },
+    {
+      "id": "ch8-ex4",
+      "title": "例题 4：体能训练营成绩报告 SmartPulse_Report.csv（双坑合一压轴）",
+      "difficulty": "综合压轴",
+      "source": "作业 51600 · 题 4（实战踩坑精华）",
+      "problemStatement": "读取 results.txt（第 1 行 10 题标准答案，第 2 行各题分值，第 3 行起为学员编号 + 10 个答案）。计算每位学员总分、全员平均分（2 位小数）、最高/最低分以及答对人数最多/最少的题目序号列表（从 1 起算，可能并列），写入 utf-8-sig 编码的 SmartPulse_Report.csv，要求不得出现多余双引号。",
+      "thinkingSteps": [
+        "封装 read_data() 带 try/except FileNotFoundError 回退 sys.stdin.read()，用状态判断依次读出标准答案 std、分值 scores、学员列表 students。",
+        "算每人总分 totals，再按题号 j=0..9 统计每题答对人数 correct[j]，用列表推导收集所有等于 max(correct) 和 min(correct) 的题号（注意 j+1 转成从 1 开始计数！）。",
+        "输出报告有两大分区且含 [1, 3, 5, 6, 8, 10] 含逗号列表，必须弃用 csv.writer，改用 with open(..., encoding='utf-8-sig', newline='') 搭配 f.write() 逐行精确手写，并补上两区之间的空行。"
+      ],
+      "code": "import sys\n\nwith open(\"results.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"A B C D A B C D A B\\n\")\n    f.write(\"10 10 10 10 10 10 10 10 10 10\\n\")\n    f.write(\"Athlete_01 A B C D A B C D A B\\n\")\n    f.write(\"Athlete_02 B C D A B C D A B C\\n\")\n    f.write(\"Athlete_03 A C C A A B D D B B\\n\")\n\ndef read_data(filename):\n    try:\n        with open(filename, \"r\", encoding=\"utf-8\") as f:\n            lines = f.read().split(\"\\n\")\n    except FileNotFoundError:\n        lines = sys.stdin.read().split(\"\\n\")\n    std, scores, students = None, [], []\n    for line in lines:\n        parts = line.split()\n        if not parts:\n            continue\n        if std is None:\n            std = parts\n        elif not scores:\n            scores = [int(x) for x in parts]\n        else:\n            students.append((parts[0], parts[1:]))\n    return std, scores, students\n\nstd, scores, students = read_data(\"results.txt\")\ntotals = [(n, sum(scores[j] for j in range(10) if a[j] == std[j])) for n, a in students]\ncorrect = [sum(1 for _, a in students if a[j] == std[j]) for j in range(10)]\nmx, mn = max(correct), min(correct)\nhi_s = [j + 1 for j in range(10) if correct[j] == mx]\nlo_s = [j + 1 for j in range(10) if correct[j] == mn]\nall_scores = [t for _, t in totals]\navg = sum(all_scores) / len(all_scores)\n\nwith open(\"SmartPulse_Report.csv\", \"w\", encoding=\"utf-8-sig\", newline=\"\") as f:\n    f.write(\"--- 学员成绩榜单 ---\\n\")\n    f.write(\"学员编号,最终得分\\n\")\n    for n, t in totals:\n        f.write(f\"{n},{t}\\n\")\n    f.write(\"\\n\")\n    f.write(\"--- 训练营全员统计摘要 ---\\n\")\n    f.write(\"指标名称,指标数值\\n\")\n    f.write(f\"全员平均分,{avg:.2f}\\n\")\n    f.write(f\"最高分,{max(all_scores)}\\n\")\n    f.write(f\"最低分,{min(all_scores)}\\n\")\n    f.write(f\"最高分题目序号,[{', '.join(map(str, hi_s))}]\\n\")\n    f.write(f\"该题答对人数,{mx}\\n\")\n    f.write(f\"最低分题目序号,[{', '.join(map(str, lo_s))}]\\n\")\n    f.write(f\"该题答对人数,{mn}\\n\")\n\nwith open(\"SmartPulse_Report.csv\", \"r\", encoding=\"utf-8-sig\") as f:\n    print(f.read().strip())",
+      "sampleOutput": "--- 学员成绩榜单 ---\n学员编号,最终得分\nAthlete_01,100\nAthlete_02,0\nAthlete_03,60\n\n--- 训练营全员统计摘要 ---\n指标名称,指标数值\n全员平均分,53.33\n最高分,100\n最低分,0\n最高分题目序号,[1, 3, 5, 6, 8, 10]\n该题答对人数,2\n最低分题目序号,[2, 4, 7, 9]\n该题答对人数,1",
+      "codeWalkthrough": [
+        {
+          "lines": "第 10~27 行",
+          "explanation": "健壮读取 results.txt（支持 stdin 回退），按顺序拆解标准答案、分值与每位学员记录。"
+        },
+        {
+          "lines": "第 29~36 行",
+          "explanation": "分别计算每位学员得分、每题答对人数、并列最高/最低题号列表（j+1）与平均分。"
+        },
+        {
+          "lines": "第 38~53 行",
+          "explanation": "用 utf-8-sig + f.write() 手写两分区与中间空行，完美规避 csv.writer 双引号坑。"
+        }
+      ],
+      "commonMistakes": [
+        "使用 csv.writer 导致列表字段被包上双引号 \"[1, 3, 5, 6, 8, 10]\" 判错。",
+        "忘了两个分区中间的空行 f.write('\\n')，或题号忘记 +1 写成从 0 起算。"
+      ],
+      "variationTip": "凡是题目既给 .csv 扩展名、又包含分区标题行（--- xxx ---）或列表字面量输出，一律视为“格式化文本报告”，直接 f.write() 手写最稳！"
+    }
+  ],
+  "summaryCheatsheet": [
+    {
+      "label": "安全读文件",
+      "snippet": "with open('a.txt', 'r', encoding='utf-8') as f:",
+      "note": "离开缩进块自动关闭"
+    },
+    {
+      "label": "覆写 vs 追加",
+      "snippet": "mode='w' (清空写) / mode='a' (末尾追加)",
+      "note": "写前确认是否要保留原内容"
+    },
+    {
+      "label": "写行必补换行",
+      "snippet": "f.write(line + '\\n')",
+      "note": "write() 不会自动换行！"
+    },
+    {
+      "label": "逐行清洗解析",
+      "snippet": "for line in f: parts = line.strip().split()",
+      "note": "去除行尾 \\n，防空行越界"
+    },
+    {
+      "label": "评测无文件回退",
+      "snippet": "except FileNotFoundError: text = sys.stdin.read()",
+      "note": "有文件读文件、无文件读 stdin"
+    },
+    {
+      "label": "Excel 中文 CSV 编码",
+      "snippet": "encoding='utf-8-sig', newline=''",
+      "note": "带 BOM 防 Excel 乱码"
+    },
+    {
+      "label": "CSV 读成二维表",
+      "snippet": "rows = list(csv.reader(f))",
+      "note": "rows[0] 表头，rows[1:] 数据"
+    },
+    {
+      "label": "CSV 按多列总分降序",
+      "snippet": "data.sort(key=lambda x: sum(map(float, x[4:])), reverse=True)",
+      "note": "先转 float 再 sum"
+    },
+    {
+      "label": "防 CSV 双引号坑",
+      "snippet": "改用 f.write(f'...,[{...}]\\n')",
+      "note": "含逗号字段要求无引号时弃用 csv.writer"
+    },
+    {
+      "label": "词频防弯引号坑",
+      "snippet": "biaodian 中保留 ’ ‘ “ ” 并 replace 成空格",
+      "note": "防止 China’s 切不开"
+    },
+    {
+      "label": "列表去重排序写文件",
+      "snippet": "for w in sorted(set(words)): f.write(w + '\\n')",
+      "note": "生成词汇表文件模板"
+    },
+    {
+      "label": "填空缩进看行尾",
+      "snippet": "前一行以 '\\n    ' 结尾顶格；裸 '\\n' 自带缩进",
+      "note": "51600 两次 0 分血泪铁律"
+    }
+  ]
+}

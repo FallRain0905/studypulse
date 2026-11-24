@@ -1,0 +1,2630 @@
+[
+  {
+    "id": 1,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.1 print 与输出控制",
+    "isExamScope": false,
+    "stem": "语句 `print(\"a\", \"b\", \"c\", sep=\"-\")` 的输出结果是（　）",
+    "code": null,
+    "options": {
+      "A": "a b c",
+      "B": "a-b-c",
+      "C": "abc",
+      "D": "a,b,c"
+    },
+    "answer": "B",
+    "explanation": "`sep` 参数指定多个输出值之间的分隔符，默认是空格，这里改成 `-`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 2,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.1 print 与输出控制",
+    "isExamScope": false,
+    "stem": "要让两次 `print` 的内容输出在同一行，应使用（　）",
+    "code": null,
+    "options": {
+      "A": "`print(\"x\", sep=\"\")`",
+      "B": "`print(\"x\", end=\"\")`",
+      "C": "`print(\"x\", line=False)`",
+      "D": "`print(\"x\", stop=True)`"
+    },
+    "answer": "B",
+    "explanation": "`end` 参数决定结尾字符，默认 `\"\\n\"`（换行），改成 `\"\"` 就不换行。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 3,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.1 print 与输出控制",
+    "isExamScope": false,
+    "stem": "`print(3 + 4)` 的输出是（　）",
+    "code": null,
+    "options": {
+      "A": "3 + 4",
+      "B": "\"7\"",
+      "C": "7",
+      "D": "34"
+    },
+    "answer": "C",
+    "explanation": "print 直接输出表达式的计算结果，整数 7 不带引号。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 4,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.2 input 与类型转换",
+    "isExamScope": false,
+    "stem": "执行 `x = input()` 后从键盘输入 5，则 `x` 的类型是（　）",
+    "code": null,
+    "options": {
+      "A": "int",
+      "B": "float",
+      "C": "str",
+      "D": "bool"
+    },
+    "answer": "C",
+    "explanation": "input() 返回的永远是字符串。要当数字用必须 `int()` / `float()` 转换。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 5,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.2 input 与类型转换",
+    "isExamScope": false,
+    "stem": "要计算输入值的算术运算，下列哪个写法是正确的（　）",
+    "code": null,
+    "options": {
+      "A": "`c = input(); f = c * 9 / 5 + 32`",
+      "B": "`c = float(input()); f = c * 9 / 5 + 32`",
+      "C": "`c = input(float()); f = c * 9`",
+      "D": "`c = input(); f = float(c * 9)`"
+    },
+    "answer": "B",
+    "explanation": "A 中 c 是字符串，`c * 9` 是重复字符串（不报错但语义错），到 `/` 才报 TypeError。转换要在运算前完成。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 6,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.2 input 与类型转换",
+    "isExamScope": false,
+    "stem": "`int(\"36.5\")` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "36.5",
+      "B": "36",
+      "C": "36.0",
+      "D": "报 ValueError 错误"
+    },
+    "answer": "D",
+    "explanation": "int() 只接受纯整数字符串；带小数点的字符串要先用 float()。`float(\"36.5\")` 才合法。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 7,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.2 input 与类型转换",
+    "isExamScope": false,
+    "stem": "输入一行 `3 5`（空格分隔），要把两个整数分别读入 a、b，正确的写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`a, b = input()`",
+      "B": "`a, b = eval(input())`",
+      "C": "`a, b = map(int, input().split())`",
+      "D": "`a, b = int(input())`"
+    },
+    "answer": "C",
+    "explanation": "split() 按空格切分，map(int,...) 批量转整数。eval 只适合逗号分隔（`3,5`），遇到空格分隔会 SyntaxError。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 8,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.2 input 与类型转换",
+    "isExamScope": false,
+    "stem": "输入 `1,2,3`（逗号分隔），`a, b, c = eval(input())` 执行后 a 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'1'",
+      "B": "1",
+      "C": "(1,2,3)",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "eval 把 `1,2,3` 解析成元组 (1,2,3)，拆包给 a,b,c，每个都是 int。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 9,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.3 数据类型",
+    "isExamScope": false,
+    "stem": "下列哪个是合法的变量名（　）",
+    "code": null,
+    "options": {
+      "A": "2name",
+      "B": "my-score",
+      "C": "_score",
+      "D": "class"
+    },
+    "answer": "C",
+    "explanation": "变量名可含字母/数字/下划线，不能数字开头（A）、不能含 `-`（B）、不能是关键字（D class）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 10,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.3 数据类型",
+    "isExamScope": false,
+    "stem": "`type(3.14)` 的返回值是（　）",
+    "code": null,
+    "options": {
+      "A": "`<class 'int'>`",
+      "B": "`<class 'float'>`",
+      "C": "`<class 'str'>`",
+      "D": "`<class 'bool'>`"
+    },
+    "answer": "B",
+    "explanation": "带小数点的字面量是 float。\"浮点数\"指带小数点的数，不是\"能计算的数\"——int 也能计算。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 11,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.3 数据类型",
+    "isExamScope": false,
+    "stem": "`int(3.9)` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "4",
+      "B": "3",
+      "C": "3.9",
+      "D": "3.0"
+    },
+    "answer": "B",
+    "explanation": "int() 转 float 时直接**截断**小数部分，不四舍五入。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 12,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.3 数据类型",
+    "isExamScope": false,
+    "stem": "下列哪个值是合法的 bool 字面量（　）",
+    "code": null,
+    "options": {
+      "A": "true",
+      "B": "True",
+      "C": "TRUE",
+      "D": "'true'"
+    },
+    "answer": "B",
+    "explanation": "Python 的布尔值首字母必须大写：True / False。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 13,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.4 算术运算符",
+    "isExamScope": false,
+    "stem": "表达式 `7 / 2` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "3",
+      "B": "3.5",
+      "C": "3.0",
+      "D": "2"
+    },
+    "answer": "B",
+    "explanation": "`/` 是普通除法，结果一定是 float。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 14,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.4 算术运算符",
+    "isExamScope": false,
+    "stem": "表达式 `7 // 2` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "3.5",
+      "B": "3",
+      "C": "4",
+      "D": "2"
+    },
+    "answer": "B",
+    "explanation": "`//` 是整除（向下取整）。注意 `-7 // 2` 是 -4（向下取整不是向零取整）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 15,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.4 算术运算符",
+    "isExamScope": false,
+    "stem": "表达式 `4 / 2` 的结果类型是（　）",
+    "code": null,
+    "options": {
+      "A": "int，值为 2",
+      "B": "float，值为 2.0",
+      "C": "str，值为 \"2.0\"",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "哪怕整除，`/` 的结果也是浮点 2.0。要得到整数 2 应该用 `4 // 2`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 16,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.4 算术运算符",
+    "isExamScope": false,
+    "stem": "表达式 `2 ** 3` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "6",
+      "B": "8",
+      "C": "9",
+      "D": "5"
+    },
+    "answer": "B",
+    "explanation": "`**` 是乘方。`^` 是按位异或，不是乘方——`2 ^ 3` 的值是 1。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 17,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.4 算术运算符",
+    "isExamScope": false,
+    "stem": "表达式 `10 % 3` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "3",
+      "B": "1",
+      "C": "3.33",
+      "D": "0"
+    },
+    "answer": "B",
+    "explanation": "% 取余数，10 = 3×3 + 1。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 18,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.5 数位提取",
+    "isExamScope": false,
+    "stem": "对于整数 n = 12345，表达式 `n % 10` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "1",
+      "B": "5",
+      "C": "1234",
+      "D": "12345"
+    },
+    "answer": "B",
+    "explanation": "`% 10` 取个位。配合 `//` 可提取任意位：十位 `n // 10 % 10`、百位 `n // 100 % 10`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 19,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.5 数位提取",
+    "isExamScope": false,
+    "stem": "对于整数 n = 12345，表达式 `n // 100 % 10` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "3",
+      "D": "4"
+    },
+    "answer": "C",
+    "explanation": "`n // 100` 得 123（去掉后两位），再 `% 10` 取其个位即原数的百位 3。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 20,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.6 格式化输出",
+    "isExamScope": false,
+    "stem": "`f\"{3.14159:.2f}\"` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "'3.14'",
+      "B": "'3.15'",
+      "C": "'3.1'",
+      "D": "'3.14159'"
+    },
+    "answer": "A",
+    "explanation": "`.2f` 保留两位小数（四舍五入到 3.14）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 21,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.6 格式化输出",
+    "isExamScope": false,
+    "stem": "计算结果为整数 36，题目样例输出是 `36`，应该怎么输出（　）",
+    "code": null,
+    "options": {
+      "A": "`print(f\"{v:.2f}\")`",
+      "B": "`print(v)`",
+      "C": "`print(f\"{v:2f}\")`",
+      "D": "`print(str(v) + \".00\")`"
+    },
+    "answer": "B",
+    "explanation": "整数结果直接输出；`.2f` 会输出 36.00 导致格式错误。样例是什么样就输出什么样。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 22,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.6 格式化输出",
+    "isExamScope": false,
+    "stem": "`f\"{123:>6}\"` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "'123　　'",
+      "B": "'　　123'（左侧补空格共 6 宽）",
+      "C": "'123000'",
+      "D": "'000123'"
+    },
+    "answer": "B",
+    "explanation": "`>` 右对齐，宽度 6，左侧补 3 个空格；`<` 是左对齐。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 23,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.7 math 模块",
+    "isExamScope": false,
+    "stem": "求 16 的平方根，正确写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`math.sqrt(16)`",
+      "B": "`sqrt(16)`",
+      "C": "`16 ** 0.5` 且无需导入",
+      "D": "`math.sqrt(16)` 且需先 `import math`（与 A 组合）"
+    },
+    "answer": "D",
+    "explanation": "【说明：即 A，且必须先 import math】\nsqrt 在 math 模块里，使用前要 `import math`。`16 ** 0.5` 数学上等价，但同样要先导入 math 才谈得上题意中的\"模块用法\"。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 24,
+    "chapter": 1,
+    "chapterTitle": "基础语法与输入输出",
+    "section": "1.7 math 模块",
+    "isExamScope": false,
+    "stem": "`math.sqrt(16)` 的返回类型是（　）",
+    "code": null,
+    "options": {
+      "A": "int",
+      "B": "float",
+      "C": "str",
+      "D": "依输入而定"
+    },
+    "answer": "B",
+    "explanation": "sqrt 返回 float，即使输入是 16 也是 4.0。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 25,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.1 索引",
+    "isExamScope": false,
+    "stem": "字符串 s = \"Python\"，`s[0]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'y'",
+      "B": "'P'",
+      "C": "'n'",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "索引从 0 开始，s[0] 是第一个字符。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 26,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.1 索引",
+    "isExamScope": false,
+    "stem": "字符串 s = \"Python\"，`s[-1]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'P'",
+      "B": "'y'",
+      "C": "'n'",
+      "D": "报错"
+    },
+    "answer": "C",
+    "explanation": "负索引从尾部数，-1 是最后一个字符。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 27,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.1 索引",
+    "isExamScope": false,
+    "stem": "表达式 `len(\"Python\")` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "5",
+      "B": "6",
+      "C": "7",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "len 返回字符个数。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 28,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.2 切片",
+    "isExamScope": false,
+    "stem": "s = \"Python\"，`s[0:3]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'Pyt'",
+      "B": "'Pyth'",
+      "C": "'yth'",
+      "D": "'Python'"
+    },
+    "answer": "A",
+    "explanation": "切片含头不含尾，取下标 0、1、2。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 29,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.2 切片",
+    "isExamScope": false,
+    "stem": "s = \"Python\"，`s[::-1]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'Python'",
+      "B": "'nohtyP'",
+      "C": "'P'",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "step 为 -1 表示逆序，是字符串反转的标准写法。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 30,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.2 切片",
+    "isExamScope": false,
+    "stem": "18 位身份证号 s，要取出生年月日（第 7~14 位），正确的切片是（　）",
+    "code": null,
+    "options": {
+      "A": "s[7:14]",
+      "B": "s[6:14]",
+      "C": "s[6:15]",
+      "D": "s[7:15]"
+    },
+    "answer": "B",
+    "explanation": "第 7 位下标是 6，第 14 位下标是 13；含头不含尾所以要 `s[6:14]`（8 个字符）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 31,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.2 切片",
+    "isExamScope": false,
+    "stem": "s = \"abcdef\"，`s[1:4]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'bcd'",
+      "B": "'bcde'",
+      "C": "'abc'",
+      "D": "'bcd e'"
+    },
+    "answer": "A",
+    "explanation": "含下标 1、2、3，不含 4。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 32,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.3 常用方法",
+    "isExamScope": false,
+    "stem": "`\"  Hello World  \".strip()` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "'Hello World'",
+      "B": "'  Hello World'",
+      "C": "'HelloWorld'",
+      "D": "'hello world'"
+    },
+    "answer": "A",
+    "explanation": "strip 去掉首尾空白，中间空格保留。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 33,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.3 常用方法",
+    "isExamScope": false,
+    "stem": "`\"a,b,c\".split(\",\")` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "'a,b,c'",
+      "B": "['a', 'b', 'c']",
+      "C": "('a', 'b', 'c')",
+      "D": "['abc']"
+    },
+    "answer": "B",
+    "explanation": "split 返回**列表**。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 34,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.3 常用方法",
+    "isExamScope": false,
+    "stem": "`\"-\".join(['a', 'b', 'c'])` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "['a-b-c']",
+      "B": "'a-b-c'",
+      "C": "'abc'",
+      "D": "['a', '-', 'b', '-', 'c']"
+    },
+    "answer": "B",
+    "explanation": "join 用分隔符连接列表元素，返回字符串。注意写法是 `sep.join(列表)`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 35,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.3 常用方法",
+    "isExamScope": false,
+    "stem": "`\"banana\".count(\"na\")` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "3",
+      "D": "0"
+    },
+    "answer": "B",
+    "explanation": "count 统计子串出现次数（允许重叠计数位置：ba**na**na 中 na 出现 2 次）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 36,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.3 常用方法",
+    "isExamScope": false,
+    "stem": "`\"abc\".replace(\"a\", \"X\")` 执行后原字符串（　）",
+    "code": null,
+    "options": {
+      "A": "变成 \"Xbc\"",
+      "B": "不变，replace 返回新字符串 \"Xbc\"",
+      "C": "报错",
+      "D": "变成 \"Xbc\" 且原串变 \"Xbc\""
+    },
+    "answer": "B",
+    "explanation": "字符串不可变，所有方法返回新字符串。要生效必须重新赋值 `s = s.replace(...)`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 37,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.3 常用方法",
+    "isExamScope": false,
+    "stem": "`\"123\".isdigit()` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "'123'",
+      "D": "报错"
+    },
+    "answer": "A",
+    "explanation": "isdigit 判断是否全是数字字符，返回 bool。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 38,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.3 常用方法",
+    "isExamScope": false,
+    "stem": "`\"b\" in \"abc\"` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "'b'",
+      "D": "1"
+    },
+    "answer": "A",
+    "explanation": "in 判断子串是否存在，返回布尔值。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 39,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.4 ASCII",
+    "isExamScope": false,
+    "stem": "`ord(\"A\")` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "65",
+      "B": "97",
+      "C": "48",
+      "D": "'A'"
+    },
+    "answer": "A",
+    "explanation": "ord 返回字符编码：A=65、a=97、'0'=48；大小写差 32。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 40,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.4 ASCII",
+    "isExamScope": false,
+    "stem": "`chr(97)` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'A'",
+      "B": "'a'",
+      "C": "97",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "chr 是 ord 的逆运算，97 对应小写 'a'。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 41,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.4 ASCII",
+    "isExamScope": false,
+    "stem": "要把字符 ch 变成对应的小写字符（假设 ch 是大写字母），可以写（　）",
+    "code": null,
+    "options": {
+      "A": "`chr(ord(ch) + 32)`",
+      "B": "`chr(ord(ch) - 32)`",
+      "C": "`ord(ch) + 32`",
+      "D": "`str(ch + 32)`"
+    },
+    "answer": "A",
+    "explanation": "先 ord 变数字，加 32（大小写差），再 chr 变回字符。当然直接 `ch.lower()` 更简单。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 42,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.5 综合应用",
+    "isExamScope": false,
+    "stem": "路径 `p = \"C:/Users/test/report.txt\"`，`p.split(\"/\")[-1]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'C:'",
+      "B": "'Users'",
+      "C": "'report.txt'",
+      "D": "'txt'"
+    },
+    "answer": "C",
+    "explanation": "split 按 / 切成列表，`[-1]` 取最后一个元素即文件名。层级不固定时用 [-1] 而不是写死下标。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 43,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.5 综合应用",
+    "isExamScope": false,
+    "stem": "`name = \"report.txt\"`，`name.split(\".\")[-1]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "'report'",
+      "B": "'txt'",
+      "C": "'.txt'",
+      "D": "'report.txt'"
+    },
+    "answer": "B",
+    "explanation": "按 . 切分后取最后一段即扩展名。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 44,
+    "chapter": 2,
+    "chapterTitle": "字符串",
+    "section": "2.5 综合应用",
+    "isExamScope": false,
+    "stem": "`\"The book\".split()`（split 不带参数）的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "['The book']",
+      "B": "['The', 'book']",
+      "C": "['T', 'h', 'e']",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "不带参数的 split 按任意空白切分，是按空格拆词的标准写法。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 45,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.1 比较与逻辑运算",
+    "isExamScope": false,
+    "stem": "`5 > 3` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "1",
+      "B": "True",
+      "C": "'True'",
+      "D": "5"
+    },
+    "answer": "B",
+    "explanation": "比较运算返回 bool 类型的 True/False。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 46,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.1 比较与逻辑运算",
+    "isExamScope": false,
+    "stem": "表达式 `3 > 5 and 2 > 1` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "报错",
+      "D": "2 > 1"
+    },
+    "answer": "B",
+    "explanation": "and 两边都真才真；左边已假，整体为 False（短路求值，右边不再算）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 47,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.1 比较与逻辑运算",
+    "isExamScope": false,
+    "stem": "表达式 `3 > 5 or 2 > 1` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "0",
+      "D": "报错"
+    },
+    "answer": "A",
+    "explanation": "or 一边真就真。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 48,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.1 比较与逻辑运算",
+    "isExamScope": false,
+    "stem": "表达式 `not (5 > 3)` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "5",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "not 取反；5 > 3 为 True，取反为 False。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 49,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.2 if / elif / else",
+    "isExamScope": false,
+    "stem": "关于 if 语句的语法，下列正确的是（　）",
+    "code": null,
+    "options": {
+      "A": "`if (a > b) then print(a)`",
+      "B": "`if a > b: print(a)`",
+      "C": "`if a > b print(a)`",
+      "D": "`if a > b { print(a) }`"
+    },
+    "answer": "B",
+    "explanation": "Python 用冒号 + 缩进表示语句块，不用 then / 花括号。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 50,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.2 if / elif / else",
+    "isExamScope": false,
+    "stem": "分数 85 分，执行下面的代码输出什么：",
+    "code": "if score >= 90: print(\"A\")\nelif score >= 80: print(\"B\")\nelse: print(\"C\")",
+    "options": {
+      "A": "A",
+      "B": "B",
+      "C": "C",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "从上往下判断，85 不满足 >=90，满足 >=80，命中 B 后跳出。**条件顺序很重要**：>=90 必须写在 >=80 之前。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 51,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.2 if / elif / else",
+    "isExamScope": false,
+    "stem": "百分制转五分制的多分支代码，为什么 elif 分支只需写下限（如 `elif s >= 80`），不需要写 `80 <= s < 90`（　）",
+    "code": null,
+    "options": {
+      "A": "因为 elif 不支持范围写法",
+      "B": "因为上面的分支已经排除了更高分数，执行到此处时必然 s < 90",
+      "C": "因为 Python 自动补全上限",
+      "D": "写上限会报语法错误"
+    },
+    "answer": "B",
+    "explanation": "多分支从上往下判断且命中即跳出，前面的分支已把更高的区间排除。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 52,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.2 if / elif / else",
+    "isExamScope": false,
+    "stem": "三角形类型判断中，为什么必须**先**判断\"能否构成三角形\"（a+b>c 等），再判断\"是否等边\"（a==b==c）（　）",
+    "code": null,
+    "options": {
+      "A": "语法要求",
+      "B": "否则输入 0 0 0 时会被误判为等边三角形",
+      "C": "等边判断更耗时间",
+      "D": "两者顺序无关"
+    },
+    "answer": "B",
+    "explanation": "0 0 0 满足 a==b==c 但不是三角形；先判类型会漏掉非法输入。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 53,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.3 真值判断",
+    "isExamScope": false,
+    "stem": "下列哪个表达式值为 False（　）",
+    "code": null,
+    "options": {
+      "A": "bool(1)",
+      "B": "bool(\"a\")",
+      "C": "bool(\"\")",
+      "D": "bool(-2)"
+    },
+    "answer": "C",
+    "explanation": "0、空字符串、空列表、None 都是 False；非零数值（包括负数）、非空串都是 True。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 54,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.4 典型题型",
+    "isExamScope": false,
+    "stem": "判断闰年的正确条件是（　）",
+    "code": null,
+    "options": {
+      "A": "`y % 4 == 0`",
+      "B": "`(y % 4 == 0 and y % 100 != 0) or y % 400 == 0`",
+      "C": "`y % 400 == 0 and y % 4 == 0`",
+      "D": "`y % 100 != 0`"
+    },
+    "answer": "B",
+    "explanation": "能被 4 整除且不能被 100 整除，**或者**能被 400 整除。1900 年是 4 的倍数但不是闰年（能被 100 整除且不能被 400 整除）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 55,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.4 典型题型",
+    "isExamScope": false,
+    "stem": "BMI 计算后分级（<18.5 偏瘦，18.5~24 正常，24~28 偏胖，≥28 肥胖），下列分支顺序正确的是（　）",
+    "code": null,
+    "options": {
+      "A": "先判 bmi >= 28，再 >= 24，再 >= 18.5，否则偏瘦",
+      "B": "先判 bmi < 18.5，再 < 24，再 < 28，否则肥胖",
+      "C": "任意顺序都行",
+      "D": "只能用嵌套不能连续 elif"
+    },
+    "answer": "B",
+    "explanation": "【说明：A 亦可，但与题干\"下列正确\"中给的两种方向，B 为标准升序写法】\n连续 elif 只要方向一致（都从小到大或都从大到小）且边界互斥即可；A 的降序写法其实也正确。单选取 B：与题面示例一致的升序写法。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 56,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.4 典型题型",
+    "isExamScope": false,
+    "stem": "阶梯电价：0~180 度 0.5 元/度，181~400 度超出部分 0.55 元/度，400 度以上超出部分 0.8 元/度。用电 500 度的电费计算式正确的是（　）",
+    "code": null,
+    "options": {
+      "A": "`500 * 0.8`",
+      "B": "`500 * 0.55`",
+      "C": "`180*0.5 + 220*0.55 + 100*0.8`",
+      "D": "`400 * 0.55 + 100 * 0.8`"
+    },
+    "answer": "C",
+    "explanation": "阶梯电价是**分段累加**：前 180 度按 0.5，中间 220 度（180~400）按 0.55，超出 400 的 100 度按 0.8。不是总电量乘单一单价。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 57,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.4 典型题型",
+    "isExamScope": false,
+    "stem": "交换两个变量 a、b 的 Python 写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`a = b; b = a`",
+      "B": "`t = a; a = b; b = t`",
+      "C": "`a, b = b, a`",
+      "D": "`swap(a, b)`"
+    },
+    "answer": "C",
+    "explanation": "元组解包一步交换。B 也对但不是 Pythonic 写法；A 两步后 a、b 都是原 b。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 58,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.4 典型题型",
+    "isExamScope": false,
+    "stem": "三数从小到大排序，三次比较的顺序应该是（　）",
+    "code": null,
+    "options": {
+      "A": "先比 a 和 c，再比 a 和 b，最后 b 和 c",
+      "B": "先 a/b，再 b/c，最后再 a/b",
+      "C": "任意顺序",
+      "D": "只比一次 a 和 b"
+    },
+    "answer": "B",
+    "explanation": "先 a/b，再 b/c（此时 b 已是当前最大），最后再 a/b（此时 c 已最大，比较 a 与新的 b）。顺序错了会漏。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 59,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.5 链式比较与浮点",
+    "isExamScope": false,
+    "stem": "表达式 `a == b == c` 等价于（　）",
+    "code": null,
+    "options": {
+      "A": "`a == b and b == c`",
+      "B": "`a == b or b == c`",
+      "C": "`(a == b) == c`",
+      "D": "`a == c`"
+    },
+    "answer": "A",
+    "explanation": "Python 支持链式比较。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 60,
+    "chapter": 3,
+    "chapterTitle": "选择结构",
+    "section": "3.5 链式比较与浮点",
+    "isExamScope": false,
+    "stem": "判断两个浮点数 x、y 是否相等，推荐写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`x == y`",
+      "B": "`abs(x - y) < 1e-9`（或题面要求的 math.fabs(n-m) <= 0.001）",
+      "C": "`x is y`",
+      "D": "`int(x) == int(y)`"
+    },
+    "answer": "B",
+    "explanation": "浮点有精度误差，直接 == 可能因 0.30000000000000004 这类表示失败；用极小正数做近似比较。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 61,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.1 for 与 range",
+    "isExamScope": true,
+    "stem": "`for i in range(5):` 循环体执行几次（　）",
+    "code": null,
+    "options": {
+      "A": "4",
+      "B": "5",
+      "C": "6",
+      "D": "无限"
+    },
+    "answer": "B",
+    "explanation": "range(5) 是 0~4 共 5 个值。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 62,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.1 for 与 range",
+    "isExamScope": true,
+    "stem": "`for i in range(1, 6):` 循环中 i 依次取（　）",
+    "code": null,
+    "options": {
+      "A": "1 2 3 4 5",
+      "B": "1 2 3 4 5 6",
+      "C": "0 1 2 3 4 5",
+      "D": "2 3 4 5"
+    },
+    "answer": "A",
+    "explanation": "range 含头不含尾，range(1,6) 是 1~5。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 63,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.1 for 与 range",
+    "isExamScope": true,
+    "stem": "要让 i 依次取 10、8、6、4、2，应使用（　）",
+    "code": null,
+    "options": {
+      "A": "`range(10, 2, -2)`",
+      "B": "`range(10, 0, -2)`",
+      "C": "`range(10, -1, 2)`",
+      "D": "`range(10, 0, 2)`"
+    },
+    "answer": "B",
+    "explanation": "倒序要给负步长；range(10, 0, -2) 取 10 8 6 4 2（不含 0）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 64,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.1 for 与 range",
+    "isExamScope": true,
+    "stem": "`for i in range(1, 10, 3):` 循环中 i 依次取（　）",
+    "code": null,
+    "options": {
+      "A": "1 4 7",
+      "B": "1 4 7 10",
+      "C": "1 3 6 9",
+      "D": "3 6 9"
+    },
+    "answer": "A",
+    "explanation": "从 1 开始步长 3：1、4、7（10 超出不含）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 65,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.2 while",
+    "isExamScope": true,
+    "stem": "下列 while 循环的问题是：",
+    "code": "n = 5\nwhile n > 0:\n    print(n)",
+    "options": {
+      "A": "语法错误",
+      "B": "死循环（n 从未更新）",
+      "C": "只打印一次",
+      "D": "不打印"
+    },
+    "answer": "B",
+    "explanation": "循环体里没有更新 n，条件永远为真。循环体内必须有让条件趋向结束的语句。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 66,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.2 while",
+    "isExamScope": true,
+    "stem": "`s = 0; n = 1; while n <= 3: s += n; n += 1` 执行后 s 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "3",
+      "B": "6",
+      "C": "10",
+      "D": "15"
+    },
+    "answer": "B",
+    "explanation": "1+2+3=6。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 67,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.3 break 与 continue",
+    "isExamScope": true,
+    "stem": "在循环中，`continue` 的作用是（　）",
+    "code": null,
+    "options": {
+      "A": "立即结束整个循环",
+      "B": "跳过本次循环剩余语句，进入下一次循环",
+      "C": "跳出所有循环层",
+      "D": "暂停一秒"
+    },
+    "answer": "B",
+    "explanation": "break 才是结束整个循环；continue 只跳过本轮。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 68,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.3 break 与 continue",
+    "isExamScope": true,
+    "stem": "下列代码输出什么：",
+    "code": "for i in range(1, 10):\n    if i == 3:\n        continue\n    if i == 6:\n        break\n    print(i, end=\" \")",
+    "options": {
+      "A": "1 2 4 5",
+      "B": "1 2 3 4 5",
+      "C": "1 2 4 5 6",
+      "D": "1 2"
+    },
+    "answer": "A",
+    "explanation": "3 被 continue 跳过；6 触发 break，其后不再输出。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 69,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.3 break 与 continue",
+    "isExamScope": true,
+    "stem": "嵌套循环中内层的 break 会（　）",
+    "code": null,
+    "options": {
+      "A": "跳出所有循环",
+      "B": "只跳出当前这层循环",
+      "C": "跳出外层循环",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "break 只作用于所在的那一层。要跳出多层需要标志变量或重构。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 70,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.4 累加与累乘",
+    "isExamScope": true,
+    "stem": "求 1+2+...+100，下列初始值与循环正确的是（　）",
+    "code": null,
+    "options": {
+      "A": "`s = 1` 起，加 1~100",
+      "B": "`s = 0` 起，for i in range(1, 101): s += i",
+      "C": "`s = 0` 起，range(1, 100)",
+      "D": "`s = 0` 起，range(0, 100)"
+    },
+    "answer": "B",
+    "explanation": "累加初始 0；range(1, 101) 恰好是 1~100；C 少了 100，D 多加了 0 还少 100。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 71,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.4 累加与累乘",
+    "isExamScope": true,
+    "stem": "求 n 的阶乘（n!），累乘变量 p 的初始值应该是（　）",
+    "code": null,
+    "options": {
+      "A": "0",
+      "B": "1",
+      "C": "n",
+      "D": "-1"
+    },
+    "answer": "B",
+    "explanation": "累乘初始值是 1（0 乘任何数都是 0）。0! = 1 也与此写法兼容。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 72,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.4 累加与累乘",
+    "isExamScope": true,
+    "stem": "循环求 1+2+...+100 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "5000",
+      "B": "5050",
+      "C": "10100",
+      "D": "100"
+    },
+    "answer": "B",
+    "explanation": "高斯求和 n(n+1)/2 = 100×101/2 = 5050。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 73,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.5 哨兵循环",
+    "isExamScope": true,
+    "stem": "\"不断读入整数，遇到 0 结束\"的标准写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`while x != 0: x = int(input())`（x 未初始化）",
+      "B": "`while True: x = int(input()); if x == 0: break; ...`",
+      "C": "`for i in range(100):`",
+      "D": "`while 1: pass`"
+    },
+    "answer": "B",
+    "explanation": "while True + break 是哨兵循环的标准写法；A 中 x 在第一次判断时未定义会报错。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 74,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.5 哨兵循环",
+    "isExamScope": true,
+    "stem": "哨兵循环里统计正负数个数，为什么要先判断 `x == 0`（break），再判断 `x > 0`（　）",
+    "code": null,
+    "options": {
+      "A": "语法要求",
+      "B": "否则 0 会被计入负数（0 不大于 0，落入 else）",
+      "C": "效率更高",
+      "D": "0 既要算正数又要算负数"
+    },
+    "answer": "B",
+    "explanation": "判断顺序决定 0 的归属；先判 0 再分支，0 才不会污染统计。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 75,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.6 素数",
+    "isExamScope": true,
+    "stem": "判断 n 是否为素数，试除的范围到（　）",
+    "code": null,
+    "options": {
+      "A": "n-1",
+      "B": "√n（即 i*i <= n）",
+      "C": "n/2",
+      "D": "n"
+    },
+    "answer": "B",
+    "explanation": "若 n 有大于 √n 的因子，必配一个小于 √n 的因子，所以试除到 √n 就够，效率远高于除到 n-1。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 76,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.6 素数",
+    "isExamScope": true,
+    "stem": "下列哪个数不是素数（　）",
+    "code": null,
+    "options": {
+      "A": "2",
+      "B": "17",
+      "C": "1",
+      "D": "23"
+    },
+    "answer": "C",
+    "explanation": "1 不是素数。素数判断必须先排除 n < 2，这是最容易漏的分支。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 77,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.6 素数",
+    "isExamScope": true,
+    "stem": "91 的素数判定中，第一次能整除它的试除数是（　）",
+    "code": null,
+    "options": {
+      "A": "2",
+      "B": "3",
+      "C": "7",
+      "D": "11"
+    },
+    "answer": "C",
+    "explanation": "91 = 7×13。2、3、4、5、6 都不能整除，到 7 就该停（break）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 78,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.7 枚举与递推",
+    "isExamScope": true,
+    "stem": "韩信点兵（3 人余 2、5 人余 3、7 人余 2）求最小解，正确的循环框架是（　）",
+    "code": null,
+    "options": {
+      "A": "`for n in range(1, 100): if 条件: print(n)`（找到后不停止）",
+      "B": "`n = 1`，`while True:` 内判条件命中就 `print(n); break`，否则 `n += 1`",
+      "C": "`while n % 3 == 2:`",
+      "D": "`for n in [23]:`"
+    },
+    "answer": "B",
+    "explanation": "从小到大枚举 + 命中即 break，得到最小解（23）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 79,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.7 枚举与递推",
+    "isExamScope": true,
+    "stem": "Fibonacci 数列 1 1 2 3 5 8...，用 a, b 递推的正确写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`a = b; b = a + b`（先更新 a）",
+      "B": "`a, b = b, a + b`",
+      "C": "`b = a + b; a = b`",
+      "D": "`a, b = a + b, b`"
+    },
+    "answer": "B",
+    "explanation": "元组解包同时更新，右边先算完再赋值。A 会先用新 a 算 b，错位。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 80,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.8 嵌套循环与图案",
+    "isExamScope": true,
+    "stem": "输出 n 行星号、第 i 行 i 个星号，最简洁的写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`for i in range(n): print(\"*\" * i)`",
+      "B": "`for i in range(1, n + 1): print(\"*\" * i)`",
+      "C": "`print(\"*\" * n)` 一行搞定",
+      "D": "双重循环必须"
+    },
+    "answer": "B",
+    "explanation": "字符串乘整数是重复；A 从 0 开始第一行是空行。C 只输出一行。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 81,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.8 嵌套循环与图案",
+    "isExamScope": true,
+    "stem": "九九乘法表第 i 行有 i 个算式，内层循环应写（　）",
+    "code": null,
+    "options": {
+      "A": "`for j in range(1, 10)`",
+      "B": "`for j in range(1, i + 1)`",
+      "C": "`for j in range(i)`",
+      "D": "`for j in range(1, n + 1)`"
+    },
+    "answer": "B",
+    "explanation": "第 i 行的算式是 1×i 到 i×i，j 从 1 到 i。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 82,
+    "chapter": 4,
+    "chapterTitle": "循环结构",
+    "section": "4.8 嵌套循环与图案",
+    "isExamScope": true,
+    "stem": "嵌套循环总共执行次数：外层 range(3)、内层 range(4)，内层循环体共执行（　）",
+    "code": null,
+    "options": {
+      "A": "7",
+      "B": "12",
+      "C": "3",
+      "D": "4"
+    },
+    "answer": "B",
+    "explanation": "3 × 4 = 12 次。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 83,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "定义函数使用的关键字是（　）",
+    "code": null,
+    "options": {
+      "A": "function",
+      "B": "def",
+      "C": "define",
+      "D": "func"
+    },
+    "answer": "B",
+    "explanation": "`def 函数名(参数):`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 84,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "函数 `def f(x): return x * 2`，调用 `f(3)` 的返回值是（　）",
+    "code": null,
+    "options": {
+      "A": "3",
+      "B": "6",
+      "C": "None",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "return 把计算结果带回调用处。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 85,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "函数体中没有 return 语句，调用该函数得到（　）",
+    "code": null,
+    "options": {
+      "A": "0",
+      "B": "空字符串",
+      "C": "None",
+      "D": "报错"
+    },
+    "answer": "C",
+    "explanation": "无 return（或 return 不带值）的函数返回 None。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 86,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "定义 `def g(a, b=10):`，调用 `g(5)` 时 b 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "5",
+      "B": "10",
+      "C": "0",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "b 是带默认值的参数，未传入时用默认值 10。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 87,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "关于 self，正确的说法是（　）",
+    "code": null,
+    "options": {
+      "A": "self 是关键字",
+      "B": "self 代表当前对象实例，由 Python 在调用时自动传入",
+      "C": "调用方法时要手动传 self",
+      "D": "self 可以省略不写"
+    },
+    "answer": "B",
+    "explanation": "self 是约定俗成的参数名（不是关键字）；`s.average()` 等价于 `Student.average(s)`，self 自动绑定。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 88,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "下列关于函数返回值，说法错误的是（　）",
+    "code": null,
+    "options": {
+      "A": "return 可以返回表达式",
+      "B": "一个函数可以有多个 return 分支",
+      "C": "return 会立即结束函数",
+      "D": "return 必须返回一个值，不能省略后面的值"
+    },
+    "answer": "D",
+    "explanation": "`return` 单独出现（不带值）是合法的，等价于返回 None。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 89,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "辗转相除求最大公约数的核心语句是（　）",
+    "code": null,
+    "options": {
+      "A": "`one, two = two, one % two`（while two != 0 循环内）",
+      "B": "`one = one % two`",
+      "C": "`two = one % two`",
+      "D": "`one, two = one % two, one`"
+    },
+    "answer": "A",
+    "explanation": "GCD(a,b) = GCD(b, a mod b)，同时更新两个变量直到除数为 0。最小公倍数 = a // g * b。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 90,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "判断\"学生是否有科目不及格\"（allPassed），返回 True 表示全部及格，正确的写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`return self.mathScore >= 60 and self.engScore >= 60 and self.proScore >= 60`",
+      "B": "`return self.mathScore >= 60 or self.engScore >= 60 or self.proScore >= 60`",
+      "C": "`return not self.mathScore < 60`",
+      "D": "`return self.average() >= 60`"
+    },
+    "answer": "A",
+    "explanation": "三科都 ≥60 才是全过，用 and。D 是平均值≥60，不等于每科都过。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 91,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "万年历问题中\"1800 年 1 月 1 日是星期三\"的作用是（　）",
+    "code": null,
+    "options": {
+      "A": "无用信息",
+      "B": "作为基准日，通过总天数差 `(总天数 + 3) % 7` 推算任意日期的星期",
+      "C": "用于输出年份",
+      "D": "只用于判断闰年"
+    },
+    "answer": "B",
+    "explanation": "星期计算的经典基准法：先算目标日距基准日的总天数，加基准星期数（周三=3）再对 7 取模。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 92,
+    "chapter": 5,
+    "chapterTitle": "函数",
+    "section": "函数",
+    "isExamScope": true,
+    "stem": "亲密数判断中 `if yinzihe(B) == n and B > n` 里 `B > n` 的作用是（　）",
+    "code": null,
+    "options": {
+      "A": "保证输出每对亲密数只出现一次（小的在前）",
+      "B": "提高速度",
+      "C": "排除 1",
+      "D": "语法要求"
+    },
+    "answer": "A",
+    "explanation": "若 A 的因子和是 B 且 B 的因子和是 A，则 (A,B) 与 (B,A) 会各判到一次；限制 B > n 保证每对只输出一次。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 93,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "`ls = [1, 2, 3]`，执行 `ls.append([4, 5])` 后 `len(ls)` 是（　）",
+    "code": null,
+    "options": {
+      "A": "3",
+      "B": "4",
+      "C": "5",
+      "D": "2"
+    },
+    "answer": "B",
+    "explanation": "append 把 `[4,5]` 整体作为一个元素追加，长度 3→4。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 94,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "`L = [1, 2, 'Python', [1, 2, 3, 4, 5]]`，`L[-3]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "'Python'",
+      "D": "[1,2,3,4,5]"
+    },
+    "answer": "B",
+    "explanation": "负索引倒数：-1 是内层列表，-2 是 'Python'，-3 是 2。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 95,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "`s1 = [4,5,6]; s2 = s1; s1[1] = 0`，print(s1) 输出（　）",
+    "code": null,
+    "options": {
+      "A": "[4, 5, 6]",
+      "B": "[4, 0, 6]",
+      "C": "[0, 5, 6]",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "`s2 = s1` 是引用赋值（同一对象）；通过任一名字修改都影响\"同一个列表\"。本题 print 的是 s1，直接看到 [4, 0, 6]；s2 同样是 [4, 0, 6]。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 96,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "去除列表 `[100,200,100,300,400,200,100,400]` 中重复元素，应使用（　）",
+    "code": null,
+    "options": {
+      "A": "`ls = set(ls)`",
+      "B": "`ls = tuple(ls)`",
+      "C": "`ls = list(ls)`",
+      "D": "`ls = dict(ls)`"
+    },
+    "answer": "A",
+    "explanation": "集合自动去重。dict(ls) 会报错（列表不能直接转字典）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 97,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "`L.reverse()` 与 `L[::-1]` 的区别是（　）",
+    "code": null,
+    "options": {
+      "A": "没有区别",
+      "B": "reverse() 原地修改 L 且返回 None；`L[::-1]` 产生反转的新列表，L 不变",
+      "C": "reverse() 返回新列表",
+      "D": "`L[::-1]` 原地修改"
+    },
+    "answer": "B",
+    "explanation": "reverse() 是原地方法（返回 None，常被误以为返回反转结果）；切片反转创建新列表。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 98,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "与 `s[0:-1]` 含义相同的是（　）",
+    "code": null,
+    "options": {
+      "A": "s[-1]",
+      "B": "s[:]",
+      "C": "s[:len(s)-1]",
+      "D": "s[0:len(s)]"
+    },
+    "answer": "C",
+    "explanation": "s[0:-1] 去掉最后一个元素；C 的写法一致。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 99,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "表达式 `[2] in [1, 2, 3, 4]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "报错",
+      "D": "2"
+    },
+    "answer": "B",
+    "explanation": "判断元素是否在列表中：列表元素是 1、2、3、4（整数），而 `[2]` 是一个列表，类型不匹配所以 False。`2 in [1,2,3,4]` 才是 True。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 100,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "二维列表 `a = [[1,2,3],[4,5,6],[7,8,9]]`，`a[1][2]` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "5",
+      "B": "6",
+      "C": "8",
+      "D": "2"
+    },
+    "answer": "B",
+    "explanation": "a[1] 是第二行 [4,5,6]，再取下标 2 得 6。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 101,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "对角线元素乘积：`p=1`，`for i in range(len(a)): p *= a[i][i]`（a 为 3×3 的 [[1,2,3],[4,5,6],[7,8,9]]），p 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "45",
+      "B": "15",
+      "C": "6",
+      "D": "28"
+    },
+    "answer": "A",
+    "explanation": "对角线是 1、5、9，乘积 45。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 102,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "`ls.index(min(ls))` 得到（　）",
+    "code": null,
+    "options": {
+      "A": "最小值",
+      "B": "最小值第一次出现的下标",
+      "C": "最小值的个数",
+      "D": "列表长度"
+    },
+    "answer": "B",
+    "explanation": "index 返回首次出现位置；有多个最小值时只报第一个。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 103,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "`list2.remove(max(list2))` 的作用是（　）",
+    "code": null,
+    "options": {
+      "A": "删除所有最大值",
+      "B": "删除第一次出现的最大值",
+      "C": "把最大值改为 0",
+      "D": "删除最后一个元素"
+    },
+    "answer": "B",
+    "explanation": "remove 只删第一个匹配的元素。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 104,
+    "chapter": 6,
+    "chapterTitle": "列表",
+    "section": "列表",
+    "isExamScope": true,
+    "stem": "随机字符统计中，`counts = [0] * 26` 然后 `counts[ord(c) - ord('a')] += 1` 的作用是（　）",
+    "code": null,
+    "options": {
+      "A": "生成 26 个随机数",
+      "B": "以字母序号作下标统计每个字母出现次数",
+      "C": "排序",
+      "D": "生成字符列表"
+    },
+    "answer": "B",
+    "explanation": "`ord(c) - ord('a')` 把 'a'~'z' 映射到 0~25，作为计数数组的索引。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 105,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "下列不能创建字典的语句是（　）",
+    "code": null,
+    "options": {
+      "A": "`dict1 = {}`",
+      "B": "`dict2 = {3:5}`",
+      "C": "`dict3 = dict([2,5],[3,4])`",
+      "D": "`dict4 = dict(([1,2],[3,4]))`"
+    },
+    "answer": "C",
+    "explanation": "dict() 需要一个可迭代参数（如键值对序列），传两个独立列表参数语法不成立。D 用元组的元组是合法写法。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 106,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "字典 `D = {'A':10,'B':20,'C':30,'D':40}`，访问键 'D' 的值应写（　）",
+    "code": null,
+    "options": {
+      "A": "D[3]",
+      "B": "D[4]",
+      "C": "D[D]",
+      "D": "D['D']"
+    },
+    "answer": "D",
+    "explanation": "字典用**键**索引，不是位置。D 是第 4 个添加的元素但没有\"位置 4\"的概念。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 107,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`d = {\"a\":5,\"b\":3}`，执行 `print(d[\"f\"])` 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "f",
+      "B": "0",
+      "C": "KeyError: 'f'",
+      "D": "None"
+    },
+    "answer": "C",
+    "explanation": "方括号访问不存在的键直接抛 KeyError。想不报错用 `d.get(\"f\", 默认值)`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 108,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`d.get(\"f\", \"not found!!!\")` 中，若键 f 不存在，返回（　）",
+    "code": null,
+    "options": {
+      "A": "None",
+      "B": "\"f\"",
+      "C": "\"not found!!!\"",
+      "D": "报 KeyError"
+    },
+    "answer": "C",
+    "explanation": "get 的第二参数是键不存在时的默认值；存在时返回键对应的值。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 109,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`d = {\"a\":5}`，执行 `d[\"e\"] = 88` 后（　）",
+    "code": null,
+    "options": {
+      "A": "报 KeyError",
+      "B": "添加新键值对 'e':88",
+      "C": "修改 a 的值",
+      "D": "无效果"
+    },
+    "answer": "B",
+    "explanation": "给不存在的键赋值就是添加；给已存在的键赋值是修改。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 110,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`d = {\"b\":99,\"c\":33,\"a\":55,\"b\":3,\"c\":4,\"a\":3}`，print(d) 的结果是（　）",
+    "code": null,
+    "options": {
+      "A": "{'b': 99, 'c': 33, 'a': 55}",
+      "B": "全部 6 个键值对",
+      "C": "{'b': 3, 'c': 4, 'a': 3}",
+      "D": "KeyError"
+    },
+    "answer": "C",
+    "explanation": "字面量重复键：**值**以最后一次赋值为准，**键的顺序**按首次出现——b、c、a 各保留最后一次的值。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 111,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`for k in d:` 遍历字典时 k 依次取（　）",
+    "code": null,
+    "options": {
+      "A": "值",
+      "B": "键",
+      "C": "(键,值) 元组",
+      "D": "索引"
+    },
+    "answer": "B",
+    "explanation": "直接遍历字典得到的是键。要值用 `d[k]`，要键值对用 `d.items()`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 112,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`for kv in d.items():` 中 kv 是（　）",
+    "code": null,
+    "options": {
+      "A": "键",
+      "B": "值",
+      "C": "('a', 5) 这样的键值元组",
+      "D": "列表"
+    },
+    "answer": "C",
+    "explanation": "items() 返回键值对，解包可用 `for k, v in d.items():`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 113,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`len({\"a\":5,\"b\":3,\"c\":4,\"d\":3})` 的值是（　）",
+    "code": null,
+    "options": {
+      "A": "4",
+      "B": "15",
+      "C": "3",
+      "D": "8"
+    },
+    "answer": "A",
+    "explanation": "len 数的是键值对个数。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 114,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "表达式 `A ^ B`（集合运算）的含义是（　）",
+    "code": null,
+    "options": {
+      "A": "交集",
+      "B": "并集",
+      "C": "差集",
+      "D": "对称差（不同时在两集合中的元素）"
+    },
+    "answer": "D",
+    "explanation": "`A & B` 交、`A | B` 并、`A - B` 差、`A ^ B` 对称差。A={1,2,3}、B={2,3,5,7} 时 A^B = {1,5,7}。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 115,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`s = {3,2,5,6,2,8,3,2}`，print(s) 输出（　）",
+    "code": null,
+    "options": {
+      "A": "{3, 2, 5, 6, 2, 8, 3, 2}",
+      "B": "{2, 3, 5, 6, 8}",
+      "C": "[2, 3, 5, 6, 8]",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "集合自动去重；打印顺序由内部实现决定（整数值集合常呈升序显示）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 116,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`a = s.pop()` 从集合 s 中弹出元素，a 的值（　）",
+    "code": null,
+    "options": {
+      "A": "一定是第一个元素",
+      "B": "一定是最后一个",
+      "C": "一定是最大/最小",
+      "D": "不确定（集合无序）"
+    },
+    "answer": "D",
+    "explanation": "集合无序，pop 弹出的元素不可预测，代码不应依赖它。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 117,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "`while len(s) < 5: s.add(eval(input()))` 这段代码的效果是（　）",
+    "code": null,
+    "options": {
+      "A": "恰好读 5 个输入",
+      "B": "读到凑满 5 个**不同**数据为止（重复输入会被集合吸收，需继续读）",
+      "C": "读 5 行就停",
+      "D": "死循环"
+    },
+    "answer": "B",
+    "explanation": "集合去重导致重复输入不增加长度，循环继续——输入次数可能超过 5 次。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 118,
+    "chapter": 7,
+    "chapterTitle": "字典、集合与元组",
+    "section": "字典、集合与元组",
+    "isExamScope": true,
+    "stem": "元组 `t = (1, 2, 3)`，下列哪个操作合法（　）",
+    "code": null,
+    "options": {
+      "A": "`t[0] = 9`",
+      "B": "`t.append(4)`",
+      "C": "`a, b, c = t`",
+      "D": "`t.remove(1)`"
+    },
+    "answer": "C",
+    "explanation": "元组不可变（A/B/D 都错），但可以解包。`a, b = b, a` 交换的本质就是元组解包。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 119,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "打开文件使用 with 语句的好处是（　）",
+    "code": null,
+    "options": {
+      "A": "读写更快",
+      "B": "块结束时自动关闭文件，无需手动 close，异常时也能正确关闭",
+      "C": "可以同时读写",
+      "D": "不需要指定文件名"
+    },
+    "answer": "B",
+    "explanation": "`with open(...) as f:` 是资源管理的推荐写法。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 120,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "`open(\"src.txt\", \"r\", encoding=\"utf-8\")` 中 `\"r\"` 表示（　）",
+    "code": null,
+    "options": {
+      "A": "读模式",
+      "B": "写模式",
+      "C": "追加模式",
+      "D": "二进制模式"
+    },
+    "answer": "A",
+    "explanation": "r 读、w 写（覆盖）、a 追加；写中文文件给 Excel 看常用 utf-8-sig。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 121,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "以 `\"w\"` 模式打开一个已存在的文件会（　）",
+    "code": null,
+    "options": {
+      "A": "报错",
+      "B": "清空原内容后写入",
+      "C": "在末尾追加",
+      "D": "只读"
+    },
+    "answer": "B",
+    "explanation": "w 模式先清空；要保留原内容追加用 `\"a\"` 模式。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 122,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "用 `f.write(\"Hello\")` 写文件后，文件里的内容（　）",
+    "code": null,
+    "options": {
+      "A": "自动换行",
+      "B": "不自动换行，需要自己写 `f.write(\"Hello\\n\")`",
+      "C": "变成大写",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "write 不自动加换行符；print 才会自动换行。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 123,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "评测程序可能不提供输入文件（如 data.txt），程序读文件时的健壮写法是（　）",
+    "code": null,
+    "options": {
+      "A": "直接 open，报错就算了",
+      "B": "try/except FileNotFoundError，失败时回退读 sys.stdin.read()",
+      "C": "换个文件名再试",
+      "D": "不读文件改为硬编码"
+    },
+    "answer": "B",
+    "explanation": "文件不存在时把后续标准输入当文件内容，两种评测方式都能跑。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 124,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "`csv.writer` 写出一行 `[\"最高分题目序号\", \"[1, 3, 5]\"]` 时，实际写出的内容是（　）",
+    "code": null,
+    "options": {
+      "A": "`最高分题目序号,[1, 3, 5]`",
+      "B": "`最高分题目序号,\"[1, 3, 5]\"`（含引号）",
+      "C": "`最高分题目序号,1,3,5`",
+      "D": "报错"
+    },
+    "answer": "B",
+    "explanation": "csv.writer 会给**含逗号的字段**自动加双引号包裹。判题期望无引号文本时，改用 f.write() 手写。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 125,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "用 `csv.reader` 读出的每一行是（　）",
+    "code": null,
+    "options": {
+      "A": "字符串",
+      "B": "字段列表（list of str）",
+      "C": "元组",
+      "D": "字典"
+    },
+    "answer": "B",
+    "explanation": "每个 row 是一个字符串列表，`rows[0]` 是表头，`rows[1:]` 是数据。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 126,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "CSV 成绩表按\"总分\"（第 5~9 列）降序排序，正确的 key 写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`key=lambda x: x[4]`",
+      "B": "`key=lambda x: sum(map(float, x[4:])), reverse=True`",
+      "C": "`key=lambda x: sum(x)`",
+      "D": "`key=lambda x: x[-1]`"
+    },
+    "answer": "B",
+    "explanation": "x[4:] 取 5 科成绩，map(float) 转数值再 sum；reverse=True 降序。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 127,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "处理含中文的 CSV 且要用 Excel 打开，编码应选（　）",
+    "code": null,
+    "options": {
+      "A": "ascii",
+      "B": "utf-8",
+      "C": "utf-8-sig（带 BOM）",
+      "D": "gbk 必选"
+    },
+    "answer": "C",
+    "explanation": "utf-8-sig 带 BOM，Excel 才能正确识别 UTF-8 中文。纯判题比对用 utf-8 即可。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 128,
+    "chapter": 8,
+    "chapterTitle": "数据文件与 CSV",
+    "section": "数据文件与 CSV",
+    "isExamScope": true,
+    "stem": "词频统计前把标点转空格时，标点字符串里最容易丢失、导致 `China’s` 切不开的字符是（　）",
+    "code": null,
+    "options": {
+      "A": "英文句号",
+      "B": "弯引号 ’ ‘ “ ”（U+2018/2019/201C/201D）",
+      "C": "下划线",
+      "D": "数字"
+    },
+    "answer": "B",
+    "explanation": "弯引号是 Unicode 字符，复制粘贴时容易丢；丢了之后带弯引号的单词无法切分，次数统计全偏。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 129,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "定义类的关键字是（　）",
+    "code": null,
+    "options": {
+      "A": "class",
+      "B": "def",
+      "C": "object",
+      "D": "type"
+    },
+    "answer": "A",
+    "explanation": "`class 类名:`。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 130,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "`__init__` 方法的调用时机是（　）",
+    "code": null,
+    "options": {
+      "A": "需要显式调用 `obj.__init__()`",
+      "B": "创建对象时自动调用",
+      "C": "程序启动时",
+      "D": "删除对象时"
+    },
+    "answer": "B",
+    "explanation": "构造方法。`Point(1,2,3)` 时自动执行，完成属性初始化。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 131,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "`self` 表示（　）",
+    "code": null,
+    "options": {
+      "A": "类本身",
+      "B": "当前对象实例",
+      "C": "父类",
+      "D": "模块"
+    },
+    "answer": "B",
+    "explanation": "self 是当前实例；调用 `s.average()` 时 Python 自动把 s 传给 self。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 132,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "类 Book，`book1 = Book()` 和 `book2 = Book()` 的关系是（　）",
+    "code": null,
+    "options": {
+      "A": "book1 是类，book2 是对象",
+      "B": "Book 是对象，book1/book2 是类",
+      "C": "Book 是类，book1、book2 是同一类的两个不同实例，各自有独立的属性",
+      "D": "两者是同一个对象"
+    },
+    "answer": "C",
+    "explanation": "类与实例的关系；每个实例的属性独立存储。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 133,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "`def dist_from(self, other):` 中 other 是（　）",
+    "code": null,
+    "options": {
+      "A": "另一个同类的对象",
+      "B": "全局变量",
+      "C": "字符串",
+      "D": "类名"
+    },
+    "answer": "A",
+    "explanation": "方法参数可以是同类对象，通过 `other.x` 访问其属性——对象间协作的常见写法。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 134,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "Time 类 24 小时制 nextHour 方法，正确的写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`self.hour = self.hour + 24`",
+      "B": "`self.hour = (self.hour + 1) % 24`",
+      "C": "`self.hour += 1`（不取模）",
+      "D": "`return self.hour + 1`"
+    },
+    "answer": "B",
+    "explanation": "% 24 处理跨零点（23 → 0）；分秒不变。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 135,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "setter 方法 `setRadius(self, r): if r > 0: self.r = r` 中 `if r > 0` 的作用是（　）",
+    "code": null,
+    "options": {
+      "A": "语法要求",
+      "B": "防御性校验：非法值（≤0）不修改数据域（封装思想）",
+      "C": "提高速度",
+      "D": "强制类型转换"
+    },
+    "answer": "B",
+    "explanation": "这是封装的典型应用——通过方法控制数据域的合法修改。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 136,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "判断两个浮点数 a、b 是否相等（等边三角形边长比较），正确写法是（　）",
+    "code": null,
+    "options": {
+      "A": "`a == b`",
+      "B": "`math.fabs(a - b) <= 0.001`",
+      "C": "`a is b`",
+      "D": "`str(a) == str(b)`"
+    },
+    "answer": "B",
+    "explanation": "浮点有精度误差，用极小正数做近似比较（题面明确要求此写法，k ≤ 0.001）。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 137,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "`for kv in d.items():` 中 kv 是什么（　）——本题与第 7 章第 112 题呼应，以类方法角度再考",
+    "code": null,
+    "options": {
+      "A": "键",
+      "B": "值",
+      "C": "(键, 值) 元组",
+      "D": "键的列表"
+    },
+    "answer": "C",
+    "explanation": "items() 产出键值对；`for k, v in d.items():` 直接解包更常用。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 138,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "一个类里定义了 `getArea(self)`，创建对象 `c = Circle(5)` 后，正确的调用是（　）",
+    "code": null,
+    "options": {
+      "A": "`c.getArea(c)`",
+      "B": "`c.getArea()`",
+      "C": "`Circle.getArea()`",
+      "D": "`getArea(c)`"
+    },
+    "answer": "B",
+    "explanation": "通过对象调用方法时不传 self。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 139,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "图形面积题：边长为 a、b、c 的三角形，三个半圆分别以三边为直径。总面积的组成是（　）",
+    "code": null,
+    "options": {
+      "A": "三角形面积 + 3 个整圆面积",
+      "B": "三角形面积 + π(a/2)²/2 + π(b/2)²/2 + π(c/2)²/2",
+      "C": "3 个半圆之和，不含三角形",
+      "D": "三角形面积 × 2"
+    },
+    "answer": "B",
+    "explanation": "半圆面积 = πr²/2，r = 边长/2。3,4,5 时 6 + π(1.5²+2²+2.5²)/2 ≈ 25.63。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 140,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "面向对象",
+    "isExamScope": false,
+    "stem": "面向对象编程的三大特性是（　）",
+    "code": null,
+    "options": {
+      "A": "封装、继承、多态",
+      "B": "顺序、分支、循环",
+      "C": "变量、函数、类",
+      "D": "输入、处理、输出"
+    },
+    "answer": "A",
+    "explanation": "封装（方法控制数据域）、继承、多态。顺序/分支/循环是三种程序控制结构，别混淆。",
+    "source": "课程复习题库"
+  },
+  {
+    "id": 141,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "作业 51603 原题",
+    "isExamScope": false,
+    "stem": "阅读 Python 面向对象代码，分析类和对象的相关概念，下列描述正确的是（　）",
+    "code": null,
+    "options": {
+      "A": "`__init__` 方法是一个普通的实例方法，必须通过对象显式调用才能执行",
+      "B": "在 display_info 方法中，discount 是一个实例属性，可以被所有实例方法访问",
+      "C": "`self` 关键字表示当前对象实例，通过它可以访问和修改该实例的属性",
+      "D": "Book 是一个对象，book1 和 book2 是类，它们共享相同的属性和方法"
+    },
+    "answer": "C",
+    "explanation": "A 错：`__init__` 是构造方法，创建对象时自动调用（`Book(...)` 时触发），不需要显式调用。\nB 错：discount 是否为实例属性取决于是否以 `self.discount` 形式定义。\nC 对：`self` 就是当前对象实例，`self.xxx` 访问/修改实例属性，是 Python 面向对象的基石。\nD 错：类与对象说反了——Book 是类，book1/book2 是对象（实例）。",
+    "source": "作业 51603 原题"
+  },
+  {
+    "id": 142,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "作业 51601 · 继承和多态",
+    "isExamScope": false,
+    "stem": "关于 Python 中类和实例的说法，下列正确的是（　）",
+    "code": null,
+    "options": {
+      "A": "类是实例的模板，创建实例时必须显式调用 `__init__` 方法",
+      "B": "属性和方法只能通过实例访问，无法通过类名访问",
+      "C": "类未定义 `__init__` 方法时，创建实例会报错出问题",
+      "D": "实例属性既可以在 `__init__` 中定义，也可以在实例创建后动态添加"
+    },
+    "answer": "D",
+    "explanation": "A 错：`Point(1,2,3)` 创建实例时 `__init__` 自动调用，无需显式调用。\nB 错：类属性（定义在类体、方法外）可以直接通过 `类名.属性` 访问。\nC 错：未定义 `__init__` 时会沿用基类 `object` 的默认构造，能正常创建实例。\nD 对：Python 实例属性支持动态绑定，如 `p.newAttr = 10` 随时可添加。",
+    "source": "作业 51601 原题"
+  },
+  {
+    "id": 143,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "作业 51601 · 继承和多态",
+    "isExamScope": false,
+    "stem": "阅读下列继承与方法重写代码，`print(dog.make_sound(), cat.make_sound())` 的输出结果是（　）",
+    "code": "class Animal:\n    def make_sound(self):\n        return \"动物叫声\"\n\nclass Dog(Animal):\n    def make_sound(self):\n        return \"汪汪汪\"\n\nclass Cat(Animal):\n    pass\n\ndog = Dog()\ncat = Cat()\nprint(dog.make_sound(), cat.make_sound())",
+    "options": {
+      "A": "汪汪汪 动物叫声",
+      "B": "动物叫声 动物叫声",
+      "C": "汪汪汪 None",
+      "D": "报错：Cat 没有定义 make_sound 方法"
+    },
+    "answer": "A",
+    "explanation": "`dog` 调用子类 `Dog` 重写后的 `make_sound()` 返回「汪汪汪」；`Cat` 继承自 `Animal` 但未重写该方法（`pass`），调用时沿继承链找到父类 `Animal` 的版本返回「动物叫声」。",
+    "source": "作业 51601 原题"
+  },
+  {
+    "id": 144,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "作业 51601 · 继承和多态",
+    "isExamScope": false,
+    "stem": "现有 `Bird`、`Eagle`、`Penguin` 各自实现了 `fly()` 方法，函数 `show_fly(animal)` 统一调用 `animal.fly()`。下列关于多态核心思想的描述正确的是（　）",
+    "code": "def show_fly(animal):\n    animal.fly()  # 传 Eagle 输出雄鹰翱翔，传 Penguin 输出企鹅不会飞",
+    "options": {
+      "A": "多态要求每个子类必须重写父类的全部方法",
+      "B": "多态是指不同类的实例调用同一方法名，能够表现出不同的行为",
+      "C": "多态是指同一个类定义多个同名但参数数量不同的方法",
+      "D": "多态是指一个子类同时继承多个父类"
+    },
+    "answer": "B",
+    "explanation": "多态的核心 = 不同类的实例调用同一方法名，运行时绑定到各自实现并表现出不同行为。A 错（子类可只重写需要定制的方法）；D 说的是多继承而非多态。",
+    "source": "作业 51601 原题"
+  },
+  {
+    "id": 145,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "作业 51601 · 继承和多态",
+    "isExamScope": false,
+    "stem": "下列关于 Python 面向对象「封装」的说法中，**错误**的是（　）",
+    "code": null,
+    "options": {
+      "A": "封装可以将数据域与操作数据的方法绑定在类内部，隐藏内部实现细节",
+      "B": "可以通过 getter/setter 方法或 `@property` 控制对私有属性的读写校验",
+      "C": "Python 通过 `private` 关键字定义私有属性，外部完全无法访问",
+      "D": "双下划线前缀如 `self.__color` 会触发名称改写，是 Python 定义私有属性的约定"
+    },
+    "answer": "C",
+    "explanation": "Python **没有 `private` 关键字**！私有属性依靠双下划线前缀 `self.__color` 实现（底层名称改写为 `_类名__color`）。A、B、D 均正确。",
+    "source": "作业 51601 原题"
+  },
+  {
+    "id": 146,
+    "chapter": 10,
+    "chapterTitle": "面向对象",
+    "section": "作业 51601 · 继承和多态",
+    "isExamScope": false,
+    "stem": "阅读下面关于继承、多态与动态绑定的代码，下列说法**错误**的是（　）",
+    "code": "class Animal(object):\n    def eat(self): print(\"Animal eats\")\n\nclass Dog(Animal):\n    def eat(self): print(\"Dog eats\")\n\nclass Cat(Animal):\n    def eat(self): print(\"Cat eats\")\n\nclass Person(object):\n    def eat(self): print(\"Person eats\")\n\ndef fun(animal):\n    animal.eat()",
+    "options": {
+      "A": "Dog、Cat、Person 类都是 Animal 类的子类",
+      "B": "Dog 类中重写了 Animal 类的 `eat()` 方法",
+      "C": "`fun` 函数接收不同对象并调用 `eat()`，体现了多态与动态绑定",
+      "D": "在 Python 鸭子类型机制下，即使 Person 不是 Animal 子类也可以传给 `fun()` 执行"
+    },
+    "answer": "A",
+    "explanation": "看清类定义括号里的基类名：`class Person(object)` 直接继承自 `object`，**不是** `Animal` 的子类，因此 A 错！B、C、D 均正确（Python 多态基于鸭子类型：只要对象实现了 `eat()` 方法就能传进 `fun()`）。",
+    "source": "作业 51601 原题"
+  }
+]

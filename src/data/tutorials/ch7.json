@@ -1,0 +1,515 @@
+{
+  "chapter": 7,
+  "title": "第 7 章 · 字典、集合与元组",
+  "subtitle": "键值对映射与 get() · 字典计数与 TopN 排序 · 集合去重与 & | - ^ 运算 · 元组不可变与解包",
+  "isExamScope": true,
+  "estimatedMinutes": 150,
+  "learningGoals": [
+    "理解字典“键 → 值”映射思想，分清 d[k]（可能报 KeyError）与 d.get(k, 默认值) 的区别。",
+    "掌握字典的增删改、字面量重复键覆盖规则，以及 keys / values / items 三种遍历方式。",
+    "默写字典计数三件套：d[k] = d.get(k, 0) + 1、sorted(d) 按键排序、sorted(d.items(), key=lambda kv: -kv[1]) 按值降序。",
+    "掌握集合自动去重特性，牢记空集合必须写 set()（{} 是空字典），区分 discard 与 remove。",
+    "熟练运用集合交(&)、并(|)、差(-)、对称差(^)解决选课统计、双色球与去重循环问题。",
+    "理解元组不可变性、单元素元组逗号写法，以及 a, b = b, a 背后的元组解包原理。"
+  ],
+  "intro": "如果说列表是按“排队序号 0, 1, 2...”找人的教室，那字典就是按“姓名直接查电话”的通讯录，集合是自动剔除重复名单的“花名册”，元组则是贴了封条、一旦装好就不能篡改的“密封包裹”。\n\n第 7 章是最新 4~8 章考试范围中选择题与编程题的双料高频区：单选必考 dict() 创建报错、KeyError、重复键覆盖、{} 与 set() 辨析、A ^ B 对称差与 s.pop() 的不确定性；编程题则以“字典计数 + 排序（字符/词频统计）”与“集合交并差（选课/维纳年龄）”为绝对主角，并且会直接衔接到第 8 章的文件词频统计大题。学好本章，就能打通 Python 数据处理最核心的任督二脉。",
+  "sections": [
+    {
+      "id": "ch7-s1",
+      "title": "从零认识字典：键值对、访问与 get() 防 KeyError",
+      "concept": "在真实编程中，我们经常需要“通过一个名字/学号/单词，立刻查到对应的信息”——例如通过姓名查电话号码、通过英文查中文释义、通过字母查它出现的次数。用列表虽然也能硬凑，但每次查找都得从头遍历一遍，既麻烦又容易错位。\n\nPython 专门为此设计了字典（`dict`），它存储的是一对对 **键: 值（key: value）**。你可以把字典想象成真正的汉语词典：用“字”（键）去查“释义”（值）。键在字典里必须是**唯一**且**不可变**的（如字符串、整数、元组；列表不能做键），而值可以是任意类型。\n\n新手使用字典踩的第一个大坑就是用方括号 `d[key]` 访问不存在的键：Python 不会返回 None，而是直接抛出 `KeyError` 让整个程序崩溃！为了安全查询，考试和实战一律推荐使用 `d.get(key, 默认值)`：键存在时返回真实对应值，键不存在时优雅返回你指定的默认值（不写第二参数时默认返回 `None`），永远不会报错。\n\n另一个单选高频点是用 `dict()` 构造函数创建字典：`dict()` 只接受**一个**可迭代参数（里面每个元素是长度为 2 的键值对序列），所以 `dict(([1, 2], [3, 4]))` 合法，而 `dict([2, 5], [3, 4])` 传了两个独立参数会直接报错！",
+      "syntaxCard": {
+        "title": "字典创建与安全查询核心语法",
+        "syntax": "d = {\"张三\": \"1380001\", \"李四\": \"1390002\"}\nd[\"张三\"]                    # 直接取键对应的值（不存在抛 KeyError！）\nd.get(\"赵六\", \"not found\")  # 安全取值（不存在返回默认值，绝不报错）\n\"张三\" in d                 # 判断某【键】是否在字典中（不查值）\nlen(d)                      # 键值对的总个数",
+        "breakdown": [
+          {
+            "part": "{k: v, ...}",
+            "meaning": "花括号包裹、冒号分隔键与值、逗号分隔多个键值对"
+          },
+          {
+            "part": "d[k]",
+            "meaning": "按键取值（不是按下标位置！）；键不存在直接 KeyError"
+          },
+          {
+            "part": "d.get(k, default)",
+            "meaning": "查表与计数神器：存在返回 d[k]，不存在返回 default"
+          },
+          {
+            "part": "k in d",
+            "meaning": "成员检测只检查键集合，速度为 O(1) 极快"
+          },
+          {
+            "part": "dict(iterable)",
+            "meaning": "只能接收 1 个包含二元键值对的可迭代对象，不能传 2 个列表参数"
+          }
+        ]
+      },
+      "keyRules": [
+        "字典只能通过【键】索引，没有“第 3 个位置 D[3]”的概念：D = {'A':10,'D':40} 必须写 D['D']。",
+        "直接 d['不存在的键'] 会立即抛 KeyError；题目要求查不到输出 not found 时直接用 d.get(name, 'not found')。",
+        "len(d) 统计的是键值对的个数，不是所有值的总和。",
+        "k in d 判断的是 k 是否为字典的键，而不是值。",
+        "dict([2,5], [3,4]) 是典型错题选项：传了两个位置参数，语法不成立。"
+      ],
+      "codeDemo": {
+        "title": "字典创建、安全查询 get() 与 in 判断",
+        "code": "# 1. 创建字典与查询\nphone = {\"张三\": \"1380001\", \"李四\": \"1390002\", \"王五\": \"1370003\"}\nprint(\"张三电话:\", phone[\"张三\"])\n\n# 2. 安全查询 get()：键存在返回真值，不存在返回默认值\nprint(\"李四:\", phone.get(\"李四\", \"not found\"))\nprint(\"赵六:\", phone.get(\"赵六\", \"not found\"))\nprint(\"长度(键值对数):\", len(phone))\nprint(\"'张三' in phone:\", \"张三\" in phone)\nprint(\"'1380001' in phone:\", \"1380001\" in phone)  # in 只查键，不查值！\n\n# 3. 用 dict() 从键值对序列创建（注意只能传 1 个可迭代参数）\nd2 = dict(([\"a\", 1], [\"b\", 2]))\nprint(\"dict() 创建:\", d2)",
+        "expectedOutput": "张三电话: 1380001\n李四: 1390002\n赵六: not found\n长度(键值对数): 3\n'张三' in phone: True\n'1380001' in phone: False\ndict() 创建: {'a': 1, 'b': 2}",
+        "lineByLine": [
+          "第 2~3 行：创建电话簿字典，并用方括号按键 '张三' 取出 '1380001'。",
+          "第 6~7 行：phone.get('李四', 'not found') 命中真实值；查 '赵六' 未命中则返回 'not found' 且不崩溃。",
+          "第 8~10 行：len(phone) 为 3；'张三' in phone 为 True，但 '1380001' 是值不是键，所以返回 False。",
+          "第 13 行：把两个二元列表打包成一个元组传给 dict(...)，成功构造 {'a': 1, 'b': 2}。"
+        ]
+      },
+      "cautionBox": {
+        "title": "用位置下标查字典 & 未保护的 KeyError",
+        "wrongCode": "D = {'A': 10, 'B': 20, 'C': 30, 'D': 40}\nprint(D[3])        # KeyError: 3（以为能按位置下标取第4个！）\nprint(D['F'])      # KeyError: 'F' 程序直接崩！",
+        "rightCode": "D = {'A': 10, 'B': 20, 'C': 30, 'D': 40}\nprint(D['D'])                    # 40\nprint(D.get('F', 'not found'))   # not found",
+        "why": "字典不是按 0,1,2 位置编号的序列，方括号里必须是已存在的键；键不确定是否存在时，务必改用 get()。"
+      }
+    },
+    {
+      "id": "ch7-s2",
+      "title": "增删改、重复键覆盖规则与三种遍历方式",
+      "concept": "字典是可变对象，给键赋值遵循一句超级好记的口诀：**“有则改之，无则加勉”**。执行 `d[k] = val` 时，如果键 `k` 已经在字典里，就覆盖更新它的值；如果 `k` 还不在字典里，就自动新增这一对键值。删除键值对则用 `del d[k]` 或 `d.pop(k, 默认值)`。\n\n单选里几乎必考一道“字面量重复键”题：比如 `d = {'b':99, 'c':33, 'a':55, 'b':3, 'c':4, 'a':3}`。很多同学以为会报错或者保留 6 个元素，其实都不会！Python 的规则非常明确：**重复键的值以最后一次赋值为准，但键在字典里的排列顺序保留首次出现的位置**。所以上面结果是 `{'b': 3, 'c': 4, 'a': 3}`。\n\n遍历字典有三种常用写法，最容易混淆的是直接 `for x in d:`——请牢记它遍历出来的永远是**键（key）**，而不是值，也不是元组！想同时拿到键和值，请用 `for k, v in d.items():`（每次产出 `(key, value)` 二元组并自动解包）；只需要值时用 `d.values()`。",
+      "syntaxCard": {
+        "title": "字典增删改与三种遍历",
+        "syntax": "d[\"a\"] = 666                 # 已有键 -> 修改值\nd[\"new\"] = 999               # 新键   -> 添加键值对\nfor k in d: ...              # 默认遍历【键】\nfor k, v in d.items(): ...   # 遍历【(键, 值) 元组并解包】\nfor v in d.values(): ...     # 仅遍历【值】",
+        "breakdown": [
+          {
+            "part": "d[k] = v",
+            "meaning": "统一承担新增与修改，不会抛 KeyError"
+          },
+          {
+            "part": "for k in d",
+            "meaning": "每次迭代变量 k 取得的是键，配合 d[k] 即可拿值"
+          },
+          {
+            "part": "d.items()",
+            "meaning": "产出 ('a', 5) 形式的键值二元组序列，排序和遍历最常用"
+          },
+          {
+            "part": "d.values()",
+            "meaning": "只取所有值，常与 sum()、max() 配合"
+          }
+        ]
+      },
+      "keyRules": [
+        "字面量出现重复键不报错：值取最后一次赋值，键的插入顺序按首次出现保留。",
+        "for k in d 遍历的是键；for kv in d.items() 中 kv 是 (键, 值) 元组。",
+        "Python 3.7+ 字典严格保持键的插入顺序；若需要按键或按值排序，必须借助 sorted() 生成列表。"
+      ],
+      "codeDemo": {
+        "title": "增改、重复键覆盖与三种遍历对比",
+        "code": "# 1. 有则改、无则增\nscores = {\"语文\": 88, \"数学\": 92}\nscores[\"数学\"] = 98      # 键已存在 -> 修改\nscores[\"英语\"] = 90      # 键不存在 -> 新增\nprint(\"增改后:\", scores)\n\n# 2. 字面量重复键：值取最后一次，键顺序按首次出现\nd = {\"b\": 99, \"c\": 33, \"a\": 55, \"b\": 3, \"c\": 4, \"a\": 3}\nprint(\"重复键结果:\", d)\n\n# 3. 三种遍历方式对比\nprint(\"--- 遍历键 ---\")\nfor k in scores:\n    print(k, \"->\", scores[k])\n\nprint(\"--- 遍历 items() 键值对 ---\")\nfor k, v in scores.items():\n    print(f\"{k}={v}\", end=\"  \")\nprint()\nprint(\"所有分数总和:\", sum(scores.values()))",
+        "expectedOutput": "增改后: {'语文': 88, '数学': 98, '英语': 90}\n重复键结果: {'b': 3, 'c': 4, 'a': 3}\n--- 遍历键 ---\n语文 -> 88\n数学 -> 98\n英语 -> 90\n--- 遍历 items() 键值对 ---\n语文=88  数学=98  英语=90  \n所有分数总和: 276",
+        "lineByLine": [
+          "第 3~4 行：'数学' 已存在被改成 98；'英语' 不存在被自动追加进字典。",
+          "第 8 行：b、c、a 都重复出现两次，最终保留后一次的值 3, 4, 3，顺序仍是首次出现的 b, c, a。",
+          "第 12~18 行：演示直接遍历键、用 items() 解包遍历键值对，以及对 values() 求总分。"
+        ]
+      },
+      "cautionBox": {
+        "title": "误以为 for x in d 拿到的是值或元组",
+        "wrongCode": "d = {'a': 5, 'b': 3}\nfor k, v in d:          # ValueError! 直接遍历 d 只有单个键，无法解包成 2 个变量\n    print(k, v)",
+        "rightCode": "d = {'a': 5, 'b': 3}\nfor k, v in d.items():  # items() 才产出 (k, v) 元组\n    print(k, v)",
+        "why": "直接迭代字典只会产出键；想同时解包出键和值，必须调用 d.items()。"
+      }
+    },
+    {
+      "id": "ch7-s3",
+      "title": "字典计数三件套、按频次 TopN 排序与字典嵌套",
+      "concept": "整个 Python 期末考从第 7 章贯穿到第 8 章的“第一大杀器”，就是**字典计数三件套**。凡是题目说“统计每个字母出现多少次”、“统计每个单词词频并输出前 10”、“统计谁选的课最多”，核心代码全都是同一行：\n\n`cnt[k] = cnt.get(k, 0) + 1`\n\n为什么这一行如此优雅？当 `k` 第一次出现时，`cnt.get(k, 0)` 返回 `0`，加 `1` 变成 `1` 并新建键 `k`；当 `k` 再次出现时，`cnt.get(k, 0)` 返回旧次数，加 `1` 后写回更新。一行代码替代了繁琐的 `if k in cnt: ... else: ...`！\n\n统计完成后，题目通常会要求两种输出顺序：\n1. **按字母/键升序输出**：`for k in sorted(cnt): print(k, cnt[k])`——`sorted(cnt)` 会把所有键排好升序。\n2. **按出现次数降序取前 N 名（TopN）**：`ranked = sorted(cnt.items(), key=lambda kv: -kv[1])[:N]`。注意用 `-kv[1]` 实现降序且利用 Python 的**稳定排序**特性：次数相同的两个键，会完美保持它们首次出现的先后顺序！\n\n此外，字典的值本身也可以是另一个字典（即**字典嵌套**），比如用学号映射到包含姓名、成绩的小字典：`students['001']['name']` 两层方括号逐级取出即可。",
+      "syntaxCard": {
+        "title": "字典计数与两种排序标准模板",
+        "syntax": "cnt = {}\nfor item in seq:\n    cnt[item] = cnt.get(item, 0) + 1          # 1. 计数\n\nfor k in sorted(cnt): ...                     # 2. 按键升序\ntopN = sorted(cnt.items(), key=lambda kv: -kv[1])[:N]  # 3. 按值降序取前N",
+        "breakdown": [
+          {
+            "part": "cnt.get(item, 0) + 1",
+            "meaning": "无则建 1、有则加 1 的标准计数惯用法"
+          },
+          {
+            "part": "len(cnt)",
+            "meaning": "统计一共出现了多少种不同的元素"
+          },
+          {
+            "part": "sorted(cnt)",
+            "meaning": "对字典的键升序排序，返回键列表"
+          },
+          {
+            "part": "key=lambda kv: -kv[1]",
+            "meaning": "kv 是 (键, 次数) 元组，-kv[1] 按次数降序且同次数保持首次出现顺序"
+          }
+        ]
+      },
+      "keyRules": [
+        "sorted(cnt) 排序的是键；想按值（次数）排序必须传 cnt.items() 配合 key=lambda kv: -kv[1]。",
+        "当需要“按次数降序、次数相同按首次出现顺序”时，用 key=lambda kv: -kv[1]（不要用 reverse=True，否则平局也会反序！）。",
+        "如果题目要求“按次数降序、次数相同按字母升序”，则写 key=lambda kv: (-kv[1], kv[0])。",
+        "字典嵌套逐层用方括号取值：students['001']['score']。"
+      ],
+      "codeDemo": {
+        "title": "词频统计、按键排序、Top3 排序与字典嵌套",
+        "code": "text = \"Python is powerful and Python is easy\"\ncnt = {}\nfor w in text.lower().split():\n    cnt[w] = cnt.get(w, 0) + 1\n\nprint(\"原始计数:\", cnt)\nprint(\"按字母升序:\", [(k, cnt[k]) for k in sorted(cnt)])\n\n# 按次数降序（稳定排序：次数相同时保留首次出现顺序）\nranked = sorted(cnt.items(), key=lambda kv: -kv[1])\nprint(\"词频 Top3:\", ranked[:3])\n\n# 字典嵌套：学号 -> 学生信息字典\nstudents = {\n    \"001\": {\"name\": \"张三\", \"score\": 90},\n    \"002\": {\"name\": \"李四\", \"score\": 85},\n}\nprint(\"001号同学:\", students[\"001\"][\"name\"], students[\"001\"][\"score\"])",
+        "expectedOutput": "原始计数: {'python': 2, 'is': 2, 'powerful': 1, 'and': 1, 'easy': 1}\n按字母升序: [('and', 1), ('easy', 1), ('is', 2), ('powerful', 1), ('python', 2)]\n词频 Top3: [('python', 2), ('is', 2), ('powerful', 1)]\n001号同学: 张三 90",
+        "lineByLine": [
+          "第 1~4 行：句子转小写按空格切词，循环内用 cnt.get(w, 0) + 1 统计词频。",
+          "第 7 行：sorted(cnt) 返回按字母表排好的单词列表。",
+          "第 10~11 行：用 -kv[1] 降序排序，'python' 和 'is' 都是 2 次，因稳定排序保留了 'python' 在前。",
+          "第 14~18 行：演示字典嵌套两层键访问。"
+        ]
+      },
+      "cautionBox": {
+        "title": "次数并列时 reverse=True 破坏先现顺序",
+        "wrongCode": "cnt = {'python': 2, 'is': 2, 'easy': 1}\n# 注意：如果平局要求按字母升序或原顺序，blind reverse=True 容易翻转次序",
+        "rightCode": "cnt = {'python': 2, 'is': 2, 'easy': 1}\n# 稳妥写法：按次数降序，平局保持原插入序\nranked = sorted(cnt.items(), key=lambda kv: -kv[1])\n# 若平局要求按字母升序：key=lambda kv: (-kv[1], kv[0])",
+        "why": "Python 排序是 Timsort 稳定排序，用负号 -kv[1] 排序时，相等元素的相对次序保持不变；若还需二级排序可直接返回元组 (-kv[1], kv[0])。"
+      }
+    },
+    {
+      "id": "ch7-s4",
+      "title": "集合（set）完全指南：去重、set() 陷阱与无序特性",
+      "concept": "集合（`set`）在数学里就是“一堆互不相同的元素”，在 Python 中有两大核心特点：**自动去重**和**无序**。只要把元素放进集合，任何重复项都会瞬间蒸发——因此把列表去重最快的一句话就是 `set(ls)`。\n\n初学者在集合上栽跟头最多的地方是**创建空集合**：因为历史原因，一对空花括号 `{}` 已经被空字典占用了！所以 `s = {}` 创建出来的是 `dict`，往里 `s.add(1)` 会直接报 `AttributeError`。创建空集合必须老老实实写 `s = set()`。\n\n另一个重要考点是集合的无序性：集合里没有“第 0 个元素”的概念，写 `s[0]` 会直接抛 `TypeError`；调用 `s.pop()` 弹出一个元素时，弹出来的是谁在语义上是**不确定**的（单选高频题！），绝不能指望它弹出第一个或最大/最小元素。\n\n删除指定元素有两个方法要分清：`s.remove(x)` 找不到 `x` 会抛 `KeyError`，而 `s.discard(x)` 找不到时静默忽略、绝不报错，实战更安全。",
+      "syntaxCard": {
+        "title": "集合创建、增删与去重",
+        "syntax": "s = set()           # 空集合（切记 {} 是空字典！）\ns = {1, 2, 2, 3}    # 自动去重 -> {1, 2, 3}\ns.add(x)            # 添加元素（重复添加自动忽略）\ns.discard(x)        # 安全删除（不存在不报错）\ns.remove(x)         # 严格删除（不存在抛 KeyError）\ns.pop()             # 弹出不确定元素（集合无序）",
+        "breakdown": [
+          {
+            "part": "set()",
+            "meaning": "创建空集合的唯一正确写法"
+          },
+          {
+            "part": "set(ls)",
+            "meaning": "将列表/字符串快速去重转为集合（注意会丢失原顺序）"
+          },
+          {
+            "part": "s.discard(x)",
+            "meaning": "存在则删、不存在不报错"
+          },
+          {
+            "part": "s.pop()",
+            "meaning": "弹出并返回一个元素，因无序故结果不可预测"
+          }
+        ]
+      },
+      "keyRules": [
+        "{} 是空字典，空集合必须写 set()！",
+        "集合无序，不能用下标 s[0] 索引（报 TypeError），也不能切片。",
+        "s.pop() 弹出的元素是不确定的，代码绝不能依赖其顺序。",
+        "set(ls) 去重后会丢掉列表原来的先后顺序；若题目要求“保留原顺序去重”或不许用 set，要改用循环 + not in。"
+      ],
+      "codeDemo": {
+        "title": "集合去重、{} 与 set() 类型验证及 discard 安全删除",
+        "code": "# 1. 自动去重\ns = {3, 2, 5, 6, 2, 8, 3, 2}\nprint(\"集合去重结果:\", s, \"元素个数:\", len(s))\n\n# 2. 空集合 vs 空字典（考试必考陷阱！）\nempty_dict = {}\nempty_set = set()\nprint(\"type({}):\", type(empty_dict), \"| type(set()):\", type(empty_set))\n\n# 3. 增删与 discard vs remove\ns.add(10)\ns.discard(999)  # 999 不存在，discard 静默跳过不报错\nprint(\"add(10) + discard(999):\", s)\n\n# 4. 列表去重（注意会丢失原顺序）\nnums = [100, 200, 100, 300, 200]\nprint(\"set(nums) 去重:\", sorted(set(nums)))",
+        "expectedOutput": "集合去重结果: {2, 3, 5, 6, 8} 元素个数: 5\ntype({}): <class 'dict'> | type(set()): <class 'set'>\nadd(10) + discard(999): {2, 3, 5, 6, 8, 10}\nset(nums) 去重: [100, 200, 300]",
+        "lineByLine": [
+          "第 2~3 行：重复的 2 和 3 被自动吸收，集合最终只剩 5 个不重复元素。",
+          "第 6~8 行：用 type() 直观证明 {} 是 dict，set() 才是 set。",
+          "第 11~13 行：add(10) 成功加入，discard(999) 对不存在的元素完全不报错。",
+          "第 16~17 行：set(nums) 去重后配合 sorted() 得到升序不重复列表。"
+        ]
+      },
+      "cautionBox": {
+        "title": "误把 {} 当空集合 & 对集合做下标索引",
+        "wrongCode": "s = {}            # 错！这是空字典\ns.add(5)          # AttributeError: 'dict' object has no attribute 'add'\nprint({1,2,3}[0]) # TypeError: 'set' object is not subscriptable",
+        "rightCode": "s = set()\ns.add(5)\nprint(sorted(s)[0])  # 先转排序列表再按索引取",
+        "why": "空花括号在 Python 中永远表示空字典；集合基于哈希表无位置顺序，必须先转 list/sorted() 才能按位置取元素。"
+      }
+    },
+    {
+      "id": "ch7-s5",
+      "title": "集合四大数学运算（& | - ^）与去重补齐循环",
+      "concept": "集合最爽的用法就是直接用数学符号做群体关系分析——选课问题、双色球中奖号码比对、共同好友统计，用集合写一行就能顶列表嵌套循环十行！牢记四大运算符：\n\n1. **交集 `A & B`**：同时在 A 和 B 中的元素（如“既选了课 1 又选了课 2 的同学”）。\n2. **并集 `A | B`**：A 和 B 合并去重后的全部元素（如“三门课的总选课人数 `len(c1 | c2 | c3)`”）。\n3. **差集 `A - B`**：在 A 中但不在 B 中的元素（如“只选了第 1 门没选第 2、3 门：`c1 - c2 - c3`”）。\n4. **对称差 `A ^ B`**：单选高频！指“只在 A 或只在 B，但不同时在两者中的元素”，等价于 `(A | B) - (A & B)`。\n\n另一个作业 51598 考过的经典模式是**去重补齐循环**：`while len(s) < 5: s.add(eval(input()))`。新手常误以为它恰好读 5 次输入，错！因为如果用户中途输入了重复数据，集合自动去重导致 `len(s)` 不增加，循环会继续读，直到**凑满 5 个互不相同的数据**为止！模拟双色球生成 6 个不重复红球也是完全相同的套路。",
+      "syntaxCard": {
+        "title": "集合四大运算与去重补齐模板",
+        "syntax": "A & B    # 交集：两者共有\nA | B    # 并集：合并去重\nA - B    # 差集：A 有而 B 无\nA ^ B    # 对称差：不同时在 A 和 B 中（并减交）\n\ns = set()\nwhile len(s) < 5:\n    s.add(eval(input()))  # 凑够 5 个不重复数据才停",
+        "breakdown": [
+          {
+            "part": "&",
+            "meaning": "交集，对应方法 A.intersection(B)"
+          },
+          {
+            "part": "|",
+            "meaning": "并集，对应方法 A.union(B)"
+          },
+          {
+            "part": "-",
+            "meaning": "差集，注意 A - B 与 B - A 结果不同"
+          },
+          {
+            "part": "^",
+            "meaning": "对称差（异或符号），去掉两者公共部分后剩下的所有元素"
+          }
+        ]
+      },
+      "keyRules": [
+        "记住 ^ 在整数间是按位异或（2^3==1），在集合间是对称差（{1,2,3} ^ {2,3,5,7} == {1,5,7}）。",
+        "复杂集合表达式建议加括号，如 (c1 & c3) - c2（同时选 1 和 3 但不选 2）。",
+        "while len(s) < N: s.add(...) 的实际循环次数 >= N，取决于是否有重复输入/随机数。"
+      ],
+      "codeDemo": {
+        "title": "集合交并差对称差 & 去重补齐 5 个不同数演示",
+        "code": "A = {1, 2, 3, 4}\nB = {3, 4, 5, 6}\nprint(\"交集 A & B (两者都有):\", A & B)\nprint(\"并集 A | B (合并去重):\", A | B)\nprint(\"差集 A - B (A有B无):\", A - B)\nprint(\"对称差 A ^ B (只在一边):\", A ^ B)\n\n# 模拟去重循环：不断读入直到凑齐 5 个不同数字\ninputs = [10, 20, 10, 30, 20, 40, 50, 60]\ncollected = set()\nreads = 0\nfor x in inputs:\n    if len(collected) >= 5:\n        break\n    collected.add(x)\n    reads += 1\nprint(f\"共读入 {reads} 次才凑满 5 个不同数:\", sorted(collected))",
+        "expectedOutput": "交集 A & B (两者都有): {3, 4}\n并集 A | B (合并去重): {1, 2, 3, 4, 5, 6}\n差集 A - B (A有B无): {1, 2}\n对称差 A ^ B (只在一边): {1, 2, 5, 6}\n共读入 7 次才凑满 5 个不同数: [10, 20, 30, 40, 50]",
+        "lineByLine": [
+          "第 1~6 行：对 {1,2,3,4} 和 {3,4,5,6} 依次做交(&)、并(|)、差(-)、对称差(^)运算。",
+          "第 9~16 行：模拟输入流含重复的 10 和 20，共读入 7 次才把集合长度凑满 5 个不同数。"
+        ]
+      },
+      "cautionBox": {
+        "title": "把 while len(s) < 5 误解为固定读 5 次",
+        "wrongCode": "# 若用 for i in range(5): s.add(randint(1, 33))\n# 一旦随机抽到重复红球，最终集合里可能只有 4 个球，少球了！",
+        "rightCode": "import random\nred = set()\nwhile len(red) < 6:\n    red.add(random.randint(1, 33))  # 保证凑齐整整 6 个不同红球",
+        "why": "双色球红球和“凑 5 个不同数据”题，因为重复值会被集合吸收，必须用 while len(s) < 目标个数，不能用固定次数的 for。"
+      }
+    },
+    {
+      "id": "ch7-s6",
+      "title": "元组（tuple）：不可变特性与打包/解包优雅写法",
+      "concept": "元组（`tuple`）长得像把列表的方括号 `[]` 换成了圆括号 `()`，如 `t = (1, 2, 3)`。它和列表一样有序、支持正负索引 `t[0]`、`t[-1]`、支持切片和 `len(t)`，唯一的本质区别是：**元组一旦创建就不可修改**！你不能改 `t[0] = 9`，也没有 `append()`、`remove()`、`sort()` 这类修改方法。\n\n为什么 Python 需要不可变的元组？一是为了**数据安全**（防止误改固定记录，如 `(姓名, 分数)` 或坐标 `(x, y)`）；二是因为只有不可变对象才能作为**字典的键**或放进集合里；三是支撑了 Python 最优雅的语法——**打包与解包**。\n\n当你写 `a, b = b, a` 交换两个变量，或者写 `for k, v in d.items():`，或者一个函数 `return mx, mn` 返回多个值时，底层其实都在默默地做元组打包（把多个值自动装成一个元组）和解包（按位置拆开赋给左侧变量）。\n\n还要记住一个小细节：定义**只有一个元素的元组**时，必须在元素后面加一个逗号 `(42,)`！如果写成 `(42)`，Python 会把括号当成数学运算的优先级括号，结果只是普通整数 `42`。",
+      "syntaxCard": {
+        "title": "元组定义、单元素逗号与解包",
+        "syntax": "t = (1, 2, 3)       # 普通元组\none = (42,)         # 单元素元组必须有逗号！\na, b, c = t         # 解包：变量个数需与元组长度一致\na, b = b, a         # 交换两变量的本质 = 元组打包 + 解包",
+        "breakdown": [
+          {
+            "part": "(a, b, c)",
+            "meaning": "有序且不可变的序列，支持读取、索引、切片、len、in"
+          },
+          {
+            "part": "(42,)",
+            "meaning": "末尾逗号才是构成单元素元组的关键，不是括号"
+          },
+          {
+            "part": "a, b, c = t",
+            "meaning": "元组解包，把元素按顺序分别赋给 a、b、c"
+          }
+        ]
+      },
+      "keyRules": [
+        "元组不可变：t[0] = 9、t.append(4)、t.remove(1) 全部报错（单选 118 题原考点！）。",
+        "单元素元组必须加逗号 (x,)，否则不是元组。",
+        "元组支持解包：a, b, c = t 合法，且 a, b = b, a 是 Pythonic 的变量交换写法。"
+      ],
+      "codeDemo": {
+        "title": "单元素元组辨析、解包交换与元组作字典键",
+        "code": "# 1. 元组创建、索引与切片\nt = (10, 20, 30)\nsingle = (42,)   # 单元素元组必须带逗号！(42) 只是整数 42\nprint(\"t[0]:\", t[0], \"| type((42,)):\", type(single), \"| type((42)):\", type((42)))\n\n# 2. 打包与解包\na, b, c = t\nprint(\"解包后:\", a, b, c)\n\n# 3. 交换变量的本质就是元组打包 + 解包\nx, y = 100, 200\nx, y = y, x\nprint(\"一步交换后:\", x, y)\n\n# 4. 元组不可变，因此可以作为字典的键或集合的元素\ncoord_map = {(0, 0): \"原点\", (1, 2): \"目标点\"}\nprint(\"坐标映射:\", coord_map[(1, 2)])",
+        "expectedOutput": "t[0]: 10 | type((42,)): <class 'tuple'> | type((42)): <class 'int'>\n解包后: 10 20 30\n一步交换后: 200 100\n坐标映射: 目标点",
+        "lineByLine": [
+          "第 2~4 行：对比 (42,) 是 tuple 而 (42) 是 int。",
+          "第 7~13 行：展示元组解包与一步交换变量。",
+          "第 16~17 行：因元组不可变，可直接当作字典的键记录二维坐标信息。"
+        ]
+      },
+      "cautionBox": {
+        "title": "试图修改元组内容",
+        "wrongCode": "t = (1, 2, 3)\nt[0] = 9      # TypeError: 'tuple' object does not support item assignment\nt.append(4)   # AttributeError",
+        "rightCode": "t = (1, 2, 3)\na, b, c = t   # 合法：只读解包\nls = list(t); ls[0] = 9; t = tuple(ls)  # 若确实要改，转列表改完再转回",
+        "why": "元组是不可变类型，任何原地增删改操作都不合法。"
+      }
+    }
+  ],
+  "workedExamples": [
+    {
+      "id": "ch7-ex1",
+      "title": "例题 1：多用户 3 次登录模拟（字典 get + for-else 联动）",
+      "difficulty": "入门",
+      "source": "作业 51597 · 字典 7-1",
+      "problemStatement": "系统已有用户字典 users（用户名 → 密码）。允许用户最多尝试登录 3 次，每次依次输入用户名和密码；若用户名存在且密码匹配则输出欢迎信息并结束；否则提示剩余次数；若 3 次均失败则提示账户已锁定。",
+      "thinkingSteps": [
+        "用字典存用户名与密码映射，查询时不能直接 users[name]（输入不存在的用户名会 KeyError 崩溃！），必须用 users.get(name)。",
+        "当用户名不存在时，users.get(name) 返回 None，只要密码非 None 就自然不相等，巧妙省去先判断 name in users 的冗余分支。",
+        "用 for attempt in range(1, 4) 控制 3 次机会，成功即 break；配合循环的 else 子句处理“3 次全错”的锁定提示。"
+      ],
+      "code": "users = {\"admin\": \"123456\", \"alice\": \"py2026\", \"bob\": \"hello\"}\n\nfor attempt in range(1, 4):\n    name = input().strip()\n    pwd = input().strip()\n    if users.get(name) == pwd:\n        print(f\"欢迎回来，{name}！（第 {attempt} 次登录成功）\")\n        break\n    else:\n        print(f\"用户名或密码错误，剩余 {3 - attempt} 次机会\")\nelse:\n    print(\"连续 3 次登录失败，账户已锁定！\")",
+      "stdin": "alice\nwrong\nalice\npy2026\n",
+      "sampleOutput": "用户名或密码错误，剩余 2 次机会\n欢迎回来，alice！（第 2 次登录成功）",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1 行",
+          "explanation": "用字典建立用户名到密码的 O(1) 查找表。"
+        },
+        {
+          "lines": "第 3~5 行",
+          "explanation": "最多循环 3 轮，strip() 去掉输入可能携带的首尾空白。"
+        },
+        {
+          "lines": "第 6~8 行",
+          "explanation": "核心判断：users.get(name) == pwd，即使用户名不存在也不抛 KeyError；匹配成功立即 break 跳出循环。"
+        },
+        {
+          "lines": "第 11~12 行",
+          "explanation": "for-else 子句：只有 3 次循环都没触发 break（全错）时才执行锁定提示。"
+        }
+      ],
+      "commonMistakes": [
+        "直接写 users[name] == pwd，测试点一旦输入未注册用户名直接抛 KeyError 0 分。",
+        "把“账户已锁定”写在循环体外部而没用 else 或 flag，导致登录成功后也错误打印了锁定信息。"
+      ],
+      "variationTip": "电话簿/生词本查询题本质完全相同：先循环录入建字典，再循环查询输出 d.get(word, 'not found') 即可。"
+    },
+    {
+      "id": "ch7-ex2",
+      "title": "例题 2：文本字母频次统计与 Top3 降序输出（必考母题）",
+      "difficulty": "常考",
+      "source": "作业 51998 / 教案附录 B 题 7",
+      "problemStatement": "输入一行英文文本，忽略大小写并只统计英文字母 a~z。输出：① 一共出现了多少种不同字母；② 出现次数最多的前 3 个字母及其次数（按次数降序，同次数保留首次出现顺序）。",
+      "thinkingSteps": [
+        "输入先 .lower() 统一转小写，遍历每个字符用 'a' <= ch <= 'z' 过滤掉空格和标点。",
+        "用字典计数黄金公式 cnt[ch] = cnt.get(ch, 0) + 1 累计频次，len(cnt) 即不同字母种数。",
+        "对 cnt.items() 用 sorted(..., key=lambda kv: -kv[1]) 稳定降序排序，再切片 [:3] 输出前三名。"
+      ],
+      "code": "s = input().lower()\ncnt = {}\nfor ch in s:\n    if 'a' <= ch <= 'z':\n        cnt[ch] = cnt.get(ch, 0) + 1\n\nprint(\"共出现不同字母种数:\", len(cnt))\nranked = sorted(cnt.items(), key=lambda kv: -kv[1])\nfor ch, num in ranked[:3]:\n    print(f\"{ch}: {num}\")",
+      "stdin": "Banana Apple Python!\n",
+      "sampleOutput": "共出现不同字母种数: 10\na: 4\nn: 3\np: 3",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1~5 行",
+          "explanation": "统一转小写后过滤纯英文字母，利用 get(ch, 0) + 1 完成计数。"
+        },
+        {
+          "lines": "第 7 行",
+          "explanation": "len(cnt) 直接给出不重复字母的种类数。"
+        },
+        {
+          "lines": "第 8~10 行",
+          "explanation": "sorted(cnt.items(), key=lambda kv: -kv[1]) 按次数降序且同次数保持首次出现顺序，取前 3 项打印。"
+        }
+      ],
+      "commonMistakes": [
+        "忘记过滤空格和标点，把空格统计成了出现次数第 1 名！",
+        "对 cnt 直接 sorted(cnt) 而忘了加 .items()，结果只按字母排序没按次数排序。"
+      ],
+      "variationTip": "若题目要求按字母顺序每行 5 个输出，则改用 enumerate(sorted(cnt)) 配合 (i+1)%5==0 换行；若统计英文单词词频，则把遍历字符改为遍历 text.split()。"
+    },
+    {
+      "id": "ch7-ex3",
+      "title": "例题 3：三门课选课名单集合交并差多问分析",
+      "difficulty": "常考",
+      "source": "作业 51598 / 教案附录 B 题 8",
+      "problemStatement": "输入三行，分别为课程 1、课程 2、课程 3 的选课学生名单（空格分隔）。依次输出：① 总选课人数（去重）；② 三门全选的学生（按字母升序）；③ 只选了第 1 门课的学生；④ 只选了第 1 门和第 3 门（没选第 2 门）的学生。",
+      "thinkingSteps": [
+        "每行用 set(input().split()) 直接变成去重集合 c1, c2, c3。",
+        "把中文自然语言精准翻译成集合运算：总人数 = 并集 c1 | c2 | c3；三门全选 = 交集 c1 & c2 & c3；只选第 1 门 = c1 - c2 - c3；只选一和三 = (c1 & c3) - c2。",
+        "因为集合无序，为了确保打印顺序确定可控，输出名单时外层套 sorted(...)。"
+      ],
+      "code": "c1 = set(input().split())\nc2 = set(input().split())\nc3 = set(input().split())\n\nprint(\"总选课人数:\", len(c1 | c2 | c3))\nprint(\"三门全选:\", sorted(c1 & c2 & c3))\nprint(\"只选第1门:\", sorted(c1 - c2 - c3))\nprint(\"只选第1和第3门:\", sorted((c1 & c3) - c2))",
+      "stdin": "Tom Jerry Alice Bob\nJerry Bob Lucy\nAlice Bob Tom\n",
+      "sampleOutput": "总选课人数: 5\n三门全选: ['Bob']\n只选第1门: []\n只选第1和第3门: ['Alice', 'Tom']",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1~3 行",
+          "explanation": "split() 拆出名单列表后立即 set() 转为集合。"
+        },
+        {
+          "lines": "第 5~6 行",
+          "explanation": "| 求总人数并集，& 求三门共有交集。"
+        },
+        {
+          "lines": "第 7~8 行",
+          "explanation": "连续差集 c1 - c2 - c3 排除其他两门；(c1 & c3) - c2 先取 1、3 公共部分再剔除选了第 2 门的同学。"
+        }
+      ],
+      "commonMistakes": [
+        "求“只选第 1 和第 3 门”时漏掉 - c2，导致三门全选的同学也被误算进去！",
+        "直接 print(c1 & c2) 而没排序，导致不同运行环境输出顺序不一致。"
+      ],
+      "variationTip": "若题目进一步问“恰好只选了一门课的人数”，可写成 len((c1-c2-c3) | (c2-c1-c3) | (c3-c1-c2))，或者用字典统计每人出现次数再筛 count == 1。"
+    },
+    {
+      "id": "ch7-ex4",
+      "title": "例题 4：维纳的年龄（集合去重检验 10 个数字各出现一次）",
+      "difficulty": "综合压轴",
+      "source": "作业 51598 · 60 分大题",
+      "problemStatement": "控制论之父诺伯特·维纳年轻时在一次演讲中说：“我今年年龄的立方是一个 4 位数，年龄的四次方是一个 6 位数，这 10 个数字正好包含了从 0 到 9 这 10 个数字，每个都恰好出现一次。”请编写程序求出维纳当年的年龄。",
+      "thinkingSteps": [
+        "枚举可能的年龄 age（范围 10 到 99 足够覆盖：10³=1000，22³=10648 已超过 4 位）。",
+        "把 age**3 和 age**4 分别转成字符串 s3 和 s4，检查 len(s3) == 4 且 len(s4) == 6。",
+        "关键巧思：总长度已经是 4 + 6 = 10 个数字字符了，怎样一句话判断 0~9 恰好各出现一次？放进集合里看 len(set(s3 + s4)) == 10！只要 10 个数字里没有重复，就必然 0~9 全部集齐！"
+      ],
+      "code": "for age in range(10, 100):\n    s3 = str(age ** 3)\n    s4 = str(age ** 4)\n    if len(s3) == 4 and len(s4) == 6 and len(set(s3 + s4)) == 10:\n        print(f\"维纳当年年龄: {age} 岁\")\n        print(f\"立方(4位): {s3} | 四次方(6位): {s4}\")\n        break",
+      "sampleOutput": "维纳当年年龄: 18 岁\n立方(4位): 5832 | 四次方(6位): 104976",
+      "codeWalkthrough": [
+        {
+          "lines": "第 1 行",
+          "explanation": "从小到大枚举两位数年龄。"
+        },
+        {
+          "lines": "第 2~3 行",
+          "explanation": "计算立方与四次方并转为字符串，便于统计位数与拼接。"
+        },
+        {
+          "lines": "第 4~7 行",
+          "explanation": "同时满足 4 位 + 6 位且拼接后转集合长度为 10，立即输出 18 岁（18³=5832, 18⁴=104976）并 break。"
+        }
+      ],
+      "commonMistakes": [
+        "忘了把整数转成字符串就直接 len(age**3)，导致 TypeError: object of type 'int' has no len()。",
+        "用 10 个 if 判断 '0' in s and '1' in s ... 代码冗长易漏，不如 len(set(s3+s4)) == 10 一行搞定。"
+      ],
+      "variationTip": "凡是题目问“某串数字/字母中是否所有字符互不相同”，核心判定一律是 len(set(s)) == len(s)！"
+    }
+  ],
+  "summaryCheatsheet": [
+    {
+      "label": "安全取值不报错",
+      "snippet": "d.get(key, 'not found')",
+      "note": "替代 d[key] 防 KeyError"
+    },
+    {
+      "label": "字典计数模板",
+      "snippet": "cnt[k] = cnt.get(k, 0) + 1",
+      "note": "第 7、8 章核心最高频代码"
+    },
+    {
+      "label": "按键升序遍历",
+      "snippet": "for k in sorted(d): print(k, d[k])",
+      "note": "sorted(d) 默认排键"
+    },
+    {
+      "label": "按次数降序 TopN",
+      "snippet": "sorted(d.items(), key=lambda kv: -kv[1])[:N]",
+      "note": "稳定排序，平局保首现顺序"
+    },
+    {
+      "label": "键值对遍历",
+      "snippet": "for k, v in d.items(): ...",
+      "note": "直接 for k in d 仅拿键"
+    },
+    {
+      "label": "重复键规则",
+      "snippet": "{'b':99,'b':3} -> {'b': 3}",
+      "note": "值取最后一次，键序按首次出现"
+    },
+    {
+      "label": "空集合唯一写法",
+      "snippet": "s = set()",
+      "note": "{} 是空字典不是空集合！"
+    },
+    {
+      "label": "集合交/并/差/对称差",
+      "snippet": "A & B | A | B | A - B | A ^ B",
+      "note": "选课/双色球核心运算"
+    },
+    {
+      "label": "安全删集合元素",
+      "snippet": "s.discard(x)",
+      "note": "不存在不报错（remove 会报 KeyError）"
+    },
+    {
+      "label": "凑齐 N 个不同值",
+      "snippet": "while len(s) < N: s.add(...)",
+      "note": "重复输入会被吸收，循环会继续"
+    },
+    {
+      "label": "单元素元组",
+      "snippet": "t = (42,)",
+      "note": "必须带逗号，元组不可修改"
+    },
+    {
+      "label": "元组解包交换",
+      "snippet": "a, b = b, a",
+      "note": "打包与解包的经典应用"
+    }
+  ]
+}
