@@ -141,7 +141,7 @@ export function PersonalHubView({
               StudyPulse 个人全科复习工作台 · 3 大学科已就绪
             </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            <h1 className="font-editorial text-2xl sm:text-3xl md:text-[34px] leading-[1.22]">
               把所有备考资料，收进一个
               <span className="text-amber-600 dark:text-amber-300">专注且顺手的桌面工作台</span>
             </h1>

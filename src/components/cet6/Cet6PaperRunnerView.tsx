@@ -508,10 +508,10 @@ export function Cet6PaperRunnerView({
   const activeCarefulPassage = paper.carefulReading[carefulIdx] ?? paper.carefulReading[0] ?? null;
   const readingTextClass =
     readingFontSize === 'sm'
-      ? 'text-[13px] leading-6'
+      ? 'font-reading text-[15px] leading-[1.82]'
       : readingFontSize === 'lg'
-        ? 'text-[16px] leading-8'
-        : 'text-[14.5px] leading-7';
+        ? 'font-reading text-[18.5px] leading-[1.95]'
+        : 'font-reading text-[16.5px] leading-[1.9]';
 
   return (
     <div className="space-y-4 pb-14">
@@ -668,7 +668,7 @@ export function Cet6PaperRunnerView({
               </span>
             </div>
 
-            <div className="rounded-2xl bg-zinc-500/[0.06] border border-zinc-500/12 p-4 text-sm leading-relaxed whitespace-pre-line">
+            <div className="rounded-2xl bg-zinc-500/[0.06] border border-zinc-500/12 p-4.5 font-reading text-[15.5px] leading-[1.85] whitespace-pre-line text-zinc-800 dark:text-zinc-200">
               {paper.writing.prompt}
             </div>
 
@@ -677,7 +677,7 @@ export function Cet6PaperRunnerView({
               onChange={(e) => setAnswer(paper.writing!.p, e.target.value)}
               rows={13}
               placeholder={`在此输入你的${cnName}英文作文草稿（系统自动本地保存，建议写满 ${minEssayWords}~${maxEssayWords} 词）...`}
-              className="w-full rounded-2xl bg-white dark:bg-[#111114] text-zinc-800 dark:text-zinc-100 border border-zinc-300 dark:border-white/[0.1] p-4 text-sm leading-7 outline-none focus:border-amber-500/60 resize-y"
+              className="w-full rounded-2xl bg-white dark:bg-[#111114] text-zinc-800 dark:text-zinc-100 border border-zinc-300 dark:border-white/[0.1] p-4.5 font-reading text-[16px] leading-[1.85] outline-none focus:border-amber-500/60 resize-y"
             />
           </div>
 
@@ -729,13 +729,13 @@ export function Cet6PaperRunnerView({
                 <div className="text-xs font-bold text-amber-600 dark:text-amber-300">
                   参考高分范文
                 </div>
-                <div className="text-sm leading-7 whitespace-pre-line text-zinc-700 dark:text-zinc-200">
+                <div className="font-reading text-[15.5px] leading-[1.85] whitespace-pre-line text-zinc-800 dark:text-zinc-200">
                   {paper.writing.modelEssay}
                 </div>
                 {paper.writing.explanation && (
                   <div className="pt-3 border-t border-zinc-500/15 space-y-1.5">
                     <div className="text-xs font-bold text-zinc-500">结构与写作思路解析</div>
-                    <div className="text-xs leading-6 whitespace-pre-line text-zinc-600 dark:text-zinc-300">
+                    <div className="font-prose-zh text-[13px] whitespace-pre-line text-zinc-600 dark:text-zinc-300">
                       {paper.writing.explanation}
                     </div>
                   </div>
@@ -837,8 +837,9 @@ export function Cet6PaperRunnerView({
                     </div>
 
                     {revealed && q.questionPrompt && (
-                      <div className="text-sm font-semibold text-amber-700 dark:text-amber-200 bg-amber-500/[0.08] border border-amber-500/20 rounded-xl px-3.5 py-2">
-                        录音问题：{q.questionPrompt}
+                      <div className="font-reading text-[15px] leading-relaxed text-amber-800 dark:text-amber-200 bg-amber-500/[0.08] border border-amber-500/20 rounded-xl px-3.5 py-2.5">
+                        <span className="font-sans text-xs font-semibold mr-1.5">录音问题：</span>
+                        {q.questionPrompt}
                       </div>
                     )}
 
@@ -868,7 +869,7 @@ export function Cet6PaperRunnerView({
                               setAnswer(q.p, opt.key);
                               soundEngine.click();
                             }}
-                            className={`text-left flex items-start gap-2.5 p-3 rounded-xl border text-xs md:text-sm transition-all ${
+                            className={`text-left flex items-start gap-2.5 p-3 rounded-xl border transition-all ${
                               attempt.submitted ? 'cursor-default' : 'cursor-pointer'
                             } ${style}`}
                           >
@@ -885,14 +886,14 @@ export function Cet6PaperRunnerView({
                             >
                               {opt.key}
                             </span>
-                            <span className="leading-relaxed">{opt.text}</span>
+                            <span className="font-reading text-[15px] leading-[1.65] text-zinc-800 dark:text-zinc-100">{opt.text}</span>
                           </button>
                         );
                       })}
                     </div>
 
                     {revealed && q.explanation && (
-                      <div className="text-xs leading-6 text-zinc-600 dark:text-zinc-300 bg-zinc-500/[0.07] rounded-xl p-3">
+                      <div className="font-prose-zh text-[13px] text-zinc-600 dark:text-zinc-300 bg-zinc-500/[0.07] rounded-xl p-3.5">
                         <strong className="text-emerald-600 dark:text-emerald-400">解析：</strong>
                         {q.explanation}
                       </div>
@@ -929,7 +930,7 @@ export function Cet6PaperRunnerView({
                     收起
                   </button>
                 </div>
-                <div className="text-xs md:text-sm leading-7 whitespace-pre-line text-zinc-700 dark:text-zinc-200">
+                <div className="font-reading text-[15.5px] leading-[1.85] whitespace-pre-line text-zinc-800 dark:text-zinc-200">
                   {activeListeningSeg.transcript}
                 </div>
               </div>
@@ -978,7 +979,7 @@ export function Cet6PaperRunnerView({
                 </span>
               </div>
 
-              <div className="text-[15px] leading-8 whitespace-pre-line text-zinc-800 dark:text-zinc-200">
+              <div className="font-reading text-[17px] leading-[2.05] whitespace-pre-line text-zinc-800 dark:text-zinc-200">
                 {bankedPassageNodes}
               </div>
 
@@ -991,7 +992,7 @@ export function Cet6PaperRunnerView({
                     {showTranslation ? '收起全文参考译文' : '展开全文 [参考译文]'}
                   </button>
                   {showTranslation && (
-                    <p className="text-xs leading-6 whitespace-pre-line text-zinc-600 dark:text-zinc-300 bg-zinc-500/[0.06] rounded-2xl p-4">
+                    <p className="font-prose-zh text-[13.5px] whitespace-pre-line text-zinc-600 dark:text-zinc-300 bg-zinc-500/[0.06] rounded-2xl p-4">
                       {activeBanked.translation}
                     </p>
                   )}
@@ -1053,8 +1054,8 @@ export function Cet6PaperRunnerView({
                             : 'bg-white/70 dark:bg-white/[0.04] border-zinc-200/80 dark:border-white/[0.08] hover:border-amber-400/60'
                       }`}
                     >
-                      <span className="truncate">
-                        <strong className="font-mono mr-1">{item.key}.</strong>
+                      <span className="truncate font-reading text-[14px]">
+                        <strong className="font-mono text-xs mr-1.5">{item.key}.</strong>
                         {item.word}
                       </span>
                       {usedByBlank && (
@@ -1172,7 +1173,9 @@ export function Cet6PaperRunnerView({
                     )}
                   </div>
                   {activeLong.title && (
-                    <h2 className="text-lg font-extrabold leading-snug">{activeLong.title}</h2>
+                    <h2 className="font-editorial text-xl md:text-[22px] leading-snug text-zinc-900 dark:text-zinc-100">
+                      {activeLong.title}
+                    </h2>
                   )}
                 </div>
 
@@ -1187,11 +1190,11 @@ export function Cet6PaperRunnerView({
               </div>
 
               {revealed && showTranslation && activeLong.translation ? (
-                <div className="text-xs md:text-sm leading-7 whitespace-pre-line text-zinc-700 dark:text-zinc-200">
+                <div className="font-prose-zh text-[14px] whitespace-pre-line text-zinc-700 dark:text-zinc-200">
                   {activeLong.translation}
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-3.5">
                   {activeLong.paragraphs.map((para) => {
                     const isHi = highlightLrPara === para.letter;
                     return (
@@ -1199,16 +1202,16 @@ export function Cet6PaperRunnerView({
                         key={para.letter}
                         id={`cet6-lr-para-${para.letter}`}
                         onClick={() => setHighlightLrPara(isHi ? null : para.letter)}
-                        className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                        className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                           isHi
                             ? 'bg-amber-500/12 border-amber-500/50 shadow-sm'
                             : 'bg-zinc-500/[0.04] border-transparent hover:border-zinc-500/20'
                         }`}
                       >
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-mono text-xs font-extrabold mr-2.5 align-middle">
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-mono text-xs font-bold mr-2.5 align-middle">
                           {para.letter}
                         </span>
-                        <span className="text-sm leading-7 text-zinc-800 dark:text-zinc-200">
+                        <span className="font-reading text-[16px] leading-[1.88] text-zinc-800 dark:text-zinc-200">
                           {para.text}
                         </span>
                       </div>
@@ -1237,11 +1240,11 @@ export function Cet6PaperRunnerView({
                           : 'border-zinc-200/80 dark:border-white/[0.08]'
                     }`}
                   >
-                    <div className="flex items-start gap-2">
-                      <span className="font-mono text-xs font-extrabold px-2 py-0.5 rounded-md bg-zinc-900/[0.06] dark:bg-white/[0.08] shrink-0 mt-0.5">
+                    <div className="flex items-start gap-2.5">
+                      <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-zinc-900/[0.06] dark:bg-white/[0.08] shrink-0 mt-0.5">
                         {st.displayNumber}
                       </span>
-                      <p className="text-xs md:text-[13px] font-medium leading-relaxed">{st.statement}</p>
+                      <p className="font-reading text-[14.5px] leading-[1.7] text-zinc-800 dark:text-zinc-100">{st.statement}</p>
                     </div>
 
                     {/* Quick Letter Picker */}
@@ -1366,11 +1369,11 @@ export function Cet6PaperRunnerView({
               </div>
 
               {revealed && showTranslation && activeCarefulPassage.translation ? (
-                <div className={`${readingTextClass} whitespace-pre-line text-zinc-700 dark:text-zinc-200`}>
+                <div className="font-prose-zh text-[14.5px] whitespace-pre-line text-zinc-700 dark:text-zinc-200">
                   {activeCarefulPassage.translation}
                 </div>
               ) : (
-                <div className="space-y-3.5">
+                <div className="space-y-4">
                   {activeCarefulPassage.paragraphs.map((pText, i) => (
                     <p key={i} className={`${readingTextClass} text-zinc-800 dark:text-zinc-200`}>
                       <span className="font-mono text-[11px] text-amber-600/80 dark:text-amber-400/70 mr-2 select-none">
@@ -1393,8 +1396,8 @@ export function Cet6PaperRunnerView({
                     className="glass-panel-strong rounded-2xl p-5 space-y-3 border border-zinc-200/80 dark:border-white/[0.08]"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-sm font-bold leading-relaxed">
-                        <span className="font-mono text-amber-600 dark:text-amber-300 mr-2">
+                      <h3 className="font-reading text-[15.5px] font-semibold leading-[1.65] text-zinc-900 dark:text-zinc-100">
+                        <span className="font-mono text-sm font-bold text-amber-600 dark:text-amber-300 mr-2">
                           {q.displayNumber}.
                         </span>
                         {q.stem}
@@ -1423,7 +1426,7 @@ export function Cet6PaperRunnerView({
                               setAnswer(q.p, opt.key);
                               soundEngine.click();
                             }}
-                            className={`w-full text-left flex items-start gap-2.5 p-3 rounded-xl border text-xs md:text-sm transition-all ${
+                            className={`w-full text-left flex items-start gap-2.5 p-3 rounded-xl border transition-all ${
                               attempt.submitted ? 'cursor-default' : 'cursor-pointer'
                             } ${style}`}
                           >
@@ -1440,14 +1443,14 @@ export function Cet6PaperRunnerView({
                             >
                               {opt.key}
                             </span>
-                            <span className="leading-relaxed">{opt.text}</span>
+                            <span className="font-reading text-[15px] leading-[1.65] text-zinc-800 dark:text-zinc-100">{opt.text}</span>
                           </button>
                         );
                       })}
                     </div>
 
                     {revealed && q.explanation && (
-                      <div className="text-xs leading-6 text-zinc-600 dark:text-zinc-300 bg-zinc-500/[0.07] rounded-xl p-3 whitespace-pre-line">
+                      <div className="font-prose-zh text-[13px] text-zinc-600 dark:text-zinc-300 bg-zinc-500/[0.07] rounded-xl p-3.5 whitespace-pre-line">
                         <strong className="text-emerald-600 dark:text-emerald-400">
                           解析（答案 {q.answer}）：
                         </strong>
@@ -1480,7 +1483,7 @@ export function Cet6PaperRunnerView({
                   </span>
                 </div>
 
-                <div className="rounded-2xl bg-zinc-500/[0.06] border border-zinc-500/12 p-4 text-sm leading-7 whitespace-pre-line">
+                <div className="rounded-2xl bg-zinc-500/[0.06] border border-zinc-500/12 p-4.5 font-prose-zh text-[15px] whitespace-pre-line text-zinc-800 dark:text-zinc-200">
                   {tr.prompt}
                 </div>
 
@@ -1489,7 +1492,7 @@ export function Cet6PaperRunnerView({
                   onChange={(e) => setAnswer(tr.p, e.target.value)}
                   rows={8}
                   placeholder="请将上述中文段落翻译为英文..."
-                  className="w-full rounded-2xl bg-white dark:bg-[#111114] text-zinc-800 dark:text-zinc-100 border border-zinc-300 dark:border-white/[0.1] p-4 text-sm leading-7 outline-none focus:border-amber-500/60 resize-y"
+                  className="w-full rounded-2xl bg-white dark:bg-[#111114] text-zinc-800 dark:text-zinc-100 border border-zinc-300 dark:border-white/[0.1] p-4.5 font-reading text-[16px] leading-[1.85] outline-none focus:border-amber-500/60 resize-y"
                 />
               </div>
 
@@ -1525,11 +1528,11 @@ export function Cet6PaperRunnerView({
                     <div className="text-xs font-bold text-amber-600 dark:text-amber-300">
                       参考译文
                     </div>
-                    <div className="text-sm leading-7 whitespace-pre-line text-zinc-700 dark:text-zinc-200">
+                    <div className="font-reading text-[15.5px] leading-[1.85] whitespace-pre-line text-zinc-800 dark:text-zinc-200">
                       {tr.reference}
                     </div>
                     {tr.explanation && (
-                      <div className="pt-3 border-t border-zinc-500/15 text-xs leading-6 whitespace-pre-line text-zinc-600 dark:text-zinc-300">
+                      <div className="pt-3 border-t border-zinc-500/15 font-prose-zh text-[13px] whitespace-pre-line text-zinc-600 dark:text-zinc-300">
                         <strong className="text-zinc-800 dark:text-zinc-100">翻译点评：</strong>
                         {tr.explanation}
                       </div>

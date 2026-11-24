@@ -28,6 +28,7 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
+  '.woff': 'font/woff',
   '.txt': 'text/plain; charset=utf-8',
 };
 

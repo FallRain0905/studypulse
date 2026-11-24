@@ -133,7 +133,7 @@ export function Cet6DashboardView({
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+            <h1 className="font-editorial text-2xl sm:text-3xl leading-[1.24]">
               {codeLabel} 大学英语{cnName}
               <span className="text-amber-600 dark:text-amber-300"> 真题套卷与 710 分模考</span>
             </h1>

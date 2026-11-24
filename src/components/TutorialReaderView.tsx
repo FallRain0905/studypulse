@@ -258,11 +258,11 @@ export function TutorialReaderView({
                   </span>
                 </div>
 
-                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+                <h1 className="font-editorial text-2xl md:text-[32px] leading-tight">
                   {active.title}
                 </h1>
                 <p className="text-sm text-amber-700 dark:text-amber-200/90 font-medium">{active.subtitle}</p>
-                <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed whitespace-pre-line pt-1">
+                <p className="font-prose-zh text-[14.5px] text-zinc-600 dark:text-zinc-300 whitespace-pre-line pt-1">
                   <RichText text={active.intro} />
                 </p>
               </div>
@@ -317,7 +317,7 @@ export function TutorialReaderView({
                         <span className="w-9 h-9 rounded-xl bg-zinc-900/[0.06] dark:bg-white/[0.07] border border-zinc-900/10 dark:border-white/[0.1] text-zinc-800 dark:text-amber-300 font-mono font-extrabold text-sm flex items-center justify-center shrink-0">
                           {String(idx + 1).padStart(2, '0')}
                         </span>
-                        <h2 className="text-lg md:text-xl font-extrabold leading-snug">
+                        <h2 className="font-editorial text-lg md:text-xl leading-snug">
                           {sec.title.replace(/^\d+[.、\s]+/, '')}
                         </h2>
                       </div>
@@ -339,7 +339,7 @@ export function TutorialReaderView({
                     </div>
 
                     {/* Narrative Concept Explanation */}
-                    <div className="space-y-3 text-sm md:text-[15px] leading-7 text-slate-700 dark:text-slate-200">
+                    <div className="space-y-3.5 font-prose-zh text-[15px] md:text-[15.5px] text-zinc-700 dark:text-zinc-200">
                       {sec.concept.split(/\n{2,}/).map((para, pIdx) => (
                         <p key={pIdx} className="whitespace-pre-line">
                           <RichText text={para.trim()} />

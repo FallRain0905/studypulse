@@ -125,7 +125,7 @@ export function DashboardView({
               <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
               全套 9 章详细教案详解（47 节 + 33 例题）· 146 单选 · 22 实验 · 40 闪卡
             </div>
-            <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            <h1 className="font-editorial text-2xl md:text-[34px] leading-[1.22]">
               冲刺 Python 期末高分，
               <span className="text-amber-600 dark:text-amber-300">
                 系统精讲与实战刷题工作台
